@@ -11,7 +11,7 @@ echo "</pre>"; */
 <div class="card rounded-0">
     <div class="card-header p-2 mb-3 bg-success text-white bg-gradient fw-bolder rounded-0">DATOS DE TU CUENTA</div>
     <div class="card-body">
-        <form id="frmMiCuenta">
+        <form id="frmMiCuenta" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-sm-12 col-md-6">
                     <div class="form-group pb-2">
@@ -129,16 +129,47 @@ echo "</pre>"; */
                         <input type="text" class="form-control rounded-0" maxlength="150" name="tiktok" id="tiktok" value="<?=$usuario['us_tiktok']?>">
                         <p class="text-danger" id="msj-tiktok"></p>
                     </div>
-                </div>                
+                </div>
+
+                <div class="col-sm-12 col-md-4 text-center">
+                                
+                </div>
+                <div class="row py-3">
+                    <div class="col-sm-8">
+                        <div class="mb-3">
+                            <label for="avatar" class=" fw-semibold">Subir una imagen como avatar o logo</label>
+                            <input class="form-control" type="file" id="avatar" name="avatar">
+                            <p class="text-danger" id="msj-avatar"></p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="image-avatar">
+                            <?php 
+                            if( $usuario['us_avatar'] != '' ){
+                                echo "<img src='".base_url('public/images/avatar/'.$usuario['us_avatar'].'')."?v=".time()."' alt='avatar'>";
+                                echo "<br>";
+                                echo "<a class='text-decoration-none text-danger eliminarAvatar btn' data-avatar='".$usuario['us_avatar']."'><i class='fas fa-trash-alt'></i> eliminar avatar</a>";
+                            }else{
+                                echo "<img src='".base_url('public/images/avatar/default.png')."' alt='avatar'>";
+                            }
+                            ?>
+                        </div>
+                    </div>                    
+                </div>
 
                 <div class="col-sm-12">
                     <button class="btn btn-danger" id="btnModificaDatos">MODIFICAR DATOS</button>
+                    
+                    <div class="progress mt-2 d-none">
+                        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                    </div>
                 </div>
             </div>
         </form>
         <div id="msj"></div>
     </div>
 </div>
+
 <?php echo $this->endSection();?>
 
 
@@ -148,7 +179,7 @@ echo "</pre>"; */
 $(function(){  
     $('#provincia').on('change', function(e){
         let idprov = $(this).val(),
-            iddist_bd = <?=$usuario['iddist']?>;
+            iddist_bd = <?=$usuario['iddist'] != '' ? $usuario['iddist']  : '0' ?>;
         
         $.post('distritosUsu', {
             idprov, iddist_bd
@@ -161,6 +192,7 @@ $(function(){
     if( $usuario['idprov'] != '' ){
     ?>
         $("#provincia").trigger("change");
+        
     <?php
     }
     ?>
@@ -173,10 +205,20 @@ $(function(){
         btn.setAttribute('disabled', 'disabled');
         btn.innerHTML = `${btnHTML} PROCESANDO...`;
 
+        let formData = new FormData(this);
+        
+        let progress = $('.progress'), 
+            progress_bar = $('.progress-bar');
+
+        progress.removeClass('d-none');
+
         $.ajax({
             method: 'POST',
             url: 'modificarDatosUsu',
-            data: $(this).serialize(),
+            data: formData,
+            cache:false,
+            contentType: false,
+            processData: false,
             success: function(data){
                 //console.log(data);
                 $('[id^="msj-"').text("");                
@@ -189,9 +231,64 @@ $(function(){
                 btn.removeAttribute('disabled');
                 btn.innerHTML = txtbtn;
                 $('#msj').html(data);
+            },
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        percentComplete = parseInt(percentComplete * 100);
+                        //console.log(percentComplete);
+                        progress_bar.width(percentComplete + "%").text(percentComplete + "%");
+
+                        if (percentComplete === 100) {
+                            progress.addClass('d-none');
+                        }
+                    }
+                }, false);
+
+                return xhr;
             }
+
         });
     });
+
+
+    $('#avatar').on('change', function(){
+        let tipos = ['image/jpeg','image/jpg'];
+        let file = this.files[0];
+        let tipofile = file.type;
+        let sizefile = file.size;
+
+        if(!tipos.includes(tipofile)){
+            Swal.fire({
+                text: "LA IMAGEN DEBE ESTAR EN FORMATO JPG",
+                icon: "info"
+            });
+            $(this).val('');
+            return false;
+        }
+        if(sizefile >= 2097152){
+            Swal.fire({
+                text: "LA IMAGEN NO DEBE SER MAYOR A 2MB",
+                icon: "info"
+            });
+            $(this).val('');
+            return false;
+        }
+    });
+
+    $('.eliminarAvatar').on('click', function(e){
+        let avatar = $(this).data('avatar');
+
+        $.post('eliminarAvaUsu', {
+            avatar
+        }, function(data){
+            $('#msj').html(data);
+        });
+    });
+
 });
 </script>
 

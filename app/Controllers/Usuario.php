@@ -172,6 +172,14 @@ class Usuario extends BaseController
                         'max_length'       => '* Máximo 150 caracteres.',
                         'valid_url_strict' => '* La URL es inválida.',
                     ]
+                ],
+                'avatar' => [
+                    'label' => 'Avatar', 
+                    'rules' => 'permit_empty|uploaded[avatar]|max_size[avatar,2048]|mime_in[avatar,image/jpg,image/jpeg]',
+                    'errors' => [
+                        'max_size' => '* La imagen no deber ser mayor a 2 MB.',
+                        'mime_in'  => '* La extensión es inválida.',
+                    ]
                 ]
             ]);
 
@@ -189,18 +197,20 @@ class Usuario extends BaseController
                 'youtube'   => trim($this->request->getVar('youtube')),
                 'instagram' => trim($this->request->getVar('instagram')),
                 'tiktok'    => trim($this->request->getVar('tiktok')),
+                'avatar'    => $this->request->getFile('avatar'),
             ];
 
             if (!$validation->run($data)) {
                 return $this->response->setJson(['errors' => $validation->getErrors()]); 
             }
 
+            $us = $this->modeloUsuario->getUsuarioPorId(session('idusuario'));
+
             //password
             if( $data['password'] != '' ){
                 $hash = '$2a$12$YmtIBS/VsxVywSQHV4A2.upBWJxS2VSqFzUwo1eMU5.tIGOgne6YG';
                 $password = crypt($data['password'], $hash);
-            }else{
-                $us = $this->modeloUsuario->getUsuarioPorId(session('idusuario'));
+            }else{                
                 $password = $us['us_pass'];
             }
             $data['password'] = $password;               
@@ -212,7 +222,22 @@ class Usuario extends BaseController
                 $data['ubigeo'] = $ubi['idubigeo'];
             }
 
-            //print_r($data); exit;
+            //avatar
+            $ava_nombre = $us['us_avatar'];
+            if( $data['avatar']->getError() === 0 ){
+                $avatar = $data['avatar'];
+
+                //$ava_nombre = $avatar->getRandomName();
+                $ava_ext    = $avatar->getClientExtension();
+                $ava_nombre = $us['us_codusuario'].'.'.$ava_ext;
+                $ava_folder = "public/images/avatar/";
+
+                $image = \Config\Services::image();
+                $image->withFile($avatar)
+                    ->resize(200, 200, true, 'width')
+                    ->save($ava_folder.$ava_nombre);
+            }
+            $data['ava_nombre'] = $ava_nombre;
 
             if( $this->modeloUsuario->modificarDatosUsuario(session('idusuario'), $data) ){
                 echo '<script>
@@ -221,8 +246,8 @@ class Usuario extends BaseController
                         text: "",
                         icon: "success",
                         showConfirmButton: false,
-                        timer: 1500
                     });
+                    setTimeout(function(){ location.reload() },1500);
                 </script>';
             }else{
                 echo '<script>
@@ -231,6 +256,30 @@ class Usuario extends BaseController
                         icon: "error"
                     });
                 </script>';
+            }
+        }
+    }
+
+    public function eliminarAvatarUsuario(){
+        if( $this->request->isAJAX() ){
+            if(!session('idusuario')){
+                exit();
+            }
+
+            $ava_folder = "public/images/avatar/";
+            $ava_nombre = trim($this->request->getVar('avatar'));
+
+            if( $this->modeloUsuario->eliminarAvatar(session('idusuario')) ){
+                if( unlink($ava_folder.$ava_nombre) ){
+                    echo '<script>
+                        Swal.fire({
+                            text: "Se eliminó el avatar",
+                            icon: "success",
+                            showConfirmButton: false,
+                        });
+                        setTimeout(function(){ location.reload() },1500);
+                    </script>';
+                } 
             }
         }
     }

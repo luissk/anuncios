@@ -20,8 +20,8 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
 
     //AJAX
     $routes->post('modificarDatosUsu', 'Usuario::modificarDatosUsuario');
-
     $routes->post('distritosUsu', 'Usuario::listarDistritosUsuario');
+    $routes->post('eliminarAvaUsu', 'Usuario::eliminarAvatarUsuario');
 });
 
 //$routes->get('users/(:num)/gallery/(:num)', 'Galleries::showUserGallery/$1/$2', ['as' => 'user_gallery']);

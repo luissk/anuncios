@@ -35,9 +35,16 @@ class UsuarioModel extends Model{
 
     public function modificarDatosUsuario($idusuario, $data){
         $query = "update usuario set us_nombre_razon = ?, us_ruc = ?, us_telefono= ?, us_pass = ?, us_whatsapp = ?, us_website = ?, us_facebook = ?, us_instagram = ?,
-            us_youtube = ?, us_tiktok = ?, us_direccion = ?, us_ubigeo = ? where idusuario = ? and us_status = 1";
+            us_youtube = ?, us_tiktok = ?, us_direccion = ?, us_ubigeo = ?, us_avatar = ? where idusuario = ? and us_status = 1";
         $st = $this->db->query($query, [$data['nombre'], $data['dniruc'], $data['telefono'], $data['password'], $data['whatsapp'], $data['web'], 
-            $data['facebook'], $data['instagram'], $data['youtube'], $data['tiktok'], $data['direccion'], $data['ubigeo'], $idusuario]);
+            $data['facebook'], $data['instagram'], $data['youtube'], $data['tiktok'], $data['direccion'], $data['ubigeo'], $data['ava_nombre'], $idusuario]);
+
+        return $st;
+    }
+
+    public function eliminarAvatar($idusuario){
+        $query = "update usuario set us_avatar = ? where idusuario = ? and us_status = 1";
+        $st = $this->db->query($query,['', $idusuario]);
 
         return $st;
     }
