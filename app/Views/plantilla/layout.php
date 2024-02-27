@@ -15,6 +15,8 @@
     <script src="https://kit.fontawesome.com/6bea3db884.js" crossorigin="anonymous"></script>
 
     <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <?php echo $this->renderSection("csslinks");?>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light py-3 shadow-sm">
@@ -164,5 +166,7 @@
     <script src="<?php echo base_url();?>public/js/home.js"></script>
 
     <?php echo $this->renderSection("scripts");?>
+
+    <?php echo $this->renderSection("scriptsPanel");?>
 </body>
 </html>

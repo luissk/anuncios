@@ -1,5 +1,11 @@
 <?php echo $this->extend('plantilla/layout')?>
 
+
+<?php echo $this->section('csslinks');?>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.min.css" rel="stylesheet">
+<?php echo $this->endSection();?>
+
+
 <?php echo $this->section('contenido');?>
 
 <?php
@@ -78,4 +84,9 @@ if(!session('idusuario')){
     </div>
 </section>
 
+<?php echo $this->endSection();?>
+
+
+<?php echo $this->section('scripts');?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.5/dist/sweetalert2.all.min.js"></script>
 <?php echo $this->endSection();?>
