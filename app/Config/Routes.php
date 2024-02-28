@@ -17,11 +17,15 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
     $routes->get('mi-cuenta', 'Usuario::micuenta');
-
     //AJAX
     $routes->post('modificarDatosUsu', 'Usuario::modificarDatosUsuario');
     $routes->post('distritosUsu', 'Usuario::listarDistritosUsuario');
-    $routes->post('eliminarAvaUsu', 'Usuario::eliminarAvatarUsuario');
+    $routes->post('eliminarAvaUsu', 'Usuario::eliminarAvatarUsuario');    
+});
+
+$routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
+    $routes->get('mis-anuncios', 'Anuncio::misAnuncios');
+    $routes->get('publicar-anuncio', 'Anuncio::publicarAnuncio');
 });
 
 //$routes->get('users/(:num)/gallery/(:num)', 'Galleries::showUserGallery/$1/$2', ['as' => 'user_gallery']);

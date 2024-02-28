@@ -37,7 +37,7 @@
                         <a class="nav-link <?php echo isset($act_menucontact) ? 'active' : ''?>" href="<?php echo base_url();?>"><i class="fas fa-address-book"></i> Contáctanos</a>
                     </li>
                     <li class="nav-item pe-3">
-                        <a class="btn btn-danger" >Publica Anuncio</a>
+                        <a class="btn btn-danger" href="<?php echo base_url('publicar-anuncio')?>">Publica Anuncio</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav  mb-2 mb-lg-0 d-flex justify-content-end">

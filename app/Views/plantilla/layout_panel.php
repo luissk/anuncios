@@ -43,7 +43,7 @@ if(!session('idusuario')){
                             <a href="<?=base_url('mi-cuenta')?>" class="text-secondary text-decoration-none d-block p-2 border-bottom bg-light <?php echo $opt_account?>">
                                 <i class="far fa-user"></i> Mi cuenta
                             </a>
-                            <a href="#" class="text-secondary text-decoration-none d-block p-2 border-bottom bg-light <?php echo $opt_anuncios?>">
+                            <a href="<?=base_url('mis-anuncios')?>" class="text-secondary text-decoration-none d-block p-2 border-bottom bg-light <?php echo $opt_anuncios?>">
                                 <i class="fas fa-bullhorn"></i> <?php echo session('idtipousu') == 1 ? 'Anuncios' : 'Mis anuncios';?>
                             </a>
                             <a href="#" class="text-secondary text-decoration-none d-block p-2 border-bottom bg-light <?php echo $opt_publicidad?>">
