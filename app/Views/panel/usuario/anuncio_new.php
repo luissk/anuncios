@@ -104,45 +104,21 @@ echo "</pre>"; */
                 </div>
             </div>
             <div class="col-sm-12">
-                <p class="fw-semibold bg-light">Sube Hasta 5 imágenes de tu Anuncio <i class="text-secondary texto-size-13">(Sólo en formato (JPEG | JPG)</i></p>
+                <p class="fw-semibold bg-light">Sube Hasta 5 imágenes de tu Anuncio</p>
                 <div class="row">
                     <div class="col-sm-12">
-                        <label for="avatar" class="">Agrega tus imágenes</label>
-                        <input class="form-control" type="file" id="avatar" name="avatar[]" multiple>
-                        <p class="text-danger" id="msj-avatar"></p>
+                        <label for="imagenes" class="">Agrega tus imágenes <i class="text-secondary texto-size-13">(Sólo en formato (JPEG | JPG) y tamaño max. 3 MB </i></label>
+                        <input class="form-control" type="file" id="imagenes" name="imagenes[]" multiple>
+                        <p class="text-danger" id="msj-imagenes"></p>
                     </div>
                     <div class="col-sm-12">
-                        <div class="d-flex justify-content-start flex-wrap">
-                            <div class="item-img position-relative me-4">
+                        <div class="d-flex justify-content-start flex-wrap" id="content_images">
+                            <!-- <div class="item-img position-relative me-4">
                                 <img src="public/img/anuncios/helado.jpg" class="img-thumbnail" alt="images">
                                 <a class="position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' href="#">
                                     <i class='fas fa-trash-alt'></i>
                                 </a>
-                            </div>
-                            <div class="item-img position-relative me-4">
-                                <img src="public/img/anuncios/eifel.jpg" class="img-thumbnail" alt="images">
-                                <a class="position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' href="#">
-                                    <i class='fas fa-trash-alt'></i>
-                                </a>
-                            </div>
-                            <div class="item-img position-relative me-4">
-                                <img src="public/img/anuncios/cielo.jpg" class="img-thumbnail" alt="images">
-                                <a class="position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' href="#">
-                                    <i class='fas fa-trash-alt'></i>
-                                </a>
-                            </div>
-                            <div class="item-img position-relative me-4">
-                                <img src="public/img/anuncios/campaña.jpg" class="img-thumbnail" alt="images">
-                                <a class="position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' href="#">
-                                    <i class='fas fa-trash-alt'></i>
-                                </a>
-                            </div>
-                            <div class="item-img position-relative me-4">
-                                <img src="public/img/anuncios/pepsi.jpg" class="img-thumbnail" alt="images">
-                                <a class="position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' href="#">
-                                    <i class='fas fa-trash-alt'></i>
-                                </a>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -178,7 +154,92 @@ echo "</pre>"; */
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
 <script>
+
+/*** IMAGENES ***/
+let arr_images = [];
+let content_images = document.querySelector("#content_images");
+
+function verImg(img){
+    $('#imgModalShow').attr('src', img.src);
+    $('#modalImg').modal('show');
+}
+
+function eliminarImg(el_arr, el){
+    arr_images.forEach((item, index) => {
+        if (item.lastModified === el_arr) {
+            arr_images.splice(index, 1);
+        }
+    });
+    el.parentElement.remove();
+    console.log(arr_images);
+}
+
+function printImages(){
+    content_images.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+    if( arr_images.length > 0 ){      
+        content_images.innerHTML = '';
+
+        arr_images.map((file, i) => {
+            let el_arr = arr_images[i].lastModified;
+            const blobUrl = window.URL.createObjectURL(file)
+            content_images.innerHTML += `
+                <div class="item-img position-relative me-4">
+                    <img src="${blobUrl}" class="img-thumbnail" alt="${file.name}" onclick="verImg(this)">
+                    <a class="btn position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' onclick='eliminarImg(${el_arr}, this)'>
+                        <i class='fas fa-trash-alt'></i>
+                    </a>
+                </div>
+            `;
+        });
+    }    
+}
+/*** FIN IMAGENES ***/
+
 $(function(){
+    /*** IMAGENES ***/
+    $('#imagenes').on('change', function(e){
+        let images = this.files,
+            total = images.length,
+            tipos = ['image/jpeg','image/jpg'];
+
+        if( total > 0 && total <= 5 ){
+            for( let i = 0; i < total; i++ ){
+                let tipo = images[i].type,
+                    tamaño = images[i].size;
+                
+                if( tamaño == 0 ){ 
+                    Swal.fire({text: "Imagen invàlida: " + images[i].name, icon: "info"});
+                    continue;
+                }
+
+                if( !tipos.includes(tipo) ){
+                    Swal.fire({ text: "Cada imagen debe estar en formato JPG o JPEG", icon: "info"});
+                    continue;
+                }
+
+                if( tamaño > 3145728 ){ //3145728
+                    Swal.fire({text: "Cada imagen no debe ser mayor a 3MB", icon: "info"});
+                    continue;
+                }
+
+                if( arr_images.length >= 5 ) {
+                    Swal.fire({text: "Sólo 5 imágenes como máximo", icon: "info"});
+                    continue;
+                }           
+                arr_images.push(images[i]);
+            }
+            printImages();
+            $(this).val('');
+        }
+
+        if( total > 5 ){
+            Swal.fire({text: "Sólo 5 imágenes como máximo", icon: "info"});
+        }
+    }); 
+    
+    /*** FIN IMAGENES ***/
+
+    /*** PRECIO ***/
     $('#nomostrar').on('click', function(e){
         if( $(this).is(':checked') ){
             $("#precio").attr('disabled','disabled');
@@ -188,22 +249,19 @@ $(function(){
         }
     });
 
-    CKEDITOR.replace( 'descripcion', {
-        removePlugins: 'image,tabletools,tableselection',
-    } );
-
-    $('.item-img img').on('click', function(e){
-        let imgSrc = $(this).attr('src');
-        $('#imgModalShow').attr('src', imgSrc);
-        $('#modalImg').modal('show');
-    });
-
     $("#precio").on("keypress keyup blur",function (event) {
         $(this).val($(this).val().replace(/[^0-9\.]/g,''));
         if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
             event.preventDefault();
         }
     });
+    /*** FIN PRECIO ***/
+
+    /*** DESCRIPCION ***/
+    CKEDITOR.replace( 'descripcion', {
+        removePlugins: 'image,tabletools,tableselection',
+    } );
+    /*** FIN DESCRIPCION ***/
     
 });
 </script>
