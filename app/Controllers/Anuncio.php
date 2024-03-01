@@ -44,8 +44,13 @@ class Anuncio extends BaseController
             return redirect()->to('panel-usuario');
         }
 
+        $tipos      = $this->modeloAnuncio->listarTipos();
+        $categorias = $this->modeloAnuncio->listarCategorias();
+
         $data['title']        = 'Nuevo Anuncio';
         $data['opt_anuncios'] = 1;
+        $data['tipos']        = $tipos;
+        $data['categorias']   = $categorias;
 
         return view('panel/usuario/anuncio_new', $data);
     }

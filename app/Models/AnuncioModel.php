@@ -5,13 +5,18 @@ use CodeIgniter\Model;
 
 class AnuncioModel extends Model{
     
-    public function registrarUsuario($datos, $hash, $codigou){
-        $query = "insert into usuario(us_codusuario,us_email,us_pass,us_nombre_razon,idtipo_usuario,us_status,us_telefono) 
-        values(?,?,?,?,?,?,?)";
-        $this->db->query($query, [$codigou, $datos['email'], $hash, $datos['nombre'], 2, 1, $datos['telefono']]);
+    public function listarTipos(){
+        $query = "select idtipo_anuncio, ta_tipo, ta_status from tipo_anuncio where ta_status = ?";
+        $st = $this->db->query($query, [1]);
 
-        return $this->db->insertID();
-    
+        return $st->getResultArray();    
+    }
+
+    public function listarCategorias(){
+        $query = "select idcate, categoria, status from cat_anuncio where status = ?";
+        $st = $this->db->query($query, [1]);
+
+        return $st->getResultArray();  
     }
 
 }

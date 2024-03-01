@@ -186,8 +186,25 @@ footer .footer-end{
     .data-opciones{width: 100%;}
 }
 
-
+/* MIS DATOS */
 .image-avatar img{
     width: 200px;
 }
+
+
+/* CREAR ANUNCIO */
+.texto-size-13{
+    font-size: 13px;
+}
+.create_anuncio .item-img{
+    width: 130px;
+    height: 130px;
+}
+.create_anuncio .item-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: crosshair;
+}
+
 /**** PANEL USUARIO ***/
