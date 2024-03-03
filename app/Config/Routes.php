@@ -26,6 +26,8 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
     $routes->get('mis-anuncios', 'Anuncio::misAnuncios');
     $routes->get('publicar-anuncio', 'Anuncio::publicarAnuncio');
+    //AJAX
+    $routes->post('distritosAnu', 'Anuncio::listarDistritosAnuncio');
 });
 
 //$routes->get('users/(:num)/gallery/(:num)', 'Galleries::showUserGallery/$1/$2', ['as' => 'user_gallery']);

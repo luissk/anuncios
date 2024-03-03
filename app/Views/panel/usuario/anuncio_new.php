@@ -10,10 +10,11 @@ echo "</pre>"; */
 <div class="card rounded-0">
     <div class="card-header p-2 mb-3 bg-success text-white bg-gradient fw-bolder rounded-0">NUEVO ANUNCIO</div>
     <div class="card-body create_anuncio">
+        <form id="frmAnuncio">
         <div class="row">
             <div class="col-sm-12 col-md-6">
                 <div class="form-group pb-2">
-                    <label for="tipo" class="mb-2 fw-semibold bg-light d-block">Tipo de anuncio</label>
+                    <label for="tipo" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-hand-point-right"></i> Tipo de anuncio</label>
                     <select name="tipo" id="tipo" class="form-select">
                         <option value="">Seleccione</option>
                         <?php
@@ -34,7 +35,7 @@ echo "</pre>"; */
             </div>
             <div class="col-sm-12 col-md-6">
                 <div class="form-group pb-2">
-                    <label for="categoria" class="mb-2 fw-semibold bg-light d-block">Categoría</label>
+                    <label for="categoria" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-hand-point-right"></i> Categoría</label>
                     <select name="categoria" id="categoria" class="form-select">
                         <option value="">Seleccione</option>
                         <?php
@@ -53,19 +54,22 @@ echo "</pre>"; */
             </div>
             <div class="col-sm-12">
                 <div class="form-group pb-2">
-                    <label for="nombre" class="mb-2 fw-semibold bg-light d-block">Título o nombre de tu anuncio</label>
+                    <label for="nombre" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-hand-point-right"></i> Título o nombre de tu anuncio</label>
                     <input type="text" class="form-control rounded-0" maxlength="100" name="nombre" id="nombre">
                     <p class="text-danger" id="msj-nombre"></p>
                 </div>
             </div>
+
+            <div class="col-sm-12">
+                <p class="fw-semibold bg-light"><i class="fas fa-hand-holding-usd"></i> Precio (S/.)</p>
+            </div>
             <div class="col-sm-4">
-                <div class="form-group pb-2">
-                    <label for="precio" class="mb-2 fw-semibold bg-light d-block">Precio (S/.)</label>
+                <div class="form-group">
                     <input type="text" class="form-control rounded-0" maxlength="15" name="precio" id="precio">
                     <p class="text-danger" id="msj-precio"></p>
                 </div>
             </div>
-            <div class="col-sm-8 d-flex align-items-sm-start align-items-md-center">
+            <div class="col-sm-8 d-flex align-items-sm-start align-items-md-start">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="1" id="nomostrar" name="nomostrar">
                     <label class="form-check-label" for="nomostrar">
@@ -73,9 +77,12 @@ echo "</pre>"; */
                     </label>
                 </div>
             </div>
+
+            <div class="col-sm-12 mt-2">
+                <p class="fw-semibold bg-light"><i class="fas fa-tag"></i> Características</p>
+            </div>
             <div class="col-sm-6">
                 <div class="form-group pb-2">
-                    <label for="caracteristicas" class="mb-2 fw-semibold bg-light d-block">Características</label>
                     <textarea class="form-control rounded-0" name="caracteristicas" id="caracteristicas" rows="7"></textarea>
                     <p class="text-danger" id="msj-caracteristicas"></p>
                 </div>
@@ -90,21 +97,21 @@ echo "</pre>"; */
             </div>
             <div class="col-sm-12">
                 <div class="form-group pb-2">
-                    <label for="descripcion" class="mb-2 fw-semibold bg-light d-block">Descripción</label>
+                    <label for="descripcion" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-tags"></i> Descripción</label>
                     <textarea class="form-control rounded-0" name="descripcion" id="descripcion" rows="10"></textarea>
                     <p class="text-danger" id="msj-descripcion"></p>
                 </div>
             </div>
             <div class="col-sm-12">
                 <div class="form-group pb-2">
-                    <label for="video" class="mb-2 fw-semibold bg-light d-block bg-light d-block">Video Youtube URL o link</label>
+                    <label for="video" class="mb-2 fw-semibold bg-light d-block bg-light d-block"><i class="fas fa-link"></i> Video Youtube URL o link</label>
                     <p class="text-secondary texto-size-13">Ejemplo: https://www.youtube.com/watch?v=p6vN06ypccM</p>
                     <input type="text" class="form-control rounded-0" maxlength="150" name="video" id="video">
                     <p class="text-danger" id="msj-video"></p>
                 </div>
             </div>
             <div class="col-sm-12">
-                <p class="fw-semibold bg-light">Sube Hasta 5 imágenes de tu Anuncio</p>
+                <p class="fw-semibold bg-light"><i class="fas fa-images"></i> Sube Hasta 5 imágenes de tu Anuncio</p>
                 <div class="row">
                     <div class="col-sm-12">
                         <label for="imagenes" class="">Agrega tus imágenes <i class="text-secondary texto-size-13">(Sólo en formato (JPEG | JPG) y tamaño max. 3 MB </i></label>
@@ -123,7 +130,77 @@ echo "</pre>"; */
                     </div>
                 </div>
             </div>
+            
+            <div class="col-sm-12 mt-4">
+                <p class="fw-semibold bg-light"><i class="fas fa-map-marker-alt"></i> Lugar de tu anuncio</p>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="form-group pb-2">
+                    <label for="provincia" class="mb-2 fw-semibold">Provincia</label>
+                    <select name="provincia" id="provincia" class="form-select">
+                        <option value="">Seleccione</option>
+                        <?php
+                        if( $provincias ){
+                            foreach($provincias as $prov){
+                                $provincia = $prov['provincia'];
+                                $idprov    = $prov['idprov'];
+
+
+                                echo "<option value='$idprov'>$provincia</option>";
+                            }
+                        }
+                        ?>
+                    </select>
+                    <p class="text-danger" id="msj-provincia"></p>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <div class="form-group pb-2">
+                    <label for="distrito" class="mb-2 fw-semibold">Distrito</label>
+                    <select name="distrito" id="distrito" class="form-select">
+                        <option value="">Seleccione</option>
+                    </select>
+                    <p class="text-danger" id="msj-distrito"></p>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group pb-2">
+                    <label for="direccion" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-location-arrow"></i> Dirección <i class="text-secondary texto-size-13">(Calle, Mz, Urb, Sector, etc)</i></label>
+                    <input type="text" class="form-control rounded-0" name="direccion" id="direccion" maxlength="150" />
+                    <p class="text-danger" id="msj-direccion"></p>
+                </div>
+            </div>
+
+            <div class="col-sm-12 mt-2">
+                <p class="fw-semibold bg-light"><i class="far fa-address-card"></i> Datos de contacto</p>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group pb-2">
+                    <label for="email" class="mb-2 fw-semibold">Email</label>
+                    <input type="email" class="form-control rounded-0" name="email" id="email" maxlength="150" value="<?=$usuario['us_email']?>" />
+                    <p class="text-danger" id="msj-email"></p>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group pb-2">
+                    <label for="telefono" class="mb-2 fw-semibold">Teléfono</label>
+                    <input type="text" class="form-control rounded-0" name="telefono" id="telefono" maxlength="150" value="<?=$usuario['us_telefono']?>" />
+                    <p class="text-danger" id="msj-telefono"></p>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group pb-2">
+                    <label for="whatsapp" class="mb-2 fw-semibold">Whatsapp</label>
+                    <input type="text" class="form-control rounded-0" name="whatsapp" id="whatsapp" maxlength="150" value="<?=$usuario['us_whatsapp']?>" />
+                    <p class="text-danger" id="msj-whatsapp"></p>
+                </div>
+            </div>
+
+            <div class="col-sm-12 text-end">
+                <button class="btn btn-danger px-5" id="btnAnuncio">CREAR ANUNCIO</button>
+            </div>
         </div>
+        </form>
     </div>
 </div>
 
@@ -171,7 +248,7 @@ function eliminarImg(el_arr, el){
         }
     });
     el.parentElement.remove();
-    console.log(arr_images);
+    //console.log(arr_images);
 }
 
 function printImages(){
@@ -262,6 +339,18 @@ $(function(){
         removePlugins: 'image,tabletools,tableselection',
     } );
     /*** FIN DESCRIPCION ***/
+
+    /*** UBIGEO */
+    $('#provincia').on('change', function(e){
+        let idprov = $(this).val()
+        
+        $.post('distritosAnu', {
+            idprov
+        }, function (data){
+            $('#distrito').html(data);
+        })
+    });
+    /*** FIN UBIGEO */
     
 });
 </script>

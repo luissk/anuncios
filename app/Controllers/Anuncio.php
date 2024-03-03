@@ -47,12 +47,40 @@ class Anuncio extends BaseController
         $tipos      = $this->modeloAnuncio->listarTipos();
         $categorias = $this->modeloAnuncio->listarCategorias();
 
+        $provincias = $this->modeloUbigeo->listarProvincias();
+
+        $us = $this->modeloUsuario->getUsuarioPorId(session('idusuario'));
+
         $data['title']        = 'Nuevo Anuncio';
         $data['opt_anuncios'] = 1;
         $data['tipos']        = $tipos;
         $data['categorias']   = $categorias;
+        $data['provincias']   = $provincias;
+        $data['usuario']      = $us;
 
         return view('panel/usuario/anuncio_new', $data);
+    }
+
+    public function listarDistritosAnuncio(){
+        if( $this->request->isAJAX() ){
+            if(!session('idusuario')){
+                exit();
+            }
+
+            $idprov    = trim($this->request->getVar('idprov'));
+
+            if( $distritos = $this->modeloUbigeo->listarDistritos($idprov) ){
+                echo "<option value = ''>Seleccione</option>";
+                foreach($distritos as $dist){
+                    $iddist   = $dist['iddist'];
+                    $distrito = $dist['dist'];
+
+                    echo "<option value = '$iddist'>$distrito</option>";
+                }
+            }else{
+                echo "<option value = ''>Seleccione</option>";
+            }
+        }
     }
 
 
