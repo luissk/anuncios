@@ -114,17 +114,20 @@ echo "</pre>"; */
                 <p class="fw-semibold bg-light"><i class="fas fa-images"></i> Sube Hasta 5 imágenes de tu Anuncio</p>
                 <div class="row">
                     <div class="col-sm-12">
-                        <label for="imagenes" class="">Agrega tus imágenes <i class="text-secondary texto-size-13">(Sólo en formato (JPEG | JPG) y tamaño max. 3 MB </i></label>
+                        <i class="text-secondary texto-size-13">Puedes marcar una imagen como principal. Sólo en formato (JPEG | JPG) y tamaño max. 3 MB </i>
                         <input class="form-control" type="file" id="imagenes" name="imagenes[]" multiple>
                         <p class="text-danger" id="msj-imagenes"></p>
                     </div>
                     <div class="col-sm-12">
-                        <div class="d-flex justify-content-start flex-wrap" id="content_images">
-                            <!-- <div class="item-img position-relative me-4">
+                        <div class="d-flex justify-content-center flex-wrap" id="content_images">
+                           <!--  <div class="item-img position-relative me-4 mb-5">
                                 <img src="public/img/anuncios/helado.jpg" class="img-thumbnail" alt="images">
                                 <a class="position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' href="#">
                                     <i class='fas fa-trash-alt'></i>
                                 </a>
+                                <div class="text-center">
+                                    <input type="checkbox" name="principal" id="principal" class=""> Principal
+                                </div>
                             </div> -->
                         </div>
                     </div>
@@ -184,14 +187,14 @@ echo "</pre>"; */
             <div class="col-sm-3">
                 <div class="form-group pb-2">
                     <label for="telefono" class="mb-2 fw-semibold">Teléfono</label>
-                    <input type="text" class="form-control rounded-0" name="telefono" id="telefono" maxlength="150" value="<?=$usuario['us_telefono']?>" />
+                    <input type="text" class="form-control rounded-0" name="telefono" id="telefono" maxlength="12" value="<?=$usuario['us_telefono']?>" />
                     <p class="text-danger" id="msj-telefono"></p>
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="form-group pb-2">
                     <label for="whatsapp" class="mb-2 fw-semibold">Whatsapp</label>
-                    <input type="text" class="form-control rounded-0" name="whatsapp" id="whatsapp" maxlength="150" value="<?=$usuario['us_whatsapp']?>" />
+                    <input type="text" class="form-control rounded-0" name="whatsapp" id="whatsapp" maxlength="9" value="<?=$usuario['us_whatsapp']?>" />
                     <p class="text-danger" id="msj-whatsapp"></p>
                 </div>
             </div>
@@ -201,6 +204,7 @@ echo "</pre>"; */
             </div>
         </div>
         </form>
+        <div id="msj"></div>
     </div>
 </div>
 
@@ -241,34 +245,80 @@ function verImg(img){
     $('#modalImg').modal('show');
 }
 
-function eliminarImg(el_arr, el){
+function eliminarImg(id, el){
     arr_images.forEach((item, index) => {
-        if (item.lastModified === el_arr) {
+        if (item.id === id) {
             arr_images.splice(index, 1);
         }
     });
     el.parentElement.remove();
     //console.log(arr_images);
+    primeraImgPrincipal();
+    printImages();
 }
+
+function principal(el, id){
+    $('[name="principal[]"]').prop('checked', false);
+    el.checked = true;
+    arr_images.forEach((item, index) => {
+        item.principal = '';
+        if (item.id === id) {
+            item.principal = 1;
+        }
+    });
+    console.log(arr_images);
+}
+
+function primeraImgPrincipal(){
+    if( arr_images.length > 0 ){        
+        let arr = arr_images.find( el => el.principal === 1);
+        if( arr === undefined ){
+            for( let i in arr_images ){                
+                if( i == 0 ){
+                    arr_images[i].principal = 1;
+                    break;
+                }
+            }
+        }
+    }
+}
+
 
 function printImages(){
     content_images.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
     if( arr_images.length > 0 ){      
         content_images.innerHTML = '';
+        
+        primeraImgPrincipal();
 
+        //console.log(arr_images);
         arr_images.map((file, i) => {
-            let el_arr = arr_images[i].lastModified;
+            let id = arr_images[i].id;
+
+            let checked = '';
+            if( file.principal === 1 ){
+                checked = 'checked';
+            }
+
             const blobUrl = window.URL.createObjectURL(file)
             content_images.innerHTML += `
-                <div class="item-img position-relative me-4">
+                <div class="item-img position-relative me-4 mb-5">
                     <img src="${blobUrl}" class="img-thumbnail" alt="${file.name}" onclick="verImg(this)">
-                    <a class="btn position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' onclick='eliminarImg(${el_arr}, this)'>
+                    <a class="btn position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' onclick='eliminarImg(${id}, this)'>
                         <i class='fas fa-trash-alt'></i>
                     </a>
+                    <div class="form-check text-center">
+                        <input class="form-check-input" type="checkbox" value="${id}" name="principal[]" id="principal-${id}" onclick='principal(this, ${id})' ${checked}>
+                        <label class="form-check-label" for="principal-${id}">
+                            Principal
+                        </label>
+                    </div>
                 </div>
             `;
         });
-    }    
+    }else{
+        content_images.innerHTML = '';
+    }   
 }
 /*** FIN IMAGENES ***/
 
@@ -302,7 +352,9 @@ $(function(){
                 if( arr_images.length >= 5 ) {
                     Swal.fire({text: "Sólo 5 imágenes como máximo", icon: "info"});
                     continue;
-                }           
+                }
+                images[i].id = Math.round(Math.random()*(9999-1000)+parseInt(1000));   
+                images[i].principal = '';   
                 arr_images.push(images[i]);
             }
             printImages();
@@ -351,6 +403,49 @@ $(function(){
         })
     });
     /*** FIN UBIGEO */
+
+
+    /*** FORMULARIO */
+    $('#frmAnuncio').on('submit', function(e){
+        e.preventDefault();
+        //console.log($(this).serialize());
+
+        e.preventDefault();
+        let btn = document.querySelector('#btnAnuncio'),
+            txtbtn = btn.textContent,
+            btnHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        btn.setAttribute('disabled', 'disabled');
+        btn.innerHTML = `${btnHTML} PROCESANDO...`;
+
+        let formData = new FormData(this);
+
+        let descripcion = CKEDITOR.instances.descripcion.getData();
+        formData.append('descripcion', descripcion);
+
+        if( arr_images.length > 0 ){
+            for( let i in arr_images ){
+                formData.append('imagenes['+i+']', arr_images[i]);
+            }
+            formData.append('arr_images', JSON.stringify(arr_images));
+        }
+
+        $.ajax({
+            method: 'POST',
+            url: 'crearAnuncio',
+            data: formData,
+            cache:false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                console.log(data);
+                btn.removeAttribute('disabled');
+                btn.innerHTML = txtbtn;
+                $('#msj').html(data);
+            }
+        });
+    });
+
+    /*** FIN FORMULARIO */
     
 });
 </script>

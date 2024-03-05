@@ -83,5 +83,16 @@ class Anuncio extends BaseController
         }
     }
 
+    public function CrearAnuncio(){
+        if( $this->request->isAJAX() ){
+            if(!session('idusuario')){
+                exit();
+            }
+
+            print_r($_POST);
+            print_r($_FILES);
+        }
+    }
+
 
 }
