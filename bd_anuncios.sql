@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-02-2024 a las 21:31:36
+-- Tiempo de generación: 06-03-2024 a las 23:24:11
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.0.25
 
@@ -34,7 +34,18 @@ CREATE TABLE `anuncio` (
   `an_fechacreacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `idtipo_anuncio` tinyint(4) NOT NULL,
   `idusuario` int(11) NOT NULL,
-  `idcate` tinyint(4) NOT NULL
+  `idcate` tinyint(4) NOT NULL,
+  `precio` decimal(10,2) DEFAULT NULL,
+  `precio_mostrar` tinyint(4) DEFAULT NULL,
+  `caracteristicas` varchar(255) DEFAULT NULL,
+  `url_video` varchar(150) DEFAULT NULL,
+  `ubigeo` mediumint(9) DEFAULT NULL,
+  `direccion` varchar(150) DEFAULT NULL,
+  `contact_email` varchar(150) NOT NULL,
+  `contact_fono` varchar(12) NOT NULL,
+  `contact_whatsapp` varchar(9) NOT NULL,
+  `codanuncio` varchar(10) NOT NULL,
+  `an_status` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
@@ -81,6 +92,21 @@ INSERT INTO `cat_anuncio` (`idcate`, `categoria`, `status`) VALUES
 (25, 'Vehículos', 1),
 (26, 'Videojuegos', 1),
 (27, 'Otros', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `images`
+--
+
+CREATE TABLE `images` (
+  `idimages` int(11) NOT NULL,
+  `idanuncio` int(11) NOT NULL,
+  `img` varchar(50) NOT NULL,
+  `img_thumb` varchar(50) DEFAULT NULL,
+  `principal` tinyint(4) DEFAULT NULL,
+  `status` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 -- --------------------------------------------------------
 
@@ -2268,7 +2294,7 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`idusuario`, `us_codusuario`, `us_email`, `us_pass`, `us_nombre_razon`, `us_ruc`, `us_avatar`, `us_linkact`, `us_linkrecup`, `us_fechacreacion`, `idtipo_usuario`, `us_status`, `us_telefono`, `us_whatsapp`, `us_website`, `us_facebook`, `us_instagram`, `us_youtube`, `us_tiktok`, `us_direccion`, `us_ubigeo`, `us_zoom`) VALUES
 (1, '1234567899', 'alberto_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Alberto Calderón Sánchez', '45487229', '1234567899.jpg', NULL, NULL, '2024-02-26 21:27:58', 1, 1, '975089485', '975089485', '', '', '', '', '', 'calle 3 de octubre 22mz k lote 12 sector sintuco', 130203, 0),
-(11, 'ALA36J4GDK', 'luchini_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Calderón xD', '', 'ALA36J4GDK.jpg', NULL, NULL, '2024-02-26 21:29:38', 2, 1, '987456321', '', '', '', '', '', '', '', 0, 0);
+(11, 'ALA36J4GDK', 'luchini_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Calderón xD', '', 'ALA36J4GDK.jpg', NULL, NULL, '2024-02-26 21:29:38', 2, 1, '987456321', '975089485', '', '', '', '', '', '', 0, 0);
 
 --
 -- Índices para tablas volcadas
@@ -2288,6 +2314,13 @@ ALTER TABLE `anuncio`
 --
 ALTER TABLE `cat_anuncio`
   ADD PRIMARY KEY (`idcate`);
+
+--
+-- Indices de la tabla `images`
+--
+ALTER TABLE `images`
+  ADD PRIMARY KEY (`idimages`),
+  ADD KEY `idanuncio` (`idanuncio`);
 
 --
 -- Indices de la tabla `tipo_anuncio`
@@ -2331,6 +2364,12 @@ ALTER TABLE `cat_anuncio`
   MODIFY `idcate` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
+-- AUTO_INCREMENT de la tabla `images`
+--
+ALTER TABLE `images`
+  MODIFY `idimages` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `tipo_anuncio`
 --
 ALTER TABLE `tipo_anuncio`
@@ -2359,6 +2398,12 @@ ALTER TABLE `anuncio`
   ADD CONSTRAINT `anuncio_ibfk_1` FOREIGN KEY (`idtipo_anuncio`) REFERENCES `tipo_anuncio` (`idtipo_anuncio`),
   ADD CONSTRAINT `anuncio_ibfk_2` FOREIGN KEY (`idusuario`) REFERENCES `usuario` (`idusuario`),
   ADD CONSTRAINT `anuncio_ibfk_3` FOREIGN KEY (`idcate`) REFERENCES `cat_anuncio` (`idcate`);
+
+--
+-- Filtros para la tabla `images`
+--
+ALTER TABLE `images`
+  ADD CONSTRAINT `images_ibfk_1` FOREIGN KEY (`idanuncio`) REFERENCES `anuncio` (`idanuncio`);
 
 --
 -- Filtros para la tabla `usuario`
