@@ -65,7 +65,7 @@ echo "</pre>"; */
             </div>
             <div class="col-sm-4">
                 <div class="form-group">
-                    <input type="text" class="form-control rounded-0" maxlength="15" name="precio" id="precio">
+                    <input type="text" class="form-control rounded-0" maxlength="11" name="precio" id="precio">
                     <p class="text-danger" id="msj-precio"></p>
                 </div>
             </div>
@@ -180,7 +180,7 @@ echo "</pre>"; */
             <div class="col-sm-6">
                 <div class="form-group pb-2">
                     <label for="email" class="mb-2 fw-semibold">Email</label>
-                    <input type="email" class="form-control rounded-0" name="email" id="email" maxlength="150" value="<?=$usuario['us_email']?>" />
+                    <input type="text" class="form-control rounded-0" name="email" id="email" maxlength="150" value="<?=$usuario['us_email']?>" />
                     <p class="text-danger" id="msj-email"></p>
                 </div>
             </div>
@@ -438,6 +438,13 @@ $(function(){
             processData: false,
             success: function(data){
                 console.log(data);
+                $('[id^="msj-"').text("");                
+                if( data.errors ){                    
+                    let errors = data.errors;
+                    for( let err in errors ){
+                        $('#msj-' + err).text(errors[err]);
+                    }
+                }
                 btn.removeAttribute('disabled');
                 btn.innerHTML = txtbtn;
                 $('#msj').html(data);

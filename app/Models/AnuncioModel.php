@@ -13,7 +13,7 @@ class AnuncioModel extends Model{
     }
 
     public function listarCategorias(){
-        $query = "select idcate, categoria, status from cat_anuncio where status = ?";
+        $query = "select idcate, categoria, status from cat_anuncio where status = ? order by categoria";
         $st = $this->db->query($query, [1]);
 
         return $st->getResultArray();  
