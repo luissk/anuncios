@@ -115,7 +115,7 @@ echo "</pre>"; */
                 <div class="row">
                     <div class="col-sm-12">
                         <i class="text-secondary texto-size-13">Puedes marcar una imagen como principal. Sólo en formato (JPEG | JPG) y tamaño max. 3 MB </i>
-                        <input class="form-control" type="file" id="imagenes" name="imagenes[]" multiple>
+                        <input class="form-control" type="file" id="imagenes" name="imagenes[]" multiple="multiple">
                         <p class="text-danger" id="msj-imagenes"></p>
                     </div>
                     <div class="col-sm-12">
@@ -201,6 +201,10 @@ echo "</pre>"; */
 
             <div class="col-sm-12 text-end">
                 <button class="btn btn-danger px-5" id="btnAnuncio">CREAR ANUNCIO</button>
+
+                <div class="progress mt-2 d-none">
+                    <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                </div>
             </div>
         </div>
         </form>
@@ -429,6 +433,10 @@ $(function(){
             formData.append('arr_images', JSON.stringify(arr_images));
         }
 
+        let progress = $('.progress'), 
+            progress_bar = $('.progress-bar');
+        progress.removeClass('d-none');
+
         $.ajax({
             method: 'POST',
             url: 'crearAnuncio',
@@ -437,17 +445,39 @@ $(function(){
             contentType: false,
             processData: false,
             success: function(data){
-                console.log(data);
+                //console.log(data);
                 $('[id^="msj-"').text("");                
                 if( data.errors ){                    
                     let errors = data.errors;
                     for( let err in errors ){
+                        if( err === 'imagenes[]' ){
+                            $('#msj-imagenes').text(errors[err]);
+                            continue;
+                        }
                         $('#msj-' + err).text(errors[err]);
                     }
                 }
                 btn.removeAttribute('disabled');
                 btn.innerHTML = txtbtn;
                 $('#msj').html(data);
+            },
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        percentComplete = parseInt(percentComplete * 100);
+                        //console.log(percentComplete);
+                        progress_bar.width(percentComplete + "%").text(percentComplete + "%");
+
+                        if (percentComplete === 100) {
+                            progress.addClass('d-none');
+                        }
+                    }
+                }, false);
+
+                return xhr;
             }
         });
     });

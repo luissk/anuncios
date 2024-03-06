@@ -42,4 +42,10 @@ if(!function_exists('stringAleatorio')){
 	    return $randomString;
     }
 }
+
+if(!function_exists('help_folderAnuncio')){
+    function help_folderAnuncio(){
+		return 'public/images/anuncios/';
+    }
+}
 ?>

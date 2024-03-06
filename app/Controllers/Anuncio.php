@@ -89,7 +89,7 @@ class Anuncio extends BaseController
                 exit();
             }
 
-            $codanuncio = stringAleatorio(15);
+            $codanuncio = stringAleatorio(10);
             
             $validation = \Config\Services::validation();
 
@@ -109,7 +109,7 @@ class Anuncio extends BaseController
                 'email'           => trim($this->request->getVar('email')),
                 'telefono'        => trim($this->request->getVar('telefono')),
                 'whatsapp'        => trim($this->request->getVar('whatsapp')),
-                'imagenes'        => $this->request->getFiles('imagenes'),
+                'imagenes'        => $this->request->getFileMultiple('imagenes'),
             ];
 
             $validation->setRules([
@@ -170,7 +170,7 @@ class Anuncio extends BaseController
                     'rules' => 'required|max_length[4000]',
                     'errors' => [
                         'required' => '* La {field} es requerido.',
-                        'max_length'  => '* Las {field} debe contener máximo 4000 caracteres.'
+                        'max_length'  => '* La {field} debe contener máximo 4000 caracteres.'
                     ]
                 ],
                 'video' => [
@@ -232,13 +232,108 @@ class Anuncio extends BaseController
                         'regex_match' => '* El {field} sólo contiene números.'
                     ]
                 ],
+                'imagenes[]' => [
+                    'label' => 'Imágenes', 
+                    'rules' => 'uploaded[imagenes.0]|max_size[imagenes,3072]|mime_in[imagenes,image/jpg,image/jpeg]',
+                    'errors' => [
+                        'uploaded' => '* Debe seleccionar al menos 1 imagen.',
+                        'max_size' => '* La imagen no deber ser mayor a 3 MB.',
+                        'mime_in'  => '* La extensión es inválida.',
+                    ]
+                ]
             ]);
+            
+            $countFiles = count(array_filter($_FILES['imagenes']['name']));
+            if( $countFiles > 5 ){//agregar validación para las imágenes
+                $validation->setError('imagenes[]', 'Máximo 5 Imágenes.');
+            }
 
-            if (!$validation->run($data)) {
+            if (!$validation->run($data)) {                
                 return $this->response->setJson(['errors' => $validation->getErrors()]); 
             }
 
-            print_r($_POST);
+            //PRECIO
+            if( $data['nomostrar'] ){
+                $data['nomostrar'] = 1;
+            }else{
+                $data['nomostrar'] = 0;
+            }
+
+            //CARACTERISTICAS
+            /* echo nl2br($data['caracteristicas'])."<hr>";
+            $arr_caract = explode("\r\n", $data['caracteristicas']);
+            print_r($arr_caract); */
+
+            //UBIGEO
+            $data['ubigeo'] = '';
+            if( $data['provincia'] != '' && $data['distrito'] != '' ){
+                $ubi = $this->modeloUbigeo->getUbigeo($data['distrito'], $data['provincia']);
+                $data['ubigeo'] = $ubi['idubigeo'];
+            }
+
+            //CODIGO ANUNCIO
+            $data['codanuncio'] = $codanuncio;
+
+            if( $idanuncio = $this->modeloAnuncio->crearAnuncio(session('idusuario'), $data) ){
+
+                //IMAGENES            
+                //IMAGEN PRINCIPAL
+                $image_principal = $this->request->getVar('arr_images');
+                $arr_img = json_decode($image_principal, true);
+
+                $idx_principal = 0; //para marcar que imagen es la principal por el orden, sacando el indice
+                foreach( $arr_img as $k => $v ){
+                    if( $v['principal'] == 1 )
+                        $idx_principal = $k;
+                }
+
+                $micarpeta = help_folderAnuncio().$codanuncio;
+                if (!file_exists($micarpeta)) {
+                    mkdir($micarpeta, 0777, true);
+                }
+                
+                $ready = FALSE;
+                foreach( $data['imagenes'] as $i => $img ){
+                    $nombre_img       = $img->getRandomName();
+                    $nombre_img_thumb = "thumb_".$img->getRandomName();
+
+                    $ruta_completa       = "$micarpeta/$nombre_img";
+                    $ruta_completa_thumb = "$micarpeta/$nombre_img_thumb";
+
+
+                    $image = \Config\Services::image();
+                    $image->withFile($img)
+                        ->resize(700, 600, true, 'height')
+                        ->save($ruta_completa);
+
+                    $image->withFile($img)
+                        ->resize(350, 350, true, 'width')
+                        ->save($ruta_completa_thumb);
+
+                    $check_principal = 0;
+                    if( $i == $idx_principal ){
+                        $check_principal = 1;
+                    }
+                    
+                    if( $this->modeloAnuncio->insertarImagenes($idanuncio, $nombre_img, $nombre_img_thumb, $check_principal) )
+                        $ready = TRUE;
+                }
+
+                if( $ready ){
+                    echo '<script>
+                        Swal.fire({
+                            title: "ANUNCIO CREADO.",
+                            text: "",
+                            icon: "success",
+                            showConfirmButton: false,
+                        });
+                        setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
+                    </script>';
+                }
+            }        
+
+            //print_r($data);
+            //print_r($_POST);
             //print_r($this->request->getFiles('imagenes'));
         }
     }
