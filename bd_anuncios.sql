@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-03-2024 a las 23:24:11
+-- Tiempo de generación: 07-03-2024 a las 23:10:36
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.0.25
 
@@ -31,7 +31,7 @@ CREATE TABLE `anuncio` (
   `idanuncio` int(11) NOT NULL,
   `an_nombre` varchar(100) NOT NULL,
   `an_descripcion` text NOT NULL,
-  `an_fechacreacion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `an_fechacreacion` datetime NOT NULL,
   `idtipo_anuncio` tinyint(4) NOT NULL,
   `idusuario` int(11) NOT NULL,
   `idcate` tinyint(4) NOT NULL,
@@ -47,6 +47,14 @@ CREATE TABLE `anuncio` (
   `codanuncio` varchar(10) NOT NULL,
   `an_status` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `anuncio`
+--
+
+INSERT INTO `anuncio` (`idanuncio`, `an_nombre`, `an_descripcion`, `an_fechacreacion`, `idtipo_anuncio`, `idusuario`, `idcate`, `precio`, `precio_mostrar`, `caracteristicas`, `url_video`, `ubigeo`, `direccion`, `contact_email`, `contact_fono`, `contact_whatsapp`, `codanuncio`, `an_status`) VALUES
+(2, 'Vendo Juego de PS4 DAYS GONE Nuevo', '<h2>Venta de Juego Xevere</h2>', '2024-03-07 15:11:10', 3, 11, 26, '50.00', 0, 'Nuevo\r\nEn Caja', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130208, 'Urb Miguel Grau 2da Etapa', 'luchini_1102@hotmail.com', '987456321', '975089485', 'HHCMVUA1NT', 1),
+(3, 'Local Para fiestas', '<h2>Alquilo local para todo tipo de eventos</h2>\r\n\r\n<p>Precio a tratar&nbsp;</p>', '2024-03-07 15:18:13', 1, 11, 15, '0.00', 1, 'Local grande\r\nPara adultos y niños', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130202, 'aaa', 'luchini_1102@hotmail.com', '987456321', '975089485', 'KDXL2GNA89', 1);
 
 -- --------------------------------------------------------
 
@@ -96,6 +104,29 @@ INSERT INTO `cat_anuncio` (`idcate`, `categoria`, `status`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `estados_anuncio`
+--
+
+CREATE TABLE `estados_anuncio` (
+  `idestado` tinyint(4) NOT NULL,
+  `estado` varchar(50) NOT NULL,
+  `descripcion` varchar(150) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `estados_anuncio`
+--
+
+INSERT INTO `estados_anuncio` (`idestado`, `estado`, `descripcion`) VALUES
+(1, 'Pendiente de Activación', 'Después de crear el anuncio, pasa a pendiente'),
+(2, 'Activo', 'Cuando un anuncio ya fué revisado por el admin, cambia a activo'),
+(3, 'Inactivo', 'Cuando un anuncio, ya venció sus días de activo p cuando el usuario lo inactiva'),
+(4, 'Destacado', 'El anuncio se mostrará en los primeros resultados de búsqueda, según su tipo y categoría.'),
+(5, 'Super Destacado', 'El anuncio es destacado y se mostrará dentro los 20 anuncios aleatorios de la página principal.');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `images`
 --
 
@@ -107,6 +138,19 @@ CREATE TABLE `images` (
   `principal` tinyint(4) DEFAULT NULL,
   `status` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `images`
+--
+
+INSERT INTO `images` (`idimages`, `idanuncio`, `img`, `img_thumb`, `principal`, `status`) VALUES
+(1, 2, '1709785499_02ac8a567aba0e7d527a.jpg', 'thumb_1709785499_02ac8a567aba0e7d527a.jpg', 0, 1),
+(2, 2, '1709785499_95b290a62f3d1d1f8451.jpg', 'thumb_1709785499_95b290a62f3d1d1f8451.jpg', 0, 1),
+(3, 2, '1709785499_0c1bcd0913919b4c99cf.jpg', 'thumb_1709785499_0c1bcd0913919b4c99cf.jpg', 1, 1),
+(4, 2, '1709785500_8755ac23cb431e3bf2bc.jpg', 'thumb_1709785500_8755ac23cb431e3bf2bc.jpg', 0, 1),
+(5, 3, '1709842693_0932e7b13ffca1144f66.jpg', 'thumb_1709842693_0932e7b13ffca1144f66.jpg', 1, 1),
+(6, 3, '1709842694_5246ae7acbdc323b8f69.jpg', 'thumb_1709842694_5246ae7acbdc323b8f69.jpg', 0, 1),
+(7, 3, '1709842694_1cd50a4886f72ec57019.jpg', 'thumb_1709842694_1cd50a4886f72ec57019.jpg', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -125,9 +169,9 @@ CREATE TABLE `tipo_anuncio` (
 --
 
 INSERT INTO `tipo_anuncio` (`idtipo_anuncio`, `ta_tipo`, `ta_status`) VALUES
-(1, 'Alquilar', 1),
-(2, 'Comprar', 1),
-(3, 'Vender', 1);
+(1, 'Alquiler', 1),
+(2, 'Compra', 1),
+(3, 'Venta', 1);
 
 -- --------------------------------------------------------
 
@@ -2316,6 +2360,12 @@ ALTER TABLE `cat_anuncio`
   ADD PRIMARY KEY (`idcate`);
 
 --
+-- Indices de la tabla `estados_anuncio`
+--
+ALTER TABLE `estados_anuncio`
+  ADD PRIMARY KEY (`idestado`);
+
+--
 -- Indices de la tabla `images`
 --
 ALTER TABLE `images`
@@ -2355,7 +2405,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `anuncio`
 --
 ALTER TABLE `anuncio`
-  MODIFY `idanuncio` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idanuncio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `cat_anuncio`
@@ -2364,10 +2414,16 @@ ALTER TABLE `cat_anuncio`
   MODIFY `idcate` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
+-- AUTO_INCREMENT de la tabla `estados_anuncio`
+--
+ALTER TABLE `estados_anuncio`
+  MODIFY `idestado` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT de la tabla `images`
 --
 ALTER TABLE `images`
-  MODIFY `idimages` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idimages` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_anuncio`

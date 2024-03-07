@@ -12,7 +12,7 @@ class Anuncio extends BaseController
     public function __construct(){
         $this->modeloUsuario = model('UsuarioModel');
         $this->modeloUbigeo  = model('UbigeoModel');
-        $this->modeloAnuncio  = model('AnuncioModel');
+        $this->modeloAnuncio = model('AnuncioModel');
         $this->session;
     }
 
@@ -26,6 +26,7 @@ class Anuncio extends BaseController
         if( session('idtipousu') == 1 ){
             $view = 'panel/administrador/anuncios';
         }else if( session('idtipousu') == 2 ){
+            $data['anuncios'] = $this->modeloAnuncio->listarAnunciosUsuario(session('idusuario'), 1);
             $view = 'panel/usuario/anuncios';
         }
 
@@ -294,8 +295,9 @@ class Anuncio extends BaseController
                 
                 $ready = FALSE;
                 foreach( $data['imagenes'] as $i => $img ){
-                    $nombre_img       = $img->getRandomName();
-                    $nombre_img_thumb = "thumb_".$img->getRandomName();
+                    $rnd_name         = $img->getRandomName();
+                    $nombre_img       = $rnd_name;
+                    $nombre_img_thumb = "thumb_".$rnd_name;
 
                     $ruta_completa       = "$micarpeta/$nombre_img";
                     $ruta_completa_thumb = "$micarpeta/$nombre_img_thumb";

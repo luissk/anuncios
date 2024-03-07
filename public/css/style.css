@@ -207,4 +207,16 @@ footer .footer-end{
     cursor: crosshair;
 }
 
+/* MIS ANUNCIOS */
+.mis-anuncios__img{
+    height: 180px;
+}
+
+.mis-anuncios img{
+    object-fit: cover;
+    max-width: 100%;
+    height: 100%;
+}
+
+
 /**** PANEL USUARIO ***/
