@@ -26,6 +26,7 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
     $routes->get('mis-anuncios', 'Anuncio::misAnuncios');
     $routes->get('publicar-anuncio', 'Anuncio::publicarAnuncio');
+    $routes->get('modificar-anuncio-(:num)', 'Anuncio::publicarAnuncio/$1');
     //AJAX
     $routes->post('distritosAnu', 'Anuncio::listarDistritosAnuncio');
     $routes->post('crearAnuncio', 'Anuncio::CrearAnuncio');

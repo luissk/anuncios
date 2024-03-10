@@ -26,7 +26,7 @@ class Anuncio extends BaseController
         if( session('idtipousu') == 1 ){
             $view = 'panel/administrador/anuncios';
         }else if( session('idtipousu') == 2 ){
-            $data['anuncios'] = $this->modeloAnuncio->listarAnunciosUsuario(session('idusuario'), 1);
+            $data['anuncios'] = $this->modeloAnuncio->listarAnunciosUsuario(session('idusuario'));
             $view = 'panel/usuario/anuncios';
         }
 
@@ -36,13 +36,25 @@ class Anuncio extends BaseController
         return view($view, $data);
     }
 
-    public function publicarAnuncio(){
+    public function publicarAnuncio($idanuncio = ''){
         if( !session('idusuario') ){
             return redirect()->to('ingresar');
         }
 
         if( session('idtipousu') == 1 ){
             return redirect()->to('panel-usuario');
+        }
+
+        $data['title'] = 'Nuevo Anuncio';
+
+        if( $idanuncio != '' ){
+            if( $anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio) ){
+                $data['anuncio'] = $anuncio;
+                $data['images']  = $this->modeloAnuncio->getImages($idanuncio);
+                $data['title']   = 'Modificar Anuncio';
+            }else{
+                return redirect()->to('panel-usuario');
+            }
         }
 
         $tipos      = $this->modeloAnuncio->listarTipos();
@@ -52,7 +64,6 @@ class Anuncio extends BaseController
 
         $us = $this->modeloUsuario->getUsuarioPorId(session('idusuario'));
 
-        $data['title']        = 'Nuevo Anuncio';
         $data['opt_anuncios'] = 1;
         $data['tipos']        = $tipos;
         $data['categorias']   = $categorias;
@@ -69,6 +80,7 @@ class Anuncio extends BaseController
             }
 
             $idprov    = trim($this->request->getVar('idprov'));
+            $iddist_bd = trim($this->request->getVar('iddist_bd'));
 
             if( $distritos = $this->modeloUbigeo->listarDistritos($idprov) ){
                 echo "<option value = ''>Seleccione</option>";
@@ -76,7 +88,8 @@ class Anuncio extends BaseController
                     $iddist   = $dist['iddist'];
                     $distrito = $dist['dist'];
 
-                    echo "<option value = '$iddist'>$distrito</option>";
+                    $selected_dist = $iddist == $iddist_bd ? 'selected' : '';
+                    echo "<option value = '$iddist' $selected_dist>$distrito</option>";
                 }
             }else{
                 echo "<option value = ''>Seleccione</option>";
@@ -91,6 +104,25 @@ class Anuncio extends BaseController
             }
 
             $codanuncio = stringAleatorio(10);
+
+            //para editar
+            $idanuncio_post = $this->request->getVar('idanuncio');
+            if( $idanuncio_post != '' && $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post) ){
+                $bd_anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
+                $codanuncio = $bd_anuncio['codanuncio']; //reemplazamos codigo anuncio
+            }else if( $idanuncio_post != '' && !$this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post) ){
+                echo '<script>
+                    Swal.fire({
+                        title: "EL ANUNCIO NO EXISTE",
+                        text: "",
+                        icon: "error",
+                        showConfirmButton: false,
+                    });
+                    setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
+                </script>';
+                exit();
+            }
+            //fin para editar           
             
             $validation = \Config\Services::validation();
 
@@ -111,9 +143,10 @@ class Anuncio extends BaseController
                 'telefono'        => trim($this->request->getVar('telefono')),
                 'whatsapp'        => trim($this->request->getVar('whatsapp')),
                 'imagenes'        => $this->request->getFileMultiple('imagenes'),
+                'idanuncio'       => trim($this->request->getVar('idanuncio')),
             ];
 
-            $validation->setRules([
+            $rules = [
                 'tipo' => [
                     'label' => 'Tipo de Anuncio', 
                     'rules' => 'required|integer|max_length[2]',
@@ -242,13 +275,31 @@ class Anuncio extends BaseController
                         'mime_in'  => '* La extensión es inválida.',
                     ]
                 ]
-            ]);
+            ];            
             
             $countFiles = count(array_filter($_FILES['imagenes']['name']));
             if( $countFiles > 5 ){//agregar validación para las imágenes
                 $validation->setError('imagenes[]', 'Máximo 5 Imágenes.');
             }
 
+            //validación solo cuando de edita
+            if( isset($bd_anuncio) && $bd_anuncio ){
+                $arr_images = $this->request->getVar('arr_images');
+                if( $arr_images != '' ){
+                    $arr_img = json_decode($arr_images, true);
+                    if( count($arr_img) > 5 ){//agregar validación para las imágenes
+                        $validation->setError('imagenes[]', 'Máximo 5 Imágenes.');
+                    }
+
+                    if( count($arr_img) > 0 ){//si en el array no esta vacío no es obligatorio (uploaded)
+                        $rules['imagenes[]']['rules'] = 'max_size[imagenes,3072]|mime_in[imagenes,image/jpg,image/jpeg]';
+                    }
+                }
+            }
+            //fin de validación cuando se edita
+
+            $validation->setRules($rules);
+            
             if (!$validation->run($data)) {                
                 return $this->response->setJson(['errors' => $validation->getErrors()]); 
             }
@@ -262,8 +313,7 @@ class Anuncio extends BaseController
 
             //CARACTERISTICAS
             /* echo nl2br($data['caracteristicas'])."<hr>";
-            $arr_caract = explode("\r\n", $data['caracteristicas']);
-            print_r($arr_caract); */
+            $arr_caract = explode("\r\n", $data['caracteristicas']);*/
 
             //UBIGEO
             $data['ubigeo'] = '';
@@ -275,63 +325,154 @@ class Anuncio extends BaseController
             //CODIGO ANUNCIO
             $data['codanuncio'] = $codanuncio;
 
-            if( $idanuncio = $this->modeloAnuncio->crearAnuncio(session('idusuario'), $data) ){
+            if( isset($bd_anuncio) && $bd_anuncio ){ //EDITAR
 
-                //IMAGENES            
-                //IMAGEN PRINCIPAL
-                $image_principal = $this->request->getVar('arr_images');
-                $arr_img = json_decode($image_principal, true);
+                if( $this->modeloAnuncio->modificarAnuncio(session('idusuario'), $idanuncio_post, $data) ){
+                    $ready = FALSE;
+                    
+                    $images_bd = $this->modeloAnuncio->getImages($idanuncio_post);
+                   /*  print_r($arr_img);
+                    print_r($images_bd);
+                    print_r($data['imagenes']); */
 
-                $idx_principal = 0; //para marcar que imagen es la principal por el orden, sacando el indice
-                foreach( $arr_img as $k => $v ){
-                    if( $v['principal'] == 1 )
-                        $idx_principal = $k;
-                }
+                    //0. Define un contador de las img que quedaran, para sacar su indice y colocar como principal
+                    $cont_imgs = 0;
+                    //0.1 Obtenemos en que indice del array de imagenes, esta la img principal
+                    $idx_principal = 0;
+                    foreach( $arr_img as $k => $v ){
+                        if( $v['principal'] == 1 )
+                            $idx_principal = $k;
+                    }
 
-                $micarpeta = help_folderAnuncio().$codanuncio;
-                if (!file_exists($micarpeta)) {
-                    mkdir($micarpeta, 0777, true);
-                }
-                
-                $ready = FALSE;
-                foreach( $data['imagenes'] as $i => $img ){
-                    $rnd_name         = $img->getRandomName();
-                    $nombre_img       = $rnd_name;
-                    $nombre_img_thumb = "thumb_".$rnd_name;
+                    $micarpeta = help_folderAnuncio().$codanuncio;
+                    //1. verificamos si las img de la base de datos aun se mantienen en el array de iamgenes, sino las borramos
+                    foreach( $images_bd as  $imbd ){
+                        if( !in_array($imbd['idimages'], array_column($arr_img, 'id')) ){
+                            if( $this->modeloAnuncio->eliminarImgPorId($imbd['idimages'], $idanuncio_post) ){
+                                unlink($micarpeta."/".$imbd['img']);
+                                unlink($micarpeta."/".$imbd['img_thumb']);
+                            }
+                        }else{
+                            if( $cont_imgs == $idx_principal ){ //verificar si es principal
+                                $this->modeloAnuncio->quitarPrincipalesImg_IdAnuncio($idanuncio_post);
+                                $this->modeloAnuncio->hacerPrincipalImg_idImg_idAnu($imbd['idimages'], $idanuncio_post);
+                            }
+                            $cont_imgs++;
+                        }
+                        $ready = TRUE;
+                    }
 
-                    $ruta_completa       = "$micarpeta/$nombre_img";
-                    $ruta_completa_thumb = "$micarpeta/$nombre_img_thumb";
+                    //2. vemos si hay nuevas imagenes para agregar
+                    if( $countFiles > 0 ){
+                        foreach( $data['imagenes'] as $i => $img ){
+                            /* echo $i." Subir imágen<br>\n";
+                            echo $cont_imgs == $idx_principal ? "Es Principal<br>\n": ''; */
+                            $rnd_name         = $img->getRandomName();
+                            $nombre_img       = $rnd_name;
+                            $nombre_img_thumb = "thumb_".$rnd_name;
+        
+                            $ruta_completa       = "$micarpeta/$nombre_img";
+                            $ruta_completa_thumb = "$micarpeta/$nombre_img_thumb";
+        
+        
+                            $image = \Config\Services::image();
+                            $image->withFile($img)
+                                ->resize(700, 600, true, 'height')
+                                ->save($ruta_completa);
+        
+                            $image->withFile($img)
+                                ->resize(350, 350, true, 'width')
+                                ->save($ruta_completa_thumb);
+        
+                            $check_principal = 0;
+                            if( $cont_imgs == $idx_principal ){
+                                $check_principal = 1;
+                            }
+                            
+                            if( $this->modeloAnuncio->insertarImagenes($idanuncio_post, $nombre_img, $nombre_img_thumb, $check_principal) )
+                                $ready = TRUE;
 
-
-                    $image = \Config\Services::image();
-                    $image->withFile($img)
-                        ->resize(700, 600, true, 'height')
-                        ->save($ruta_completa);
-
-                    $image->withFile($img)
-                        ->resize(350, 350, true, 'width')
-                        ->save($ruta_completa_thumb);
-
-                    $check_principal = 0;
-                    if( $i == $idx_principal ){
-                        $check_principal = 1;
+                            $cont_imgs++;
+                        }
+                    }
+                    //echo $cont_imgs." - ".$idx_principal;
+                    if( $ready ){
+                        echo '<script>
+                            Swal.fire({
+                                title: "ANUNCIO MODIFICADO.",
+                                text: "",
+                                icon: "success",
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                            });
+                            setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
+                        </script>';
                     }
                     
-                    if( $this->modeloAnuncio->insertarImagenes($idanuncio, $nombre_img, $nombre_img_thumb, $check_principal) )
-                        $ready = TRUE;
                 }
 
-                if( $ready ){
-                    echo '<script>
-                        Swal.fire({
-                            title: "ANUNCIO CREADO.",
-                            text: "",
-                            icon: "success",
-                            showConfirmButton: false,
-                        });
-                        setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
-                    </script>';
+            }else{// INSERTAR
+
+                if( $idanuncio = $this->modeloAnuncio->crearAnuncio(session('idusuario'), $data) ){
+
+                    //IMAGENES            
+                    //IMAGEN PRINCIPAL
+                    $image_principal = $this->request->getVar('arr_images');
+                    $arr_img = json_decode($image_principal, true);
+    
+                    $idx_principal = 0; //para marcar que imagen es la principal por el orden, sacando el indice
+                    foreach( $arr_img as $k => $v ){
+                        if( $v['principal'] == 1 )
+                            $idx_principal = $k;
+                    }
+    
+                    $micarpeta = help_folderAnuncio().$codanuncio;
+                    if (!file_exists($micarpeta)) {
+                        mkdir($micarpeta, 0777, true);
+                    }
+                    
+                    $ready = FALSE;
+                    foreach( $data['imagenes'] as $i => $img ){
+                        $rnd_name         = $img->getRandomName();
+                        $nombre_img       = $rnd_name;
+                        $nombre_img_thumb = "thumb_".$rnd_name;
+    
+                        $ruta_completa       = "$micarpeta/$nombre_img";
+                        $ruta_completa_thumb = "$micarpeta/$nombre_img_thumb";
+    
+    
+                        $image = \Config\Services::image();
+                        $image->withFile($img)
+                            ->resize(700, 600, true, 'height')
+                            ->save($ruta_completa);
+    
+                        $image->withFile($img)
+                            ->resize(350, 350, true, 'width')
+                            ->save($ruta_completa_thumb);
+    
+                        $check_principal = 0;
+                        if( $i == $idx_principal ){
+                            $check_principal = 1;
+                        }
+                        
+                        if( $this->modeloAnuncio->insertarImagenes($idanuncio, $nombre_img, $nombre_img_thumb, $check_principal) )
+                            $ready = TRUE;
+                    }
+    
+                    if( $ready ){
+                        echo '<script>
+                            Swal.fire({
+                                title: "ANUNCIO CREADO.",
+                                text: "",
+                                icon: "success",
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                            });
+                            setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
+                        </script>';
+                    }
                 }
+
             }        
 
             //print_r($data);

@@ -3,12 +3,69 @@
 <?php echo $this->section('contenido_panel');?>
 
 <?php
-/* echo "<pre>"; 
-print_r();
-echo "</pre>"; */
+if( isset($anuncio) && $anuncio ){
+    echo "<pre>"; 
+    //print_r($anuncio);
+    //print_r($images);
+    echo "</pre>";
+
+    $bd_idanuncio       = $anuncio['idanuncio'];
+    $bd_nombre          = $anuncio['an_nombre'];
+    $bd_idtipo          = $anuncio['idtipo_anuncio'];
+    $bd_idcate          = $anuncio['idcate'];
+    $bd_precio          = $anuncio['precio'];
+    $bd_mostrar         = $anuncio['precio_mostrar'];
+    $bd_codanuncio      = $anuncio['codanuncio'];
+    $bd_caracteristicas = $anuncio['caracteristicas'];
+    $bd_descripcion     = $anuncio['an_descripcion'];
+    $bd_urlvideo        = $anuncio['url_video'];
+    $bd_direccion       = $anuncio['direccion'];
+    $bd_contactemail    = $anuncio['contact_email'];
+    $bd_contactfono     = $anuncio['contact_fono'];
+    $bd_contactwhatsapp = $anuncio['contact_whatsapp'];
+    $bd_idprov          = $anuncio['idprov'];
+    $bd_iddist          = $anuncio['iddist'];
+
+    $titulo = 'MODIFICAR ANUNCIO';
+    $boton  = 'MODIFICAR ANUNCIO';
+
+    $arr = []; //Pra imàgenes javascript
+    foreach( $images as $im ){
+        $arr[] = [
+            'id'        => (int)$im['idimages'],
+            'principal' => (int)$im['principal'],
+            'img'       => help_folderAnuncio().$bd_codanuncio."/".$im['img'],
+            'bd'        => 1
+        ];
+    }
+    /* echo "<pre>"; 
+    print_r($arr);
+    echo "</pre>";  */
+}else{
+    $bd_idanuncio       = '';
+    $bd_nombre          = '';
+    $bd_idtipo          = '';
+    $bd_idcate          = '';
+    $bd_precio          = '';
+    $bd_mostrar         = '';
+    $bd_codanuncio      = '';
+    $bd_caracteristicas = '';
+    $bd_descripcion     = '';
+    $bd_urlvideo        = '';
+    $bd_direccion       = '';
+    $bd_contactemail    = '';
+    $bd_contactfono     = '';
+    $bd_contactwhatsapp = '';
+    $bd_idprov          = '';
+    $bd_iddist          = '';
+
+    $titulo = 'NUEVO ANUNCIO';
+    $boton  = 'CREAR ANUNCIO';
+}
+
 ?>
 <div class="card rounded-0">
-    <div class="card-header p-2 mb-3 bg-success text-white bg-gradient fw-bolder rounded-0">NUEVO ANUNCIO</div>
+    <div class="card-header p-2 mb-3 bg-success text-white bg-gradient fw-bolder rounded-0"><?=$titulo?></div>
     <div class="card-body create_anuncio">
         <form id="frmAnuncio">
         <div class="row">
@@ -23,9 +80,9 @@ echo "</pre>"; */
                                 $idtipo = $tipo['idtipo_anuncio'];
                                 $tipo   = $tipo['ta_tipo'];
 
-                                //$selected_prov = $idprov == $usuario['idprov'] ? 'selected' : '';
+                                $selected_tipo = $idtipo == $bd_idtipo ? 'selected' : '';
 
-                                echo "<option value='$idtipo'>$tipo</option>";
+                                echo "<option value='$idtipo' $selected_tipo>$tipo</option>";
                             }
                         }
                         ?>                        
@@ -44,7 +101,9 @@ echo "</pre>"; */
                                 $idcate    = $cate['idcate'];
                                 $categoria = $cate['categoria'];
 
-                                echo "<option value='$idcate'>$categoria</option>";
+                                $selected_cate = $idcate == $bd_idcate ? 'selected' : '';
+
+                                echo "<option value='$idcate' $selected_cate>$categoria</option>";
                             }
                         }
                         ?>                       
@@ -55,7 +114,7 @@ echo "</pre>"; */
             <div class="col-sm-12">
                 <div class="form-group pb-2">
                     <label for="nombre" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-hand-point-right"></i> Título o nombre de tu anuncio</label>
-                    <input type="text" class="form-control rounded-0" maxlength="100" name="nombre" id="nombre">
+                    <input type="text" class="form-control rounded-0" maxlength="100" name="nombre" id="nombre" value="<?=$bd_nombre?>">
                     <p class="text-danger" id="msj-nombre"></p>
                 </div>
             </div>
@@ -65,13 +124,13 @@ echo "</pre>"; */
             </div>
             <div class="col-sm-4">
                 <div class="form-group">
-                    <input type="text" class="form-control rounded-0" maxlength="11" name="precio" id="precio">
+                    <input type="text" class="form-control rounded-0" maxlength="11" name="precio" id="precio" value="<?=$bd_mostrar != 1 ? $bd_precio : ''?>" <?=$bd_mostrar == 1 ? 'disabled' : ''?> >
                     <p class="text-danger" id="msj-precio"></p>
                 </div>
             </div>
             <div class="col-sm-8 d-flex align-items-sm-start align-items-md-start">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="1" id="nomostrar" name="nomostrar">
+                    <input class="form-check-input" type="checkbox" value="1" id="nomostrar" name="nomostrar" <?=$bd_mostrar == 1 ? 'checked' : ''?> >
                     <label class="form-check-label" for="nomostrar">
                         No mostrar precio
                     </label>
@@ -83,7 +142,7 @@ echo "</pre>"; */
             </div>
             <div class="col-sm-6">
                 <div class="form-group pb-2">
-                    <textarea class="form-control rounded-0" name="caracteristicas" id="caracteristicas" rows="7"></textarea>
+                    <textarea class="form-control rounded-0" name="caracteristicas" id="caracteristicas" rows="7"><?=$bd_caracteristicas?></textarea>
                     <p class="text-danger" id="msj-caracteristicas"></p>
                 </div>
             </div>
@@ -98,7 +157,7 @@ echo "</pre>"; */
             <div class="col-sm-12">
                 <div class="form-group pb-2">
                     <label for="descripcion" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-tags"></i> Descripción</label>
-                    <textarea class="form-control rounded-0" name="descripcion" id="descripcion" rows="10"></textarea>
+                    <textarea class="form-control rounded-0" name="descripcion" id="descripcion" rows="10"><?=$bd_descripcion?></textarea>
                     <p class="text-danger" id="msj-descripcion"></p>
                 </div>
             </div>
@@ -106,7 +165,7 @@ echo "</pre>"; */
                 <div class="form-group pb-2">
                     <label for="video" class="mb-2 fw-semibold bg-light d-block bg-light d-block"><i class="fas fa-link"></i> Video Youtube URL o link</label>
                     <p class="text-secondary texto-size-13">Ejemplo: https://www.youtube.com/watch?v=p6vN06ypccM</p>
-                    <input type="text" class="form-control rounded-0" maxlength="150" name="video" id="video">
+                    <input type="text" class="form-control rounded-0" maxlength="150" name="video" id="video" value="<?=$bd_urlvideo?>">
                     <p class="text-danger" id="msj-video"></p>
                 </div>
             </div>
@@ -148,8 +207,9 @@ echo "</pre>"; */
                                 $provincia = $prov['provincia'];
                                 $idprov    = $prov['idprov'];
 
+                                $selected_prov = $idprov == $bd_idprov ? 'selected' : '';
 
-                                echo "<option value='$idprov'>$provincia</option>";
+                                echo "<option value='$idprov' $selected_prov>$provincia</option>";
                             }
                         }
                         ?>
@@ -169,7 +229,7 @@ echo "</pre>"; */
             <div class="col-sm-12">
                 <div class="form-group pb-2">
                     <label for="direccion" class="mb-2 fw-semibold bg-light d-block"><i class="fas fa-location-arrow"></i> Dirección <i class="text-secondary texto-size-13">(Calle, Mz, Urb, Sector, etc)</i></label>
-                    <input type="text" class="form-control rounded-0" name="direccion" id="direccion" maxlength="150" />
+                    <input type="text" class="form-control rounded-0" name="direccion" id="direccion" maxlength="150" value="<?=$bd_direccion?>" />
                     <p class="text-danger" id="msj-direccion"></p>
                 </div>
             </div>
@@ -180,27 +240,28 @@ echo "</pre>"; */
             <div class="col-sm-6">
                 <div class="form-group pb-2">
                     <label for="email" class="mb-2 fw-semibold">Email</label>
-                    <input type="text" class="form-control rounded-0" name="email" id="email" maxlength="150" value="<?=$usuario['us_email']?>" />
+                    <input type="text" class="form-control rounded-0" name="email" id="email" maxlength="150" value="<?=$bd_contactemail ?: $usuario['us_email']?>" />
                     <p class="text-danger" id="msj-email"></p>
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="form-group pb-2">
                     <label for="telefono" class="mb-2 fw-semibold">Teléfono</label>
-                    <input type="text" class="form-control rounded-0" name="telefono" id="telefono" maxlength="12" value="<?=$usuario['us_telefono']?>" />
+                    <input type="text" class="form-control rounded-0" name="telefono" id="telefono" maxlength="12" value="<?=$bd_contactfono ?: $usuario['us_telefono']?>" />
                     <p class="text-danger" id="msj-telefono"></p>
                 </div>
             </div>
             <div class="col-sm-3">
                 <div class="form-group pb-2">
                     <label for="whatsapp" class="mb-2 fw-semibold">Whatsapp</label>
-                    <input type="text" class="form-control rounded-0" name="whatsapp" id="whatsapp" maxlength="9" value="<?=$usuario['us_whatsapp']?>" />
+                    <input type="text" class="form-control rounded-0" name="whatsapp" id="whatsapp" maxlength="9" value="<?=$bd_contactwhatsapp ?: $usuario['us_whatsapp']?>" />
                     <p class="text-danger" id="msj-whatsapp"></p>
                 </div>
             </div>
-
-            <div class="col-sm-12 text-end">
-                <button class="btn btn-danger px-5" id="btnAnuncio">CREAR ANUNCIO</button>
+            
+            <input type="hidden" name="idanuncio" value="<?=$bd_idanuncio?>">
+            <div class="col-sm-12 text-end">                
+                <button class="btn btn-danger px-5" id="btnAnuncio"><?=$boton?></button>
 
                 <div class="progress mt-2 d-none">
                     <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
@@ -239,10 +300,29 @@ echo "</pre>"; */
 <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
 <script>
+function generarRandom(num) {
+  let characters = "abcdefghijklmnopqrstuvwxyz0123456789".split(''),
+    result = "";
+    if (num > characters.length) return false;
+    for (let i = 0; i < num; i++) {
+        result += characters.splice(Math.floor(Math.random() * characters.length), 1)[0];
+    }
+    return result;
+}
+
 
 /*** IMAGENES ***/
 let arr_images = [];
 let content_images = document.querySelector("#content_images");
+
+<?php
+if( $bd_idanuncio != '' ){ //validar para llenar el array de imágenes desde la BD
+?>
+    arr_images = <?php echo json_encode($arr)?>;
+    printImages();
+<?php
+}
+?>
 
 function verImg(img){
     $('#imgModalShow').attr('src', img.src);
@@ -250,8 +330,9 @@ function verImg(img){
 }
 
 function eliminarImg(id, el){
+    //console.log(id, el, el.parentElement);
     arr_images.forEach((item, index) => {
-        if (item.id === id) {
+        if (item.id == id) {
             arr_images.splice(index, 1);
         }
     });
@@ -266,11 +347,11 @@ function principal(el, id){
     el.checked = true;
     arr_images.forEach((item, index) => {
         item.principal = '';
-        if (item.id === id) {
+        if (item.id == id) {
             item.principal = 1;
         }
     });
-    console.log(arr_images);
+    //console.log(arr_images);
 }
 
 function primeraImgPrincipal(){
@@ -297,22 +378,24 @@ function printImages(){
 
         //console.log(arr_images);
         arr_images.map((file, i) => {
-            let id = arr_images[i].id;
+            let id = arr_images[i].id,
+                bd = arr_images[i].bd;
 
             let checked = '';
-            if( file.principal === 1 ){
+            if( file.principal == 1 ){
                 checked = 'checked';
             }
 
-            const blobUrl = window.URL.createObjectURL(file)
+            const url = bd == 1 ? arr_images[i].img : window.URL.createObjectURL(file); 
+
             content_images.innerHTML += `
                 <div class="item-img position-relative me-4 mb-5">
-                    <img src="${blobUrl}" class="img-thumbnail" alt="${file.name}" onclick="verImg(this)">
-                    <a class="btn position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' onclick='eliminarImg(${id}, this)'>
+                    <img src="${url}" class="img-thumbnail" onclick="verImg(this)">
+                    <a class="btn position-absolute top-0 start-100 translate-middle badge  bg-danger" title='eliminar' onclick='eliminarImg("${id}", this)'>
                         <i class='fas fa-trash-alt'></i>
                     </a>
                     <div class="form-check text-center">
-                        <input class="form-check-input" type="checkbox" value="${id}" name="principal[]" id="principal-${id}" onclick='principal(this, ${id})' ${checked}>
+                        <input class="form-check-input" type="checkbox" value="${id}" name="principal[]" id="principal-${id}" onclick='principal(this, "${id}")' ${checked}>
                         <label class="form-check-label" for="principal-${id}">
                             Principal
                         </label>
@@ -357,8 +440,9 @@ $(function(){
                     Swal.fire({text: "Sólo 5 imágenes como máximo", icon: "info"});
                     continue;
                 }
-                images[i].id = Math.round(Math.random()*(9999-1000)+parseInt(1000));   
-                images[i].principal = '';   
+                images[i].id = generarRandom(5);   
+                images[i].principal = '';
+                images[i].bd = 0; //no es de la BD   
                 arr_images.push(images[i]);
             }
             printImages();
@@ -367,6 +451,7 @@ $(function(){
 
         if( total > 5 ){
             Swal.fire({text: "Sólo 5 imágenes como máximo", icon: "info"});
+            $(this).val('');
         }
     }); 
     
@@ -398,14 +483,24 @@ $(function(){
 
     /*** UBIGEO */
     $('#provincia').on('change', function(e){
-        let idprov = $(this).val()
+        let idprov = $(this).val(),
+            iddist_bd = <?=$bd_iddist != '' ? $bd_iddist   : '0' ?>;
         
         $.post('distritosAnu', {
-            idprov
+            idprov,iddist_bd
         }, function (data){
             $('#distrito').html(data);
         })
     });
+
+    <?php
+    if( $bd_idprov != '' ){
+    ?>
+        $("#provincia").trigger("change");
+        
+    <?php
+    }
+    ?>
     /*** FIN UBIGEO */
 
 
@@ -427,8 +522,12 @@ $(function(){
         formData.append('descripcion', descripcion);
 
         if( arr_images.length > 0 ){
+            let j = 0;//contador para los que no son de la bd
             for( let i in arr_images ){
-                formData.append('imagenes['+i+']', arr_images[i]);
+                if( arr_images[i].bd == 0 ){
+                    formData.append('imagenes['+j+']', arr_images[i]);
+                    j++;
+                }                    
             }
             formData.append('arr_images', JSON.stringify(arr_images));
         }

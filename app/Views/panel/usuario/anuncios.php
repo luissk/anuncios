@@ -59,7 +59,7 @@ echo "</pre>"; */
 
                             <div class='row'>
                                 <div class='col-sm-12 text-center'>
-                                    <a class='btn btn-outline-info mt-2'>Modificar</a>
+                                    <a href="<?=base_url('modificar-anuncio-'.$idanuncio.'')?>" class='btn btn-outline-info mt-2'>Modificar</a>
                                     <a class='btn btn-outline-danger mt-2'>Eliminar</a>
                                     <a class='btn btn-outline-secondary mt-2'>Inactivo</a>
                                     <a class='btn btn-outline-success mt-2'>Destacar</a>
