@@ -46,7 +46,9 @@ class AnuncioModel extends Model{
         return $st;
     }
 
-    public function listarAnunciosUsuario($idusuario, $status = ''){
+    public function listarAnunciosUsuario($idusuario, $desde, $hasta, $nombre = '', $status = ''){
+        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $nombre . "%' " : '';
+
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
         anu.codanuncio, anu.an_status,
         tan.ta_tipo, can.categoria,
@@ -57,10 +59,23 @@ class AnuncioModel extends Model{
         inner join cat_anuncio can on anu.idcate=can.idcate 
         inner join images img on anu.idanuncio=img.idanuncio 
         inner join estados_anuncio ean on anu.an_status = ean.idestado
-        where anu.idusuario = ? and img.principal = ? order by anu.idanuncio";
-        $st = $this->db->query($query, [$idusuario, 1]);
+        where anu.idusuario = ? and img.principal = ? $sql order by anu.idanuncio desc limit ?,?";
+        
+        $st = $this->db->query($query, [$idusuario, 1, $desde, $hasta]);
 
         return $st->getResultArray();  
+    }
+
+    public function countListarAnunciosUsuario($idusuario, $nombre = '', $status = ''){
+        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $nombre . "%' " : '';
+
+        $query = "select count(anu.idanuncio) as total
+        from anuncio anu 
+        where anu.idusuario = ? $sql";
+        
+        $st = $this->db->query($query, [$idusuario]);
+
+        return $st->getRowArray();
     }
 
     public function getAnu_idanu_idusu($idusuario, $idanuncio){

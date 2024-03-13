@@ -6,6 +6,8 @@
 /* echo "<pre>"; 
 print_r($anuncios);
 echo "</pre>"; */
+$nombre = isset($_GET['nombre']) ? $_GET['nombre'] : '';
+$nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
 ?>
 
 <div class="col-sm-12 text-end">
@@ -13,8 +15,22 @@ echo "</pre>"; */
 </div>
 
 <div class="mis-anuncios mt-4">
+    <div class="row">
+        <div class="col-sm-12 col-md-6">
+            <form method="get">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control rounded-0" placeholder="Buscar por nombre" id="txtBuscarMiAviso" name="nombre" value="<?=$nombre?>" autocomplete="off">
+                    <button class="btn btn-success rounded-0" id="btnBuscarMiAviso" >Buscar</button>
+                </div>
+            </form>
+            <p class="text-danger" id="msj-whatsapp"><?=session('errors.nombre')?></p>
+        </div>
+    </div>
+
     <?php
     if( $anuncios ){
+    ?>
+    <?php
         foreach( $anuncios as $anu ){
             $idanuncio      = $anu['idanuncio'];
             $nombre         = $anu['an_nombre'];
@@ -70,24 +86,72 @@ echo "</pre>"; */
                     </div>
                 </div>
             </div>
-    <?php
+        <?php
         }
+
+        $RegistrosAMostrar = 10;
+        $PaginasIntervalo  = 2;
+        $PagAct            = $page;
+
+        $PagUlt = $totalRegistros / $RegistrosAMostrar;
+        $res    = $totalRegistros % $RegistrosAMostrar;
+        if( $res > 0 ) $PagUlt = floor($PagUlt) + 1;
+        ?>
+
+        <nav>
+            <ul class="pagination justify-content-end <?=$totalRegistros <= 10 ? 'd-none' : ''?>">
+                <li class="page-item <?=$PagAct > ($PaginasIntervalo + 1) ? '' : 'd-none'?>">
+                    <a class="page-link" href="<?=base_url('mis-anuncios-1').$nombre_page?>">Primer</a>
+                </li>
+                <?php
+                for ( $i = ($PagAct - $PaginasIntervalo) ; $i <= ($PagAct - 1) ; $i ++) {
+                    if($i >= 1) {
+                        echo "<li class='page-item'><a class='page-link' href='".base_url('mis-anuncios-'.$i.'')."$nombre_page'>$i</a></li>";
+                    }
+                }
+                ?>
+                <li class="page-item"><a class="page-link active"><?=$PagAct?></a></li>
+                <?php
+                for ( $i = ($PagAct + 1) ; $i <= ($PagAct + $PaginasIntervalo) ; $i ++) {
+                    if( $i <= $PagUlt) {
+                        echo "<li class='page-item'><a class='page-link' href='".base_url('mis-anuncios-'.$i.'')."$nombre_page'>$i</a></li>";
+                    }
+                }
+                ?>          
+                <li class="page-item <?=$PagAct < ($PagUlt - $PaginasIntervalo) ? '' : 'd-none'?>">
+                    <a class="page-link" href="<?=base_url('mis-anuncios-'.$PagUlt.'').$nombre_page?>">Ultimo</a>
+                </li>
+            </ul>
+        </nav>
+
+    <?php
+    }else{
+        echo '
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        No se encontraron resultados registros!
+                    </div>
+                </div>
+            </div>
+        ';
     }
     ?>
-    <!-- <div class='card mb-3'>
-        <div class='row g-0'>
-            <div class='col-md-3'>
-                <img src='...' class='img-fluid rounded-start' alt='...'>
-            </div>
-            <div class='col-md-9'>
-            <div class='card-body'>
-                <h5 class='card-title'>Card title</h5>
-                <p class='card-text'>This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                <p class='card-text'><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-            </div>
-            </div>
-        </div>
-    </div> -->
 </div>
+
+<?php echo $this->endSection();?>
+
+
+<?php echo $this->section('scriptsPanel');?>
+
+<script>
+$(function(){
+    /* $('#btnBuscarMiAviso').on('click', function(e){
+        let txt = $('#txtBuscarMiAviso').val();
+
+        $.post()
+    }); */
+});
+</script>
 
 <?php echo $this->endSection();?>

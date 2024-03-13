@@ -18,7 +18,7 @@ class Anuncio extends BaseController
 
     public function index(){}
 
-    public function misAnuncios(){
+    public function misAnuncios($page = 1){
         if( !session('idusuario') ){
             return redirect()->to('/');
         }
@@ -26,7 +26,40 @@ class Anuncio extends BaseController
         if( session('idtipousu') == 1 ){
             $view = 'panel/administrador/anuncios';
         }else if( session('idtipousu') == 2 ){
-            $data['anuncios'] = $this->modeloAnuncio->listarAnunciosUsuario(session('idusuario'));
+            $nombre = '';
+            if( $this->request->is('get') && $this->request->getGet('nombre') ){ 
+                //if( !is_int($page) ) return redirect()->to('/');
+                //print_r($this->request->getGet('nombre'));
+                $dato = [
+                    'nombre' => trim($this->request->getVar('nombre'))
+                ];
+                $validation = \Config\Services::validation();
+                $rules = [
+                    'nombre' => [
+                        'label' => 'Nombre', 
+                        'rules' => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ. 0-9]+$/]|max_length[100]',
+                        'errors' => [
+                            'required'    => '* El {field} es requerido.',
+                            'regex_match' => '* El {field} no es válido.',
+                            'max_length'  => '* El {field} debe contener máximo 100 caracteres.'
+                        ]
+                    ],
+                ];
+                $validation->setRules($rules);
+                if (!$validation->run($dato)) {
+                    return redirect()->back()->with('errors', $validation->getErrors())->withInput();
+                }
+            }
+            $nombre = trim($this->request->getVar('nombre'));
+            /* $uri = service('uri'); 
+            print_r( $uri->getSegments() ); */
+
+            $desde        = $page * 10 - 10;
+            $hasta        = 10;
+            $data['page'] = $page;
+
+            $data['anuncios']       = $this->modeloAnuncio->listarAnunciosUsuario(session('idusuario'), $desde, $hasta, $nombre);
+            $data['totalRegistros'] = $this->modeloAnuncio->countListarAnunciosUsuario(session('idusuario'), $nombre)['total'];
             $view = 'panel/usuario/anuncios';
         }
 
@@ -167,7 +200,7 @@ class Anuncio extends BaseController
                 ],
                 'nombre' => [
                     'label' => 'Nombre', 
-                    'rules' => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ 0-9]+$/]|max_length[100]',
+                    'rules' => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ. 0-9]+$/]|max_length[100]',
                     'errors' => [
                         'required'    => '* El {field} es requerido.',
                         'regex_match' => '* El {field} no es válido.',
