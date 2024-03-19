@@ -47,10 +47,11 @@ class AnuncioModel extends Model{
     }
 
     public function listarAnunciosUsuario($idusuario, $desde, $hasta, $nombre = '', $status = ''){
-        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $nombre . "%' " : '';
+        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
+        //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
 
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
-        anu.codanuncio, anu.an_status,
+        anu.codanuncio, anu.an_status,date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
         ean.estado
@@ -112,6 +113,13 @@ class AnuncioModel extends Model{
         return $st;
     }
 
+    public function eliminarImgPorIdAnuncio($idanuncio){
+        $query = "delete from images where idanuncio = ?";
+        $st = $this->db->query($query, [$idanuncio]);
+
+        return $st;
+    }
+
     public function quitarPrincipalesImg_IdAnuncio($idanuncio){
         $query = "update images set principal = 0 where idanuncio = ?";
         $st = $this->db->query($query, [$idanuncio]);
@@ -122,6 +130,13 @@ class AnuncioModel extends Model{
     public function hacerPrincipalImg_idImg_idAnu($idimg, $idanuncio, $principal = 1){
         $query = "update images set principal = ? where idimages=? and idanuncio = ?";
         $st = $this->db->query($query, [$principal, $idimg, $idanuncio]);
+
+        return $st;
+    }
+
+    public function eliminarAnuncio($idanuncio){
+        $query = "delete from anuncio where idanuncio = ?";
+        $st = $this->db->query($query, [$idanuncio]);
 
         return $st;
     }

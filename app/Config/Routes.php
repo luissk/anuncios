@@ -31,6 +31,7 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     //AJAX
     $routes->post('distritosAnu', 'Anuncio::listarDistritosAnuncio');
     $routes->post('crearAnuncio', 'Anuncio::CrearAnuncio');
+    $routes->post('eliminarAnuncioUsuario', 'Anuncio::eliminarAnuncioPorUsuario');
 });
 
 //$routes->get('users/(:num)/gallery/(:num)', 'Galleries::showUserGallery/$1/$2', ['as' => 'user_gallery']);

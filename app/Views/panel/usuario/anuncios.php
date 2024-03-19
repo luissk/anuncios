@@ -25,6 +25,9 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
             </form>
             <p class="text-danger" id="msj-whatsapp"><?=session('errors.nombre')?></p>
         </div>
+        <div class="col-sm-12 col-md-6 text-end">
+            Avisos: <span class="badge text-bg-secondary"><?=$totalRegistros?></span>
+        </div>
     </div>
 
     <?php
@@ -35,6 +38,7 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
             $idanuncio      = $anu['idanuncio'];
             $nombre         = $anu['an_nombre'];
             $fechacreacion  = $anu['an_fechacreacion'];
+            $fechac         = $anu['fechac'];
             $idtipo         = $anu['idtipo_anuncio'];
             $idcate         = $anu['idcate'];
             $precio         = $anu['precio'];
@@ -60,23 +64,26 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
                     <div class='card-body'>
                         <h6 class='card-title bg-success p-2 text-white'><?=$nombre?></h6>
                         <div class='row'>
-                            <div class='col-sm-3 text-secondary'>
+                            <div class='col-sm-3 text-secondary fw-semibold texto-size-13'>
                                 <i class='fas fa-hand-point-right'></i> <?=$tipo?>
                             </div>
-                            <div class='col-sm-4 text-secondary'>
+                            <div class='col-sm-4 text-secondary fw-semibold texto-size-13'>
                                 <i class='fas fa-tag'></i> <?=$categoria?>
                             </div>
-                            <div class='col-sm-5 text-secondary'>
+                            <div class='col-sm-5 text-secondary fw-semibold texto-size-13'>
                                 <i class='fas fa-hand-holding-usd'></i> S/. <?=$tagprecio?>
                             </div>
-                            <div class='col-sm-12 text-secondary fw-semibold pt-2'>
+                            <div class='col-sm-6 text-secondary fw-semibold pt-2 texto-size-13'>
                                 <i class='fas fa-thermometer-quarter'></i> Estado: <?=$estado?>
+                            </div>
+                            <div class='col-sm-6 text-secondary fw-semibold pt-2 texto-size-13'>
+                                <i class="fas fa-calendar-alt"></i> Creado: <?=$fechac?>
                             </div>
 
                             <div class='row'>
                                 <div class='col-sm-12 text-center'>
-                                    <a href="<?=base_url('modificar-anuncio-'.$idanuncio.'')?>" class='btn btn-outline-info mt-2'>Modificar</a>
-                                    <a class='btn btn-outline-danger mt-2'>Eliminar</a>
+                                    <a href="<?=base_url('modificar-anuncio-'.$idanuncio.'')?>" class='btn btn-outline-info mt-2' title="Modificar Anuncio">Modificar</a>
+                                    <a class='btn btn-outline-danger mt-2 eliminarAnuncio' data-id="<?=$idanuncio?>" title="Eliminar Anuncio">Eliminar</a>
                                     <a class='btn btn-outline-secondary mt-2'>Inactivo</a>
                                     <a class='btn btn-outline-success mt-2'>Destacar</a>
                                 </div>
@@ -139,6 +146,8 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
     ?>
 </div>
 
+<div id="msjAnuncios"></div>
+
 <?php echo $this->endSection();?>
 
 
@@ -146,11 +155,25 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
 
 <script>
 $(function(){
-    /* $('#btnBuscarMiAviso').on('click', function(e){
-        let txt = $('#txtBuscarMiAviso').val();
-
-        $.post()
-    }); */
+    $('.eliminarAnuncio').on('click', function(e){
+        e.preventDefault();
+        let id = $(this).data('id');
+        Swal.fire({
+            title: "¿Estás seguro que vas a eliminar tu anuncio?",
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('eliminarAnuncioUsuario', {
+                    id
+                }, function(data){
+                    //console.log(data);
+                    $('#msjAnuncios').html(data);
+                });
+            }
+        });
+    });
 });
 </script>
 

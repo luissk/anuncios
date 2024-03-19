@@ -514,5 +514,62 @@ class Anuncio extends BaseController
         }
     }
 
+    public function eliminarAnuncioPorUsuario(){
+        if( $this->request->isAJAX() ){
+            if(!session('idusuario')){
+                exit();
+            }
+
+            $idanuncio_post = $this->request->getVar('id');
+            if( $idanuncio_post != '' && $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post) ){
+                $bd_anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
+                $codanuncio = $bd_anuncio['codanuncio'];
+
+                //PENDIENTE: VALIDAR SI ES QUE NO TIENE PAGOS (DESTACADO)
+                
+                $micarpeta = help_folderAnuncio().$codanuncio;
+
+                //eliminar imagenes
+                $images_bd = $this->modeloAnuncio->getImages($idanuncio_post);
+                foreach( $images_bd as $im){
+                    $idimg = $im['idimages'];
+                    $img   = $micarpeta."/".$im['img'];
+                    $thumb = $micarpeta."/".$im['img_thumb'];
+
+                    if( file_exists($img) ) unlink($img);
+                    if( file_exists($thumb) ) unlink($thumb);
+                }
+                $this->modeloAnuncio->eliminarImgPorIdAnuncio($idanuncio_post); //eliminar de la bd
+                //eliminar carpeta
+                if( file_exists($micarpeta) ){
+                    rmdir($micarpeta);
+                }
+
+                if( $this->modeloAnuncio->eliminarAnuncio($idanuncio_post) ){
+                    echo '<script>
+                        Swal.fire({
+                            title: "ANUNCIO ELIMINADO.",
+                            text: "",
+                            icon: "success",
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                        });
+                        setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
+                    </script>';
+                }
+            }else{
+                echo '<script>
+                    Swal.fire({
+                        title: "EL ANUNCIO NO EXISTE",
+                        text: "",
+                        icon: "error",
+                        showConfirmButton: false,
+                    });
+                </script>';
+                exit();
+            }
+        }
+    }
+
 
 }
