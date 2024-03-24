@@ -141,4 +141,84 @@ class AnuncioModel extends Model{
         return $st;
     }
 
+
+    public function listarAnunciosAdmin($desde, $hasta, $nombre = '', $status = [1,2,3,4,5,6,7]){
+        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
+        //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
+
+        $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
+        anu.codanuncio, anu.an_status,date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
+        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant,
+        tan.ta_tipo, can.categoria,
+        img.idimages, img.img, img.img_thumb,
+        ean.estado
+        from anuncio anu
+        inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
+        inner join cat_anuncio can on anu.idcate=can.idcate 
+        inner join images img on anu.idanuncio=img.idanuncio 
+        inner join estados_anuncio ean on anu.an_status = ean.idestado
+        where img.principal = ? and anu.an_status in ? $sql order by anu.idanuncio desc limit ?,?";
+        
+        $st = $this->db->query($query, [1, $status, $desde, $hasta]);
+
+        return $st->getResultArray();  
+    }
+
+    public function countListarAnunciosAdmin($nombre = '', $status = [1,2,3,4,5,6,7]){
+        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $nombre . "%' " : '';
+
+        $query = "select count(anu.idanuncio) as total
+        from anuncio anu 
+        where anu.an_status in ? $sql";
+        
+        $st = $this->db->query($query, [$status]);
+
+        return $st->getRowArray();
+    }
+
+    public function getAnu_idanu($idanuncio){
+        $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
+        anu.codanuncio, anu.an_status, anu.caracteristicas, anu.an_descripcion, anu.url_video, anu.direccion,
+        anu.contact_email, anu.contact_fono, anu.contact_whatsapp,
+        date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
+        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant,
+        tan.ta_tipo, can.categoria,
+        tan.ta_tipo, can.categoria,
+        img.idimages, img.img, img.img_thumb,
+        ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
+        ean.estado,
+        usu.us_email, usu.us_nombre_razon
+        from anuncio anu
+        inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
+        inner join cat_anuncio can on anu.idcate=can.idcate 
+        inner join images img on anu.idanuncio=img.idanuncio 
+        inner join estados_anuncio ean on anu.an_status = ean.idestado 
+        inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo 
+        inner join usuario usu on anu.idusuario=usu.idusuario
+        where anu.idanuncio = ? and img.principal = 1";
+        $st = $this->db->query($query, [$idanuncio]);
+
+        return $st->getRowArray();  
+    }
+
+    public function activarAnuncio($idanuncio, $estado, $activo, $idusuarioactivador){
+        if( $activo == 1 ){
+            $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, activousuario = ?  where idanuncio = ?";
+            $st = $this->db->query($query, [$estado, '', '', $idusuarioactivador, $idanuncio]);
+        }else if( $activo != 1 ){
+            $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, activousuario = ?, an_activo = ?, activadofecha = now(), 
+                hastafecha = DATE_ADD(now(), INTERVAL 30 DAY)  where idanuncio = ?";
+            $st = $this->db->query($query, [$estado, '', '', $idusuarioactivador, 1, $idanuncio]);
+        }  
+
+        return $st;
+    }
+
+    public function observarAnuncio($idanuncio, $estado, $motivo, $estado_ant){
+        $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?  where idanuncio = ?";
+        $st = $this->db->query($query, [$estado, $motivo, $estado_ant, $idanuncio]);
+
+        return $st;
+    }
+
 }

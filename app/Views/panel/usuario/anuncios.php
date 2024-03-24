@@ -84,8 +84,14 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
                                 <div class='col-sm-12 text-center'>
                                     <a href="<?=base_url('modificar-anuncio-'.$idanuncio.'')?>" class='btn btn-outline-info mt-2' title="Modificar Anuncio">Modificar</a>
                                     <a class='btn btn-outline-danger mt-2 eliminarAnuncio' data-id="<?=$idanuncio?>" title="Eliminar Anuncio">Eliminar</a>
-                                    <a class='btn btn-outline-secondary mt-2'>Inactivo</a>
+                                    <?php
+                                    if( $idestado == 2 || $idestado == 4 || $idestado == 2 ){
+                                    ?>
+                                    <a class='btn btn-outline-secondary mt-2'>Desactivar</a>
                                     <a class='btn btn-outline-success mt-2'>Destacar</a>
+                                    <?php
+                                    }
+                                    ?>
                                 </div>
                             </div>
                         </div>

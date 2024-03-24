@@ -24,6 +24,41 @@ class Anuncio extends BaseController
         }
 
         if( session('idtipousu') == 1 ){
+            $nombre = '';
+            if( $this->request->is('get') && $this->request->getGet('nombre') ){ 
+                //if( !is_int($page) ) return redirect()->to('/');
+                //print_r($this->request->getGet('nombre'));
+                $dato = [
+                    'nombre' => trim($this->request->getVar('nombre'))
+                ];
+                $validation = \Config\Services::validation();
+                $rules = [
+                    'nombre' => [
+                        'label' => 'Nombre', 
+                        'rules' => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ. 0-9]+$/]|max_length[100]',
+                        'errors' => [
+                            'required'    => '* El {field} es requerido.',
+                            'regex_match' => '* El {field} no es válido.',
+                            'max_length'  => '* El {field} debe contener máximo 100 caracteres.'
+                        ]
+                    ],
+                ];
+                $validation->setRules($rules);
+                if (!$validation->run($dato)) {
+                    return redirect()->back()->with('errors', $validation->getErrors())->withInput();
+                }
+            }
+            $nombre = trim($this->request->getVar('nombre'));
+            /* $uri = service('uri'); 
+            print_r( $uri->getSegments() ); */
+
+            $desde        = $page * 10 - 10;
+            $hasta        = 10;
+            $data['page'] = $page;
+
+            $data['anuncios']       = $this->modeloAnuncio->listarAnunciosAdmin($desde, $hasta, $nombre);
+            $data['totalRegistros'] = $this->modeloAnuncio->countListarAnunciosAdmin($nombre)['total'];
+
             $view = 'panel/administrador/anuncios';
         }else if( session('idtipousu') == 2 ){
             $nombre = '';
@@ -567,6 +602,117 @@ class Anuncio extends BaseController
                     });
                 </script>';
                 exit();
+            }
+        }
+    }
+
+    
+
+    public function detalleAnuncioAdmin($idanuncio){
+        if( !session('idusuario') ){
+            return redirect()->to('/');
+        }
+
+        if( session('idtipousu') != 1 ){
+            return redirect()->to('/');
+        }
+
+        if( $anuncio = $this->modeloAnuncio->getAnu_idanu($idanuncio) ){
+
+            $images_bd = $this->modeloAnuncio->getImages($idanuncio);
+
+            $data['title']        = 'Detalle del anuncio';
+            $data['opt_anuncios'] = 1;
+            $data['anuncio']      = $anuncio;
+            $data['imagenes']     = $images_bd;
+
+            return view('panel/administrador/anuncio_detalle', $data);
+        }else{
+            return redirect()->to('mis-anuncios')->with('msj_detalle', 'No existe el anuncio');
+        }
+    }
+
+    public function activarObservarAnuncio(){
+        if( $this->request->isAJAX() ){
+            if( !session('idusuario') ){
+                exit();
+            }
+    
+            if( session('idtipousu') != 1 ){
+                exit();
+            }
+
+            $idanuncio = trim($this->request->getVar('id'));
+            $opt       = trim($this->request->getVar('opt'));
+            $motivo    = trim($this->request->getVar('motivo'));
+
+            if( $opt == 2 && $motivo == '' ){
+                echo "*Ingrese un motivo.";
+            }else{
+                if( $anuncio = $this->modeloAnuncio->getAnu_idanu($idanuncio) ){
+
+                    $idestado   = $anuncio['an_status'];
+                    $activo     = $anuncio['an_activo']; //si es que ya ha sido activado
+                    $estado_ant = $anuncio['estado_ant'];//estado anterior, esto es cuando el admin ya lo observó antes
+
+                    if( $opt == 1 ){//Activar
+                        //si ya ha sido activado, cambiar de estado, borrar observacion y borrar estado anterior
+                        if( $idestado == 6 && $activo == 1 ){
+                            //echo "solo activar y borrar observacion";
+                            if( $this->modeloAnuncio->activarAnuncio($idanuncio, $estado_ant, $activo, session('idusuario')) ){
+                                echo '<script>
+                                    Swal.fire({
+                                        title: "ANUNCIO ACTIVADO.",
+                                        text: "",
+                                        icon: "success",
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false,
+                                    });
+                                    setTimeout(function(){ location.reload() },1500);
+                                </script>';
+                            }
+                            exit();
+                        }
+                        //si no estaba activado, cambiar de estado, borrar observacion, borrar estado anterior y agregarle su fecha de activo y hasta la fecha que esta activo 30 días
+                        if( in_array($idestado, [1, 6]) && $activo != 1 ){
+                            //echo "activar por primera vez";
+                            if( $this->modeloAnuncio->activarAnuncio($idanuncio, 2, $activo, session('idusuario')) ){
+                                echo '<script>
+                                    Swal.fire({
+                                        title: "ANUNCIO ACTIVADO.",
+                                        text: "",
+                                        icon: "success",
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false,
+                                    });
+                                    setTimeout(function(){ location.reload() },1500);
+                                </script>';
+                            }
+                            exit();
+                        }
+
+                        echo "NADA QUE HACER";
+                    }else if( $opt == 2 ){//Observar
+                        //echo "observar joder";
+                        if( in_array($idestado, [1, 2, 4, 5]) ){
+                            if( $this->modeloAnuncio->observarAnuncio($idanuncio, 6, $motivo, $idestado) ){
+                                echo '<script>
+                                    Swal.fire({
+                                        title: "ANUNCIO OBSERVADO.",
+                                        text: "",
+                                        icon: "success",
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false,
+                                    });
+                                    setTimeout(function(){ location.reload() },1500);
+                                </script>';
+                            }
+                        }
+                        exit();
+                    }
+                }else{
+                    echo "* EL ANUNCIO NO EXISTE!";
+                }
             }
         }
     }

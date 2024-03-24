@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-03-2024 a las 23:10:36
+-- Tiempo de generación: 24-03-2024 a las 15:51:22
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.0.25
 
@@ -45,16 +45,26 @@ CREATE TABLE `anuncio` (
   `contact_fono` varchar(12) NOT NULL,
   `contact_whatsapp` varchar(9) NOT NULL,
   `codanuncio` varchar(10) NOT NULL,
-  `an_status` tinyint(4) NOT NULL
+  `an_status` tinyint(4) NOT NULL,
+  `an_activo` tinyint(4) DEFAULT NULL,
+  `activadofecha` date DEFAULT NULL,
+  `hastafecha` date DEFAULT NULL,
+  `activousuario` int(11) DEFAULT NULL,
+  `observadopor` varchar(255) DEFAULT NULL,
+  `estado_ant` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `anuncio`
 --
 
-INSERT INTO `anuncio` (`idanuncio`, `an_nombre`, `an_descripcion`, `an_fechacreacion`, `idtipo_anuncio`, `idusuario`, `idcate`, `precio`, `precio_mostrar`, `caracteristicas`, `url_video`, `ubigeo`, `direccion`, `contact_email`, `contact_fono`, `contact_whatsapp`, `codanuncio`, `an_status`) VALUES
-(2, 'Vendo Juego de PS4 DAYS GONE Nuevo', '<h2>Venta de Juego Xevere</h2>', '2024-03-07 15:11:10', 3, 11, 26, '50.00', 0, 'Nuevo\r\nEn Caja', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130208, 'Urb Miguel Grau 2da Etapa', 'luchini_1102@hotmail.com', '987456321', '975089485', 'HHCMVUA1NT', 1),
-(3, 'Local Para fiestas', '<h2>Alquilo local para todo tipo de eventos</h2>\r\n\r\n<p>Precio a tratar&nbsp;</p>', '2024-03-07 15:18:13', 1, 11, 15, '0.00', 1, 'Local grande\r\nPara adultos y niños', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130202, 'aaa', 'luchini_1102@hotmail.com', '987456321', '975089485', 'KDXL2GNA89', 1);
+INSERT INTO `anuncio` (`idanuncio`, `an_nombre`, `an_descripcion`, `an_fechacreacion`, `idtipo_anuncio`, `idusuario`, `idcate`, `precio`, `precio_mostrar`, `caracteristicas`, `url_video`, `ubigeo`, `direccion`, `contact_email`, `contact_fono`, `contact_whatsapp`, `codanuncio`, `an_status`, `an_activo`, `activadofecha`, `hastafecha`, `activousuario`, `observadopor`, `estado_ant`) VALUES
+(2, 'Vendo Juego de PS4 DAYS GONE Nuevo xD', '<h2>Venta de Juego Xevere xD hahaha</h2>', '2024-03-07 15:11:10', 3, 11, 26, '55.00', 0, 'Nuevo\r\nEn Caja\r\nSellado', '', 130208, 'Urb Miguel Grau 2da Etapa D', 'luchito_1102@hotmail.com', '987456999', '975089666', 'HHCMVUA1NT', 2, 1, '2024-03-24', '2024-04-23', 1, '', 0),
+(5, 'Alquilo Casa de Campo', '<p>Casa Bonita</p>', '2024-03-09 19:58:23', 1, 11, 12, '1250.00', 0, 'x1\r\nx2\r\nx3', '', 130303, 'ss', 'lu@hotmail.com', '987456322', '975089480', 'CE90YZ4CV2', 2, 1, '2024-03-24', '2024-04-23', 1, '', 0),
+(6, 'Vendo Local de buen espacio para todo negocios', '<p>Alquilo Local para diversos tipos de festividades</p>\r\n\r\n<p>El local cuenta con 200 m cuadrados&nbsp;</p>', '2024-03-12 09:23:54', 1, 12, 14, '50000.00', 0, 'Cerca a Negocios\r\nCon Piso\r\nPiscina', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130205, 'Urb. Razuri', 'lushito88@gmail.com', '975089485', '975089485', 'GVEUW3GPFB', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 'Busco usb con entrada 3.0 y tipo c', '<p>Busco usb con entradas 3.0 y tipo</p>\r\n\r\n<p>Usb que sea h&iacute;brido</p>', '2024-03-12 09:27:01', 2, 12, 7, '0.00', 1, '64 gb\r\nkingston', 'https://www.youtube.com/watch?v=-9XRRdL6MgU', 130605, 'aaa', 'lushito88@gmail.com', '975089485', '', 'JO51Z6ZM0Y', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 'Vendo Juegos de Llaves Stilson', '<h1>Vendo Kit de LLave Stilson a buen precio</h1>\r\n\r\n<p>Nuevos, en caja. Para todo tipo de trabajos</p>', '2024-03-12 09:30:27', 3, 11, 10, '150.00', 0, 'Acero inoxidable\r\nKit o set de llaves', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130208, '', 'luchini_1102@hotmail.com', '987456321', '975089485', 'FZT8PAEWHB', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, 'Vendo todo tipo de útiles Escolares', '<p>Se vende todo tipo de utiles escolares</p>', '2024-03-12 09:34:05', 3, 11, 28, '0.00', 1, 'Cuadernos\r\nLapiceros\r\nColores\r\nPlumones', '', 130203, 'Sintuco', 'luchini_1102@hotmail.com', '987456321', '975089485', 'WYO2674R41', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -99,7 +109,8 @@ INSERT INTO `cat_anuncio` (`idcate`, `categoria`, `status`) VALUES
 (24, 'Servicios', 1),
 (25, 'Vehículos', 1),
 (26, 'Videojuegos', 1),
-(27, 'Otros', 1);
+(27, 'Otros', 1),
+(28, 'Colegio', 1);
 
 -- --------------------------------------------------------
 
@@ -120,9 +131,11 @@ CREATE TABLE `estados_anuncio` (
 INSERT INTO `estados_anuncio` (`idestado`, `estado`, `descripcion`) VALUES
 (1, 'Pendiente de Activación', 'Después de crear el anuncio, pasa a pendiente'),
 (2, 'Activo', 'Cuando un anuncio ya fué revisado por el admin, cambia a activo'),
-(3, 'Inactivo', 'Cuando un anuncio, ya venció sus días de activo p cuando el usuario lo inactiva'),
+(3, 'Inactivo', 'Cuando un anuncio, ya venció sus días de activo p cuando el usuario lo desactiva'),
 (4, 'Destacado', 'El anuncio se mostrará en los primeros resultados de búsqueda, según su tipo y categoría.'),
-(5, 'Super Destacado', 'El anuncio es destacado y se mostrará dentro los 20 anuncios aleatorios de la página principal.');
+(5, 'Super Destacado', 'El anuncio es destacado y se mostrará dentro los 20 anuncios aleatorios de la página principal.'),
+(6, 'Observado', 'Cuando el usuario admin observa un anuncio, por contenido explicito u otro motivo'),
+(7, 'Eliminado', 'Cuando se elimina el anuncio, pero ha tenido movimientos de pago destacados');
 
 -- --------------------------------------------------------
 
@@ -148,9 +161,14 @@ INSERT INTO `images` (`idimages`, `idanuncio`, `img`, `img_thumb`, `principal`, 
 (2, 2, '1709785499_95b290a62f3d1d1f8451.jpg', 'thumb_1709785499_95b290a62f3d1d1f8451.jpg', 0, 1),
 (3, 2, '1709785499_0c1bcd0913919b4c99cf.jpg', 'thumb_1709785499_0c1bcd0913919b4c99cf.jpg', 1, 1),
 (4, 2, '1709785500_8755ac23cb431e3bf2bc.jpg', 'thumb_1709785500_8755ac23cb431e3bf2bc.jpg', 0, 1),
-(5, 3, '1709842693_0932e7b13ffca1144f66.jpg', 'thumb_1709842693_0932e7b13ffca1144f66.jpg', 1, 1),
-(6, 3, '1709842694_5246ae7acbdc323b8f69.jpg', 'thumb_1709842694_5246ae7acbdc323b8f69.jpg', 0, 1),
-(7, 3, '1709842694_1cd50a4886f72ec57019.jpg', 'thumb_1709842694_1cd50a4886f72ec57019.jpg', 0, 1);
+(21, 5, '1710032303_2d6c097449ff4b005e98.jpeg', 'thumb_1710032303_2d6c097449ff4b005e98.jpeg', 0, 1),
+(22, 5, '1710032303_26a8b028141e5c19690d.jpg', 'thumb_1710032303_26a8b028141e5c19690d.jpg', 0, 1),
+(23, 5, '1710032304_2791b9d63d72c272b69f.jpg', 'thumb_1710032304_2791b9d63d72c272b69f.jpg', 1, 1),
+(24, 5, '1710032304_c92b507603ddecdaac79.jpg', 'thumb_1710032304_c92b507603ddecdaac79.jpg', 0, 1),
+(25, 6, '1710253434_ead0d5708242cff00929.jpeg', 'thumb_1710253434_ead0d5708242cff00929.jpeg', 1, 1),
+(26, 7, '1710253621_b02930b19a954ba64e72.jpg', 'thumb_1710253621_b02930b19a954ba64e72.jpg', 1, 1),
+(27, 8, '1710253827_9f592cd5f42c822eaa9d.jpg', 'thumb_1710253827_9f592cd5f42c822eaa9d.jpg', 1, 1),
+(28, 9, '1710254045_bbb5e0af94c162165cf2.jpg', 'thumb_1710254045_bbb5e0af94c162165cf2.jpg', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -2338,7 +2356,8 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`idusuario`, `us_codusuario`, `us_email`, `us_pass`, `us_nombre_razon`, `us_ruc`, `us_avatar`, `us_linkact`, `us_linkrecup`, `us_fechacreacion`, `idtipo_usuario`, `us_status`, `us_telefono`, `us_whatsapp`, `us_website`, `us_facebook`, `us_instagram`, `us_youtube`, `us_tiktok`, `us_direccion`, `us_ubigeo`, `us_zoom`) VALUES
 (1, '1234567899', 'alberto_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Alberto Calderón Sánchez', '45487229', '1234567899.jpg', NULL, NULL, '2024-02-26 21:27:58', 1, 1, '975089485', '975089485', '', '', '', '', '', 'calle 3 de octubre 22mz k lote 12 sector sintuco', 130203, 0),
-(11, 'ALA36J4GDK', 'luchini_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Calderón xD', '', 'ALA36J4GDK.jpg', NULL, NULL, '2024-02-26 21:29:38', 2, 1, '987456321', '975089485', '', '', '', '', '', '', 0, 0);
+(11, 'ALA36J4GDK', 'luchini_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Calderón xD', '', 'ALA36J4GDK.jpg', NULL, NULL, '2024-02-26 21:29:38', 2, 1, '987456321', '975089485', '', '', '', '', '', '', 0, 0),
+(12, 'J1CJKV0ADE', 'lushito88@gmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Lushito Calderón', NULL, NULL, NULL, NULL, '2024-03-12 14:19:53', 2, 1, '975089485', NULL, '', '', '', '', '', '', 0, 0);
 
 --
 -- Índices para tablas volcadas
@@ -2405,25 +2424,25 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `anuncio`
 --
 ALTER TABLE `anuncio`
-  MODIFY `idanuncio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `idanuncio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `cat_anuncio`
 --
 ALTER TABLE `cat_anuncio`
-  MODIFY `idcate` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `idcate` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `estados_anuncio`
 --
 ALTER TABLE `estados_anuncio`
-  MODIFY `idestado` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idestado` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `images`
 --
 ALTER TABLE `images`
-  MODIFY `idimages` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idimages` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_anuncio`
@@ -2441,7 +2460,7 @@ ALTER TABLE `tipo_usuario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Restricciones para tablas volcadas
