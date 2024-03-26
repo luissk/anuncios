@@ -212,6 +212,7 @@ class Anuncio extends BaseController
                 'whatsapp'        => trim($this->request->getVar('whatsapp')),
                 'imagenes'        => $this->request->getFileMultiple('imagenes'),
                 'idanuncio'       => trim($this->request->getVar('idanuncio')),
+                'levantaobs'      => trim($this->request->getVar('levantaobs')),
             ];
 
             $rules = [
@@ -363,6 +364,22 @@ class Anuncio extends BaseController
                         $rules['imagenes[]']['rules'] = 'max_size[imagenes,3072]|mime_in[imagenes,image/jpg,image/jpeg]';
                     }
                 }
+
+                //para levantar observacion
+                if( $bd_anuncio['an_status'] == 6 ){
+                    $rules['levantaobs'] = [
+                        'label' => 'Levantar Observación', 
+                        'rules' => 'required|integer|max_length[1]',
+                        'errors' => [
+                            'required'   => '* Tienes que marcar la casilla de {field}.',
+                            'integer'    => '* El {field} sólo contiene números',
+                            'max_length' => '* El {field} debe contener máximo 1 caracteres.'
+                        ]
+                    ];
+                }
+                //echo $bd_anuncio['an_status']." - ".$bd_anuncio['observadopor']." - ".$bd_anuncio['levanta_obs'];
+                //exit();
+
             }
             //fin de validación cuando se edita
 
@@ -379,9 +396,12 @@ class Anuncio extends BaseController
                 $data['nomostrar'] = 0;
             }
 
-            //CARACTERISTICAS
-            /* echo nl2br($data['caracteristicas'])."<hr>";
-            $arr_caract = explode("\r\n", $data['caracteristicas']);*/
+            //Levanta observación
+            if( $data['levantaobs'] ){
+                $data['levantaobs'] = 1;
+            }else{
+                $data['levantaobs'] = 0;
+            }
 
             //UBIGEO
             $data['ubigeo'] = '';
@@ -560,7 +580,7 @@ class Anuncio extends BaseController
                 $bd_anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
                 $codanuncio = $bd_anuncio['codanuncio'];
 
-                //PENDIENTE: VALIDAR SI ES QUE NO TIENE PAGOS (DESTACADO)
+                //PENDIENTE: VALIDAR SI ES QUE NO TIENE PAGOS (DESTACADO), DE LO CONTRARIO SOLO CAMBIAR A ESTADO ELIMINADO
                 
                 $micarpeta = help_folderAnuncio().$codanuncio;
 

@@ -31,6 +31,7 @@ $bd_estado          = $anuncio['estado'];
 $bd_observadopor    = $anuncio['observadopor'];
 $bd_usuemail        = $anuncio['us_email'];
 $bd_usunombre       = $anuncio['us_nombre_razon'];
+$bd_levantaobs      = $anuncio['levanta_obs'];
 
 $bd_tipo        = $anuncio['ta_tipo'];
 $bd_cate        = $anuncio['categoria'];
@@ -150,6 +151,13 @@ $bd_cate        = $anuncio['categoria'];
                 ?>                
                 <a class="btn btn-danger botones" data-id="<?=$bd_idanuncio?>" data-opt="2">Observar</a> 
                 <input type="text" class="form-control mt-2" placeholder="Motivo de observación" maxlength="250" value="<?=$bd_observadopor?>" id="txtMotivo">
+                <?php
+                if( $bd_idestado == 6 && $bd_levantaobs == 1 ){
+                    echo "<p class='text-success fw-semibold'>El usuario ha levantado la observación.</p>";
+                }else if( $bd_idestado == 6 && $bd_levantaobs != 1 ){
+                    echo "<p class='text-danger fw-semibold'>El usuario no ha levantado la observación.</p>";
+                }
+                ?>
             </div>
         </div>
     </div>

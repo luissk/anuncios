@@ -49,10 +49,16 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
             $img_thumb      = $anu['img_thumb'];
             $idestado       = $anu['an_status'];
             $estado         = $anu['estado'];
+            $diasactivo     = $anu['diasactivo'];
+            $levanta_obs    = $anu['levanta_obs'];
 
             $img = help_folderAnuncio().$codanuncio."/".$img_thumb;
 
             $tagprecio = $precio_mostrar == 1 ? 'No mostrar precio' : $precio;
+
+            $tooltip_observado = $idestado == 6 ? 'data-bs-toggle="tooltip" data-bs-placement="top" title="Tu anuncio fue observado, ve a la opción modificar para más detalle"' : '';
+
+            $icon_levanta_obs = $idestado == 6 && $levanta_obs == 1 ? '<i class="fas fa-check"></i>' : ($idestado == 6 && $levanta_obs != 1 ? '<i class="fas fa-times"></i>' : '');
 
             ?>
             <div class='card mb-3'>
@@ -73,12 +79,21 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
                             <div class='col-sm-5 text-secondary fw-semibold texto-size-13'>
                                 <i class='fas fa-hand-holding-usd'></i> S/. <?=$tagprecio?>
                             </div>
-                            <div class='col-sm-6 text-secondary fw-semibold pt-2 texto-size-13'>
-                                <i class='fas fa-thermometer-quarter'></i> Estado: <?=$estado?>
+                            <div class='col-sm-5 text-secondary fw-semibold pt-2 texto-size-13'>
+                                <i class='fas fa-thermometer-quarter'></i> Estado: <span <?=$tooltip_observado?> ><?=$estado?></span> <?=$icon_levanta_obs?>
                             </div>
-                            <div class='col-sm-6 text-secondary fw-semibold pt-2 texto-size-13'>
+                            <div class='col-sm-4 text-secondary fw-semibold pt-2 texto-size-13'>
                                 <i class="fas fa-calendar-alt"></i> Creado: <?=$fechac?>
                             </div>
+                            <?php
+                            if( $diasactivo != '' ){
+                            ?>
+                            <div class='col-sm-3 text-secondary fw-semibold pt-2 texto-size-13'>
+                                <i class="fas fa-hourglass-start"></i> Vence: <?=$diasactivo?> día(s)
+                            </div>
+                            <?php
+                            }
+                            ?>
 
                             <div class='row'>
                                 <div class='col-sm-12 text-center'>
@@ -161,6 +176,11 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
 
 <script>
 $(function(){
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
     $('.eliminarAnuncio').on('click', function(e){
         e.preventDefault();
         let id = $(this).data('id');

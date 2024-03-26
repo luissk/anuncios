@@ -4,10 +4,10 @@
 
 <?php
 if( isset($anuncio) && $anuncio ){
-    echo "<pre>"; 
-    //print_r($anuncio);
-    //print_r($images);
-    echo "</pre>";
+    /* echo "<pre>"; 
+    print_r($anuncio);
+    print_r($images);
+    echo "</pre>"; */
 
     $bd_idanuncio       = $anuncio['idanuncio'];
     $bd_nombre          = $anuncio['an_nombre'];
@@ -25,6 +25,10 @@ if( isset($anuncio) && $anuncio ){
     $bd_contactwhatsapp = $anuncio['contact_whatsapp'];
     $bd_idprov          = $anuncio['idprov'];
     $bd_iddist          = $anuncio['iddist'];
+
+    $bd_idestado        = $anuncio['an_status'];
+    $bd_observacion     = $anuncio['observadopor'];
+    $bd_levantaobs      = $anuncio['levanta_obs'];
 
     $titulo = 'MODIFICAR ANUNCIO';
     $boton  = 'MODIFICAR ANUNCIO';
@@ -58,6 +62,10 @@ if( isset($anuncio) && $anuncio ){
     $bd_contactwhatsapp = '';
     $bd_idprov          = '';
     $bd_iddist          = '';
+
+    $bd_idestado        = '';
+    $bd_observacion     = '';
+    $bd_levantaobs      = '';
 
     $titulo = 'NUEVO ANUNCIO';
     $boton  = 'CREAR ANUNCIO';
@@ -258,6 +266,30 @@ if( isset($anuncio) && $anuncio ){
                     <p class="text-danger" id="msj-whatsapp"></p>
                 </div>
             </div>
+
+            <?php
+            if( $bd_idestado == 6 ){
+            ?>
+            <div class="col-sm-12">
+                <div class="card text-danger fw-bold mb-3">
+                    <div class="card-header">Anuncio Observado</div>
+                    <div class="card-body text-secondary">
+                        <h5 class="card-title">Motivo: </h5>
+                        <p class="card-text"><?=$bd_observacion?></p>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="1" id="levantaobs" name="levantaobs" <?=$bd_levantaobs == 1 ? 'checked' : ''?> >
+                            <label class="form-check-label text-success" for="levantaobs">
+                                Levantar Observación 
+                            </label>
+                            <p class="text-danger" id="msj-levantaobs"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php
+            }
+            ?>
             
             <input type="hidden" name="idanuncio" value="<?=$bd_idanuncio?>">
             <div class="col-sm-12 text-end">                

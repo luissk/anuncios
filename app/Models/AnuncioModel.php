@@ -31,10 +31,10 @@ class AnuncioModel extends Model{
 
     public function modificarAnuncio($idusuario, $idanuncio_post, $data){
         $query = "update anuncio set an_nombre=?,an_descripcion=?,idtipo_anuncio=?,idcate=?,precio=?,precio_mostrar=?,caracteristicas=?,url_video=?,ubigeo=?,
-        direccion=?,contact_email=?,contact_fono=?,contact_whatsapp=? WHERE idanuncio=? and idusuario=?";
+        direccion=?,contact_email=?,contact_fono=?,contact_whatsapp=?, levanta_obs = ? WHERE idanuncio=? and idusuario=?";
 
         $st = $this->db->query($query, [$data['nombre'],$data['descripcion'],$data['tipo'],$data['categoria'],$data['precio'],$data['nomostrar'],
-            $data['caracteristicas'],$data['video'],$data['ubigeo'],$data['direccion'],$data['email'],$data['telefono'],$data['whatsapp'],$idanuncio_post, $idusuario]);
+            $data['caracteristicas'],$data['video'],$data['ubigeo'],$data['direccion'],$data['email'],$data['telefono'],$data['whatsapp'],$data['levantaobs'],$idanuncio_post, $idusuario]);
 
         return $st;
     }
@@ -52,6 +52,8 @@ class AnuncioModel extends Model{
 
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
         anu.codanuncio, anu.an_status,date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
+        DATEDIFF(anu.hastafecha, now()) diasactivo,
+        anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
         ean.estado
@@ -83,6 +85,7 @@ class AnuncioModel extends Model{
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
         anu.codanuncio, anu.an_status, anu.caracteristicas, anu.an_descripcion, anu.url_video, anu.direccion,
         anu.contact_email, anu.contact_fono, anu.contact_whatsapp,
+        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant, anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
         ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
@@ -148,7 +151,8 @@ class AnuncioModel extends Model{
 
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
         anu.codanuncio, anu.an_status,date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
-        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant,
+        DATEDIFF(anu.hastafecha, now()) diasactivo,
+        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant, anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
         ean.estado
@@ -181,7 +185,8 @@ class AnuncioModel extends Model{
         anu.codanuncio, anu.an_status, anu.caracteristicas, anu.an_descripcion, anu.url_video, anu.direccion,
         anu.contact_email, anu.contact_fono, anu.contact_whatsapp,
         date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
-        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant,
+        DATEDIFF(anu.hastafecha, now()) diasactivo,
+        anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant, anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
@@ -215,8 +220,8 @@ class AnuncioModel extends Model{
     }
 
     public function observarAnuncio($idanuncio, $estado, $motivo, $estado_ant){
-        $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?  where idanuncio = ?";
-        $st = $this->db->query($query, [$estado, $motivo, $estado_ant, $idanuncio]);
+        $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, levanta_obs = ?  where idanuncio = ?";
+        $st = $this->db->query($query, [$estado, $motivo, $estado_ant, 0, $idanuncio]);
 
         return $st;
     }
