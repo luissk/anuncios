@@ -144,6 +144,14 @@ class AnuncioModel extends Model{
         return $st;
     }
 
+    public function cambiarEstadoAnuncioUsu($idanuncio, $idestado){
+        $query = "update anuncio set an_status = ? where idanuncio = ?";
+        $st = $this->db->query($query, [$idestado, $idanuncio]);
+
+        return $st;
+    }
+
+
 
     public function listarAnunciosAdmin($desde, $hasta, $nombre = '', $status = [1,2,3,4,5,6,7]){
         $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
@@ -208,12 +216,12 @@ class AnuncioModel extends Model{
 
     public function activarAnuncio($idanuncio, $estado, $activo, $idusuarioactivador){
         if( $activo == 1 ){
-            $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, activousuario = ?  where idanuncio = ?";
-            $st = $this->db->query($query, [$estado, '', '', $idusuarioactivador, $idanuncio]);
+            $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, levanta_obs = ?, activousuario = ?  where idanuncio = ?";
+            $st = $this->db->query($query, [$estado, '', '', 0, $idusuarioactivador, $idanuncio]);
         }else if( $activo != 1 ){
-            $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, activousuario = ?, an_activo = ?, activadofecha = now(), 
+            $query = "update anuncio set an_status = ?, observadopor = ?, estado_ant = ?, levanta_obs = ?, activousuario = ?, an_activo = ?, activadofecha = now(), 
                 hastafecha = DATE_ADD(now(), INTERVAL 30 DAY)  where idanuncio = ?";
-            $st = $this->db->query($query, [$estado, '', '', $idusuarioactivador, 1, $idanuncio]);
+            $st = $this->db->query($query, [$estado, '', '', 0, $idusuarioactivador, 1, $idanuncio]);
         }  
 
         return $st;

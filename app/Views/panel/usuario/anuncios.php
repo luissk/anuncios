@@ -100,9 +100,9 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
                                     <a href="<?=base_url('modificar-anuncio-'.$idanuncio.'')?>" class='btn btn-outline-info mt-2' title="Modificar Anuncio">Modificar</a>
                                     <a class='btn btn-outline-danger mt-2 eliminarAnuncio' data-id="<?=$idanuncio?>" title="Eliminar Anuncio">Eliminar</a>
                                     <?php
-                                    if( $idestado == 2 || $idestado == 4 || $idestado == 2 ){
+                                    if( $idestado == 2 || $idestado == 4 || $idestado == 5 ){
                                     ?>
-                                    <a class='btn btn-outline-secondary mt-2'>Desactivar</a>
+                                    <a class='btn btn-outline-secondary mt-2 desactivarAnuncio' data-id="<?=$idanuncio?>" data-status="<?=$idestado?>" title="Desactivar Anuncio">Desactivar</a>
                                     <a class='btn btn-outline-success mt-2'>Destacar</a>
                                     <?php
                                     }
@@ -200,6 +200,34 @@ $(function(){
             }
         });
     });
+
+    $('.desactivarAnuncio').on('click', function(e){
+        e.preventDefault();
+        let id = $(this).data('id'),
+            status = $(this).data('status');
+
+        let text = '';
+        if( status == 2 ) text = 'Tu anuncio esta Activo. ¿Quieres desactivarlo?';
+        if( status == 4 ) text = 'Tu anuncio esta Destacado, si lo desactivas ya no estará como Destacado. ¿Quieres desactivarlo?';
+        if( status == 5 ) text = 'Tu anuncio esta Super Destacado, si lo desactivas ya no estará como Super Destacado. ¿Quieres desactivarlo?';
+
+        Swal.fire({
+            text: text,
+            showCancelButton: true,
+            confirmButtonText: "Confirmar",
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.post('desactivarAnuncioUsuario', {
+                    id
+                }, function(data){
+                    //console.log(data);
+                    $('#msjAnuncios').html(data);
+                });
+            }
+        });
+    });
+
 });
 </script>
 

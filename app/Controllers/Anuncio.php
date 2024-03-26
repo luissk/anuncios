@@ -626,8 +626,41 @@ class Anuncio extends BaseController
         }
     }
 
+    public function desactivarAnuncioPorUsuario(){
+        if( $this->request->isAJAX() ){
+            if(!session('idusuario')){
+                exit();
+            }
+
+            $idanuncio_post = $this->request->getVar('id');
+            if( $idanuncio_post != '' && $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post) ){
+                $bd_anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
+                //$codanuncio = $bd_anuncio['codanuncio'];
+                $idestado   = $bd_anuncio['an_status'];
+                $activo     = $bd_anuncio['an_activo']; 
+
+                if( in_array($idestado, [2,4,5]) && $activo == 1 ){
+                    echo "desactivar";
+                }
+            }else{
+                echo '<script>
+                    Swal.fire({
+                        title: "UPS!, no pudo procesar!",
+                        text: "",
+                        icon: "error",
+                        showConfirmButton: false,
+                    });
+                </script>';
+                exit();
+            }
+
+        }
+
+    }
+
     
 
+    //PARTE ADMIN
     public function detalleAnuncioAdmin($idanuncio){
         if( !session('idusuario') ){
             return redirect()->to('/');

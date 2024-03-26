@@ -32,7 +32,8 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     $routes->post('distritosAnu', 'Anuncio::listarDistritosAnuncio');
     $routes->post('crearAnuncio', 'Anuncio::CrearAnuncio');
     $routes->post('eliminarAnuncioUsuario', 'Anuncio::eliminarAnuncioPorUsuario');
-
+    $routes->post('desactivarAnuncioUsuario', 'Anuncio::desactivarAnuncioPorUsuario');
+    
     //ADMIN
     $routes->get('detalle-anuncio-admin-(:num)', 'Anuncio::detalleAnuncioAdmin/$1');
     //AJAX
