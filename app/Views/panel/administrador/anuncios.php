@@ -91,9 +91,13 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
                             </div>
                             <?php
                             if( $diasactivo != '' ){
+                                $text_dias = '';
+                                if( $diasactivo == 0 ) $text_dias = "Hoy";
+                                if( $diasactivo > 0 ) $text_dias = "$diasactivo día(s)";
+                                if( $diasactivo < 0 ) $text_dias = "Vencido";
                             ?>
                             <div class='col-sm-4 text-secondary fw-semibold pt-2 texto-size-13'>
-                                <i class="fas fa-hourglass-start"></i> Vence: <?=$diasactivo?> día(s)
+                                <i class="fas fa-hourglass-start"></i> Vence: <?=$text_dias?>
                             </div>
                             <?php
                             }
