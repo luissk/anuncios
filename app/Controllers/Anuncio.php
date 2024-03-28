@@ -469,7 +469,7 @@ class Anuncio extends BaseController
                                 ->save($ruta_completa);
         
                             $image->withFile($img)
-                                ->resize(350, 350, true, 'width')
+                                ->resize(300, 300, true, 'width')
                                 ->save($ruta_completa_thumb);
         
                             $check_principal = 0;
@@ -535,7 +535,7 @@ class Anuncio extends BaseController
                             ->save($ruta_completa);
     
                         $image->withFile($img)
-                            ->resize(350, 350, true, 'width')
+                            ->resize(300, 300, true, 'width')
                             ->save($ruta_completa_thumb);
     
                         $check_principal = 0;
@@ -631,17 +631,66 @@ class Anuncio extends BaseController
             if(!session('idusuario')){
                 exit();
             }
-
+            //print_r($_POST);exit();
             $idanuncio_post = $this->request->getVar('id');
+            $opt            = $this->request->getVar('opt');
+
             if( $idanuncio_post != '' && $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post) ){
                 $bd_anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
                 //$codanuncio = $bd_anuncio['codanuncio'];
-                $idestado   = $bd_anuncio['an_status'];
-                $activo     = $bd_anuncio['an_activo']; 
+                $idestado      = $bd_anuncio['an_status'];
+                $activo        = $bd_anuncio['an_activo'];
+                $diasactivo    = $bd_anuncio['diasactivo'];
+                $iddestacado   = $bd_anuncio['iddestacado'];//para activar cuando estaba destacado
+                $tipodes       = $bd_anuncio['tipodes'];//para activar cuando estaba destacado al tipo de destacado
+                //$diasdestacado = $bd_anuncio['diasdestacado'];
 
-                if( in_array($idestado, [2,4,5]) && $activo == 1 ){
-                    echo "desactivar";
-                }
+                if( $opt == 0 ){//desactivar
+                    if( in_array($idestado, [2,4,5]) && $activo == 1 ){
+                        if( $this->modeloAnuncio->cambiarEstadoAnuncioUsu($idanuncio_post, 3) ){
+                            echo '<script>
+                                Swal.fire({
+                                    title: "ANUNCIO DESACTIVADO.",
+                                    text: "",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                });
+                                setTimeout(function(){ location.reload()},1500);
+                            </script>';
+                        }
+                    }
+                }else if( $opt == 1 ){//activar
+                    if( in_array($idestado, [3]) && $activo == 1 ){
+                        $r = FALSE;
+                        $msj = "ANUNCIO ACTIVADO.";
+                        if( $iddestacado > 0 ){//solo activar, y regresar a su estado de destacado o super destacado
+                            $this->modeloAnuncio->cambiarEstadoAnuncioUsu($idanuncio_post, $tipodes);
+                            $r = TRUE;
+                        }else if( $iddestacado == '' ){
+                            if( $diasactivo > 0 ){//solo activar, porq aun no vence como activo
+                                $this->modeloAnuncio->cambiarEstadoAnuncioUsu($idanuncio_post, 2);
+                                $r = TRUE;
+                            }else if( $diasactivo < 0 ){//activar y agregarle 30 días de activo, porque ya venció
+                                $this->modeloAnuncio->cambiarEstadoAnuncioUsu($idanuncio_post, 2, TRUE);
+                                $msj = "ANUNCIO ACTIVADO POR 30 DÍAS MÁS.";
+                                $r = TRUE;
+                            }
+                        }
+                        if( $r ){
+                            echo '<script>
+                                Swal.fire({
+                                    title: "'.$msj.'",
+                                    text: "",
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    allowOutsideClick: false,
+                                });
+                                setTimeout(function(){ location.reload()},1500);
+                            </script>';
+                        }
+                    }
+                }               
             }else{
                 echo '<script>
                     Swal.fire({

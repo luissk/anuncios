@@ -56,12 +56,14 @@ class AnuncioModel extends Model{
         anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
-        ean.estado
+        ean.estado,
+        anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
         from anuncio anu
         inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
         inner join cat_anuncio can on anu.idcate=can.idcate 
         inner join images img on anu.idanuncio=img.idanuncio 
-        inner join estados_anuncio ean on anu.an_status = ean.idestado
+        inner join estados_anuncio ean on anu.an_status = ean.idestado 
+        left join destacado des on anu.iddestacado=des.iddestacado 
         where anu.idusuario = ? and img.principal = ? $sql order by anu.idanuncio desc limit ?,?";
         
         $st = $this->db->query($query, [$idusuario, 1, $desde, $hasta]);
@@ -85,17 +87,20 @@ class AnuncioModel extends Model{
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
         anu.codanuncio, anu.an_status, anu.caracteristicas, anu.an_descripcion, anu.url_video, anu.direccion,
         anu.contact_email, anu.contact_fono, anu.contact_whatsapp,
+        DATEDIFF(anu.hastafecha, now()) diasactivo,
         anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant, anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
         ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
-        ean.estado
+        ean.estado,
+        anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
         from anuncio anu
         inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
         inner join cat_anuncio can on anu.idcate=can.idcate 
         inner join images img on anu.idanuncio=img.idanuncio 
         inner join estados_anuncio ean on anu.an_status = ean.idestado 
         inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
+        left join destacado des on anu.iddestacado=des.iddestacado
         where anu.idanuncio = ? and anu.idusuario = ? and img.principal = 1";
         $st = $this->db->query($query, [$idanuncio, $idusuario]);
 
@@ -144,8 +149,12 @@ class AnuncioModel extends Model{
         return $st;
     }
 
-    public function cambiarEstadoAnuncioUsu($idanuncio, $idestado){
-        $query = "update anuncio set an_status = ? where idanuncio = ?";
+    public function cambiarEstadoAnuncioUsu($idanuncio, $idestado, $dias = FALSE){
+        if( $dias )
+            $query = "update anuncio set an_status = ?, hastafecha = DATE_ADD(now(), INTERVAL 30 DAY) where idanuncio = ?";
+        else
+            $query = "update anuncio set an_status = ? where idanuncio = ?";
+
         $st = $this->db->query($query, [$idestado, $idanuncio]);
 
         return $st;
@@ -163,12 +172,14 @@ class AnuncioModel extends Model{
         anu.an_activo,anu.activadofecha, anu.hastafecha, anu.activousuario, anu.observadopor, anu.estado_ant, anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
-        ean.estado
+        ean.estado,
+        anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
         from anuncio anu
         inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
         inner join cat_anuncio can on anu.idcate=can.idcate 
         inner join images img on anu.idanuncio=img.idanuncio 
-        inner join estados_anuncio ean on anu.an_status = ean.idestado
+        inner join estados_anuncio ean on anu.an_status = ean.idestado 
+        left join destacado des on anu.iddestacado=des.iddestacado
         where img.principal = ? and anu.an_status in ? $sql order by anu.idanuncio desc limit ?,?";
         
         $st = $this->db->query($query, [1, $status, $desde, $hasta]);
@@ -200,7 +211,8 @@ class AnuncioModel extends Model{
         img.idimages, img.img, img.img_thumb,
         ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
         ean.estado,
-        usu.us_email, usu.us_nombre_razon
+        usu.us_email, usu.us_nombre_razon,
+        anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
         from anuncio anu
         inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
         inner join cat_anuncio can on anu.idcate=can.idcate 
@@ -208,6 +220,7 @@ class AnuncioModel extends Model{
         inner join estados_anuncio ean on anu.an_status = ean.idestado 
         inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo 
         inner join usuario usu on anu.idusuario=usu.idusuario
+        left join destacado des on anu.iddestacado=des.iddestacado
         where anu.idanuncio = ? and img.principal = 1";
         $st = $this->db->query($query, [$idanuncio]);
 

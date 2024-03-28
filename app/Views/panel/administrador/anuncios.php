@@ -54,42 +54,45 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
             $estado         = $anu['estado'];
             $diasactivo     = $anu['diasactivo'];
             $levanta_obs    = $anu['levanta_obs'];
+            $fechad_fin     = $anu['fechad_fin'];//fecha fin destacado
 
             $img = help_folderAnuncio().$codanuncio."/".$img_thumb;
 
-            $tagprecio = $precio_mostrar == 1 ? 'No mostrar precio' : $precio;
+            $tagprecio = $precio_mostrar == 1 ? 'No mostrar' : $precio;
 
             $icon_levanta_obs = $idestado == 6 && $levanta_obs == 1 ? '<i class="fas fa-check"></i>' : ($idestado == 6 && $levanta_obs != 1 ? '<i class="fas fa-times"></i>' : '');
 
+            $text_fechad_fin = $fechad_fin != '' ? "($fechad_fin)" : "";
             ?>
             <div class='card mb-3'>
                 <div class='row g-0'>
-                    <div class='col-lg-3 col-xxl-2 text-center mis-anuncios__img d-flex align-items-center'>
+                    <div class='col-lg-3 col-xxl-2 text-center mis-anuncios__img'>
                         <img src='<?=$img?>' class='' alt='<?=$nombre?>'>
                     </div>
                     <div class='col-lg-9 col-xxl-10'>
                     <div class='card-body'>
                         <h6 class='card-title bg-success p-2 text-white'><?=$nombre?></h6>
                         <div class='row'>
-                            <div class='col-sm-3 text-secondary fw-semibold texto-size-13'>
-                                <i class='fas fa-hand-point-right'></i> <?=$tipo?>
-                            </div>
-                            <div class='col-sm-4 text-secondary fw-semibold texto-size-13'>
-                                <i class='fas fa-tag'></i> <?=$categoria?>
+                        <div class='col-sm-3 text-secondary fw-semibold texto-size-13'>
+                                <i class='fas fa-hand-point-right' title="tipo"></i> <?=$tipo?>
                             </div>
                             <div class='col-sm-5 text-secondary fw-semibold texto-size-13'>
-                                <i class='fas fa-hand-holding-usd'></i> S/. <?=$tagprecio?>
+                                <i class='fas fa-tag' title="categoria"></i> <?=$categoria?>
+                            </div>
+                            <div class='col-sm-4 text-secondary fw-semibold texto-size-13'>
+                                <i class='fas fa-hand-holding-usd' title="precio"></i> S/. <?=$tagprecio?>
+                            </div>
+
+                            <div class='col-sm-3 text-secondary fw-semibold pt-2 texto-size-13'>
+                                <i class="fas fa-calendar-alt" title="creado el:"></i> <?=$fechac?>
                             </div>
                             <div class='col-sm-5 text-secondary fw-semibold pt-2 texto-size-13'>
-                                <i class='fas fa-thermometer-quarter'></i> Estado: <?=$estado?> <?=$icon_levanta_obs?>
-                            </div>
-                            <div class='col-sm-4 text-secondary fw-semibold pt-2 texto-size-13'>
-                                <i class="fas fa-calendar-alt"></i> Creado: <?=$fechac?>
+                                <i class='fas fa-thermometer-quarter' title="estado"></i> <?=$estado?> <?=$icon_levanta_obs?> <?=$text_fechad_fin?>
                             </div>
                             <?php
                             if( $diasactivo != '' ){
                             ?>
-                            <div class='col-sm-3 text-secondary fw-semibold pt-2 texto-size-13'>
+                            <div class='col-sm-4 text-secondary fw-semibold pt-2 texto-size-13'>
                                 <i class="fas fa-hourglass-start"></i> Vence: <?=$diasactivo?> día(s)
                             </div>
                             <?php
@@ -98,7 +101,7 @@ $nombre_page = $nombre != '' ? "?nombre=".$nombre : '';
 
                             <div class='row'>
                                 <div class='col-sm-12 text-center'>
-                                    <a class='btn btn-outline-warning mt-2' href="<?=base_url('detalle-anuncio-admin-'.$idanuncio.'')?>">Detalle</a>
+                                    <a class='btn btn-sm btn-outline-warning mt-2' href="<?=base_url('detalle-anuncio-admin-'.$idanuncio.'')?>">Detalle</a>
                                 </div>
                             </div>
                         </div>
