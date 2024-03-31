@@ -55,19 +55,42 @@
             <div class="col-sm-12">
                 <h3 class="mt-5 mb-4 text-center">Anuncios Destacados</h3>
             </div>
-        </div>
+        </div>        
         <div class="row d-flex justify-content-center align-items-center py-3">
+            <?php
+            /* echo "<pre>"; 
+            print_r($anuncios);
+            echo "</pre>"; */
+            if( $anuncios ){
+                foreach( $anuncios as $anu ){
+                    $idanuncio  = $anu['idanuncio'];
+                    $codanuncio = $anu['codanuncio'];
+                    $nombre     = $anu['an_nombre'];
+                    $idcate     = $anu['idcate'];
+                    $categoria  = $anu['categoria'];
+                    $img_thumb  = $anu['img_thumb'];       
+
+                    $img = help_folderAnuncio().$codanuncio."/".$img_thumb;
+
+                    $url = help_reemplazaCaracterUrl($nombre)."-".$idanuncio;
+            ?>
+
             <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
                 <div class="card border-0 shadow-sm my-1">
-                    <img src="<?php echo base_url()?>public/img/anuncios/burger.jpg" class="card-img-top" alt="...">
+                    <a href="anuncio-<?=$url?>"><img src="<?=$img?>" class="card-img-top" alt="<?=$nombre?>"></a>
                     <div class="card-body">
-                        <h5 class="card-title fs-6 fw-bold">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis, qui!</h5>
-                        <p class="card-text text-truncate">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero odit cupiditate sit? </p>
-                        <a href="#" class="btn btn-outline-primary"><i class="fas fa-angle-right"></i> ver más</a>
+                        <h5 class="card-title fs-6 fw-bold"><a class="text-decoration-none text-black" href="anuncio-<?=$url?>"><?=$nombre?></a></h5>
+                        <p class="card-text text-truncate"><a class="text-decoration-none text-secondary" href="#"><?=$categoria?></a></p>
+                        <a href="anuncio-<?=$url?>" class="btn btn-outline-primary"><i class="fas fa-angle-right"></i> ver más</a>
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
+
+            <?php
+                }
+            }
+            ?>
+            <!-- <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-3">
                 <div class="card border-0 shadow-sm my-1">
                     <img src="<?php echo base_url()?>public/img/anuncios/campaña.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
@@ -136,7 +159,7 @@
                         <a href="#" class="btn btn-outline-primary"><i class="fas fa-angle-right"></i> ver más</a>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </section>

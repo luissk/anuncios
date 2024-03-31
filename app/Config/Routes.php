@@ -9,6 +9,7 @@ use CodeIgniter\Router\RouteCollection;
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
     $routes->get('', 'Inicio::index');
+    $routes->get('anuncio-(:any)', 'Inicio::detalleAnuncio/$1');
     $routes->get('ingresar', 'Inicio::loginRegister');
     $routes->post('ingresar', 'Inicio::loginRegister');
     $routes->get('salir', 'Inicio::salir');

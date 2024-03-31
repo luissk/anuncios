@@ -72,7 +72,10 @@ $bd_cate        = $anuncio['categoria'];
                 <div class="bg-light fw-bold p-1"><i class="fas fa-check"></i>  Link Youtube</div>
                 <?php
                 if( $bd_urlvideo != '' ){
-                    echo '<iframe id="video" width="100%" height="480" src="'.$bd_urlvideo.'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                    $iframe = preg_replace("/\s*[a-zA-Z\/\/:\.]*youtube.com\/watch\?v=([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i","<iframe width=\"100%\" height=\"480\" src=\"//www.youtube.com/embed/$1\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>", $bd_urlvideo);
+                    echo '<div>';
+                    echo $iframe;
+                    echo '</div>';
                 }else
                     echo "sin url";
                 ?>

@@ -5,11 +5,13 @@ use App\Models\UsuarioModel;
 
 class Inicio extends BaseController
 {
+    protected $modeloAnuncio;
     protected $modeloUsuario;
     protected $helpers = ['funciones'];
 
     public function __construct(){
-        $this->modeloUsuario  = model('UsuarioModel');
+        $this->modeloUsuario = model('UsuarioModel');
+        $this->modeloAnuncio = model('AnuncioModel');
         $this->session;
     }
 
@@ -18,7 +20,32 @@ class Inicio extends BaseController
         $data['title']          = 'Inicio pe';
         $data['act_menuinicio'] = 1;
 
+        $anuncios = $this->modeloAnuncio->listarAnunciosAdmin(0, 19, '', [2,4,5]);
+        $data['anuncios'] = $anuncios;
+
         return view('general/index', $data);
+    }
+
+    public function detalleAnuncio($a)
+    {   
+        if( $this->request->is('get') ){
+            $split = explode("-", $a);
+            $id    = (int)$split[count($split) - 1];
+
+            if( !is_int($id) ) exit();
+
+            $anuncio = $this->modeloAnuncio->getAnu_idanu($id);
+
+            if( !$anuncio ) return redirect()->to('/');
+
+            $nombreAnun = $anuncio['an_nombre'];
+
+            $data['title']    = $nombreAnun;
+            $data['anuncio']  = $anuncio;
+            $data['imagenes'] = $this->modeloAnuncio->getImages($id);
+
+            return view('general/detalle', $data);
+        }        
     }
 
     public function loginRegister()
