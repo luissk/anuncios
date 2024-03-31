@@ -31,7 +31,7 @@
                         <a class="nav-link <?php echo isset($act_menuinicio) ? 'active' : ''?>" aria-current="page" href="<?php echo base_url();?>"><i class="fas fa-home"></i> Inicio</a>
                     </li>
                     <li class="nav-item pe-3">
-                        <a class="nav-link <?php echo isset($act_menuanuncios) ? 'active' : ''?>" href="<?php echo base_url();?>"><i class="fas fa-bullhorn"></i> Anuncios</a>
+                        <a class="nav-link <?php echo isset($act_menuanuncios) ? 'active' : ''?>" href="busca"><i class="fas fa-bullhorn"></i> Anuncios</a>
                     </li>
                     <li class="nav-item pe-3">
                         <a class="nav-link <?php echo isset($act_menucontact) ? 'active' : ''?>" href="<?php echo base_url();?>"><i class="fas fa-address-book"></i> Contáctanos</a>

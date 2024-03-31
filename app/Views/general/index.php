@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-sm-12 col-md-6">
-                <form action="#" class="d-flex formsearch">
+                <form action="busca" class="d-flex formsearch"  method="get">
                     <input class="form-control  me-2" type="text" placeholder="Busca anuncios por distritos o nombres"> 
                     <button class="btn btn-outline-dark" title="Buscar"><i class="fas fa-search"></i></button>
                 </form>

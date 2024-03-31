@@ -95,8 +95,9 @@ footer .footer-end{
 /**** DETALLE ***/
 .multimedia__images{
     display: flex;
-    height: 450px;
+    height: 400px;
     box-shadow: 0 0 5px #999;
+    justify-content: center;
 }
 
 .multimedia__images .big{

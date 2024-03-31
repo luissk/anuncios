@@ -26,6 +26,12 @@ class Inicio extends BaseController
         return view('general/index', $data);
     }
 
+    public function busqueda(){
+        $data['title']    = 'Búsqueda';
+
+        return view('general/busqueda', $data);
+    }
+
     public function detalleAnuncio($a)
     {   
         if( $this->request->is('get') ){

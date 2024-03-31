@@ -72,8 +72,8 @@ $imgprincipal = $carpeta.$bd_img;
                         <a data-bs-toggle="modal" data-bs-target="#modalMultimedia" data-bs-slide-to="0">
                             <img src="<?=$imgprincipal?>" alt="">
                         </a>
-                    </div>                            
-                    <div class="littles">
+                    </div>                
+                    <div class="littles <?=count($imagenes) == 1 ? 'd-none' : ''?>">
                         <?php 
                         $cont = 0;
                         foreach($imagenes as $im){
