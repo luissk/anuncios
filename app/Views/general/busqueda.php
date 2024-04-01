@@ -59,31 +59,57 @@
 </section>
 
 <section class="container resultado">
+    <?php
+    /* echo "<pre>"; 
+    print_r($anuncios);
+    echo "</pre>"; */
+    if( $anuncios ){
+        foreach( $anuncios as $anu ){
+            $idanuncio   = $anu['idanuncio'];
+            $codanuncio  = $anu['codanuncio'];
+            $anunciodesc = $anu['anunciodesc'];
+            $nombre      = $anu['an_nombre'];
+            $idcate      = $anu['idcate'];
+            $categoria   = $anu['categoria'];
+            $img_thumb   = $anu['img_thumb']; 
+            $idtipo      = $anu['idtipo_anuncio'];
+            $tipo        = $anu['ta_tipo'];
+            $direccion   = $anu['direccion'];
+            $prov        = $anu['prov'];
+            $dist        = $anu['dist'];
+            $precio      = $anu['precio'];
+
+            $img = help_folderAnuncio().$codanuncio."/".$img_thumb;
+
+            $url = help_reemplazaCaracterUrl($nombre)."-".$idanuncio;
+    ?>
+
     <div class="resultado__item mb-4">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-4 col-xl-3 resultado__item--img text-center">
-                <a href="#"><img src="img/anuncios/burger.jpg" alt="" class=""></a>
+                <a href="anuncio-<?=$url?>"><img src="<?=$img?>" alt="<?=$nombre?>" class=""></a>
             </div>
-            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-9 resultado__item--content py-3 px-3">
-                <div class="resultado__item--title fw-bolder">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi, provident alias! Dignissimos, tempora! Quibusdam officia!
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-9 resultado__item--content py-2 px-3">
+                <div class="resultado__item--title fw-bolder text-success">
+                    <?=$nombre?>
                 </div>
-                <div class="resultado__item--desc text-truncate pt-2 text-secondary">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi, provident alias! Dignissimos, tempora! Quibusdam officia enim modi, maiores magni eveniet!
+                <div class="resultado__item--desc pt-2 text-secondary">
+                    <?=strlen($anunciodesc) > 200 ? $anunciodesc."..." : $anunciodesc?>
                 </div>
-                <div class="resultado__item--ubi text-truncate pt-2 text-secondary pt-3">
-                    <span> Av. America Sur nro 123 lorem</span>
+                <div class="resultado__item--ubi text-truncate text-secondary pt-2 fs-12px">
+                    <span> <?=$direccion?></span>
                     <br>
-                    <span class="fs-12px fst-italic"><i class="fas fa-map-marker-alt"></i> Razuri, Trujillo</span>
-                </div>
-                <div class="resultado__item--aditional pt-2 text-secondary pt-3">
-                    datos adicionales
+                    <span class="fs-12px fst-italic"><i class="fas fa-map-marker-alt"></i> <?=$dist?>, <?=$prov?></span>
                 </div>
                 <div class="row">
-                    <div class="col-sm-6 text-secondary">
-                        mas adicional
+                    <div class="col-sm-4 resultado__item--aditional text-secondary pt-2 fs-12px">
+                        <i class="fas fa-angle-right"></i> <?=$tipo?> <i class="fas fa-caret-right"></i> <?=$categoria?>
                     </div>
-                    <div class="col-sm-6 text-end pe-4">
+               
+                    <div class="col-sm-4 text-secondary text-center fw-bolder">
+                        <?=$precio > 0 ? "S/. ".number_format($precio, 2) : ''?>
+                    </div>
+                    <div class="col-sm-4 text-end pe-4">
                         <a href="#" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
                     </div>
                 </div>
@@ -91,69 +117,12 @@
         </div>
     </div>
 
-    <div class="resultado__item mb-4">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-3 resultado__item--img text-center">
-                <a href="#"><img src="img/anuncios/campaña.jpg" alt="" class=""></a>
-            </div>
-            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-9 resultado__item--content py-3 px-3">
-                <div class="resultado__item--title fw-bolder">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi, provident alias! Dignissimos, tempora! Quibusdam officia!
-                </div>
-                <div class="resultado__item--desc text-truncate pt-2 text-secondary">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi, provident alias! Dignissimos, tempora! Quibusdam officia enim modi, maiores magni eveniet!
-                </div>
-                <div class="resultado__item--ubi text-truncate pt-2 text-secondary pt-3">
-                    <span> Av. America Sur nro 123 lorem</span>
-                    <br>
-                    <span class="fs-12px fst-italic"><i class="fas fa-map-marker-alt"></i> Razuri, Trujillo</span>
-                </div>
-                <div class="resultado__item--aditional pt-2 text-secondary pt-3">
-                    datos adicionales
-                </div>
-                <div class="row">
-                    <div class="col-sm-6 text-secondary">
-                        mas adicional
-                    </div>
-                    <div class="col-sm-6 text-end pe-4">
-                        <a href="#" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="resultado__item mb-4">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-3 resultado__item--img text-center">
-                <a href="#"><img src="img/anuncios/eifel.jpg" alt="" class=""></a>
-            </div>
-            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-9 resultado__item--content py-3 px-3">
-                <div class="resultado__item--title fw-bolder">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi, provident alias! Dignissimos, tempora! Quibusdam officia!
-                </div>
-                <div class="resultado__item--desc text-truncate pt-2 text-secondary">
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi, provident alias! Dignissimos, tempora! Quibusdam officia enim modi, maiores magni eveniet!
-                </div>
-                <div class="resultado__item--ubi text-truncate pt-2 text-secondary pt-3">
-                    <span> Av. America Sur nro 123 lorem</span>
-                    <br>
-                    <span class="fs-12px fst-italic"><i class="fas fa-map-marker-alt"></i> Razuri, Trujillo</span>
-                </div>
-                <div class="resultado__item--aditional pt-2 text-secondary pt-3">
-                    datos adicionales
-                </div>
-                <div class="row">
-                    <div class="col-sm-6 text-secondary">
-                        mas adicional
-                    </div>
-                    <div class="col-sm-6 text-end pe-4">
-                        <a href="#" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php
+        }
+    }else{
+        echo "NO HAY ANUNCIOS";
+    }
+    ?>
 </section>
 
 <section class="container">

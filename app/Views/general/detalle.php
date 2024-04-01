@@ -174,7 +174,7 @@ $imgprincipal = $carpeta.$bd_img;
             <div class="desc mt-5">
                 <h4>Descripción</h4>
 
-                <p><?=$bd_descripcion?></p>
+                <p><?=nl2br($bd_descripcion)?></p>
             </div>
 
             <div class="desc mt-5">

@@ -33,6 +33,14 @@ footer{
     background-color: #ededef;
 }
 
+.destacados_item img{
+    object-fit: cover;
+    height: 180px;
+}
+.destacados_item .card-body{
+    min-height: 180px;
+}
+
 .home-sec3 .rounded-circle{
     width: 190px;
     height: 190px;
@@ -74,11 +82,11 @@ footer .footer-end{
 }
 
 .resultado__item--img{
-    height: 270px;
+    height: 210px;
 }
 
 .resultado__item--img img{
-    width: 100%;
+    max-width: 100%;
     height: 100%;
     object-fit: cover;
 }

@@ -247,4 +247,33 @@ class AnuncioModel extends Model{
         return $st;
     }
 
+
+
+    //RESULTADO DE BUSQUEDA
+    public function busqueda($desde, $hasta, $nombre = '', $status = [2,4,5]){
+        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
+        //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
+
+        $query = "select anu.idanuncio, anu.an_nombre, anu.idtipo_anuncio, anu.idcate, anu.precio, anu.precio_mostrar, anu.direccion,
+        substring(anu.an_descripcion, 1, 200) as anunciodesc,
+        anu.codanuncio, anu.an_status,
+        tan.ta_tipo, can.categoria,
+        img.idimages, img.img, img.img_thumb,
+        ean.estado,
+        ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
+        anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
+        from anuncio anu
+        inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
+        inner join cat_anuncio can on anu.idcate=can.idcate 
+        inner join images img on anu.idanuncio=img.idanuncio 
+        inner join estados_anuncio ean on anu.an_status = ean.idestado 
+        inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
+        left join destacado des on anu.iddestacado=des.iddestacado
+        where img.principal = ? and anu.an_status in ? $sql order by anu.idanuncio desc limit ?,?";
+        
+        $st = $this->db->query($query, [1, $status, $desde, $hasta]);
+
+        return $st->getResultArray();  
+    }
+
 }

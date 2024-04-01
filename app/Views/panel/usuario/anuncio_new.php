@@ -329,7 +329,7 @@ if( isset($anuncio) && $anuncio ){
 
 <?php echo $this->section('scriptsPanel');?>
 
-<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<!-- <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script> -->
 
 <script>
 function generarRandom(num) {
@@ -508,9 +508,9 @@ $(function(){
     /*** FIN PRECIO ***/
 
     /*** DESCRIPCION ***/
-    CKEDITOR.replace( 'descripcion', {
+   /*  CKEDITOR.replace( 'descripcion', {
         removePlugins: 'image,tabletools,tableselection',
-    } );
+    } ); */
     /*** FIN DESCRIPCION ***/
 
     /*** UBIGEO */
@@ -550,8 +550,8 @@ $(function(){
 
         let formData = new FormData(this);
 
-        let descripcion = CKEDITOR.instances.descripcion.getData();
-        formData.append('descripcion', descripcion);
+        /* let descripcion = CKEDITOR.instances.descripcion.getData();
+        formData.append('descripcion', descripcion); */
 
         if( arr_images.length > 0 ){
             let j = 0;//contador para los que no son de la bd

@@ -59,7 +59,7 @@ $bd_cate        = $anuncio['categoria'];
             </div>
             <div class="col-sm-12 pb-2">
                 <div class="bg-light fw-bold p-1"><i class="fas fa-check"></i>  Descripción</div>
-                <p class="p-2"><?=$bd_descripcion?></p>
+                <p class="p-2"><?=nl2br($bd_descripcion)?></p>
             </div>
             <div class="col-sm-12 pb-2">
                 <div class="bg-light fw-bold p-1"><i class="fas fa-check"></i>  Características</div>

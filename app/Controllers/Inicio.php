@@ -29,6 +29,10 @@ class Inicio extends BaseController
     public function busqueda(){
         $data['title']    = 'Búsqueda';
 
+        $anuncios = $this->modeloAnuncio->busqueda(0, 30, '');
+
+        $data['anuncios'] = $anuncios;
+
         return view('general/busqueda', $data);
     }
 
