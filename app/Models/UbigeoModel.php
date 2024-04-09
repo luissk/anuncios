@@ -26,4 +26,18 @@ class UbigeoModel extends Model{
         return $st->getRowArray();
     }
 
+    public function getUbigeo_x_Id($idubigeo){
+        $query = "select idubigeo, iddepa, idprov, iddist, depa, prov, dist from ubigeo where idubigeo = ?";
+        $st = $this->db->query($query, [$idubigeo]);
+
+        return $st->getRowArray();
+    }
+
+    public function getUbigeo_x_Ubigeo($ubigeo, $iddepa = 13){
+        $query = "select idubigeo, iddepa, idprov, iddist, depa, prov, dist from ubigeo where iddepa = ? and seotexto2 = ? and seotexto2 <> ''";
+        $st = $this->db->query($query, [$iddepa, $ubigeo]);
+
+        return $st->getRowArray();
+    }
+
 }

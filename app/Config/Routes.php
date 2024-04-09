@@ -9,7 +9,16 @@ use CodeIgniter\Router\RouteCollection;
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
     $routes->get('', 'Inicio::index');
-    $routes->get('busca', 'Inicio::busqueda');
+
+    /* $routes->get('busca-(:any)-de-(:any)-en-(:any)', 'Inicio::busqueda/$1/$2/$3');
+    $routes->get('busca-(:any)-de-(:any)', 'Inicio::busqueda/$1/$2');
+    $routes->get('busca-(:any)', 'Inicio::busqueda/$1'); */
+
+    $routes->get('busca-(:any)-de-(:any)-en-(:any)', 'Inicio::busqueda/$1/$2/$3');
+    $routes->get('busca-(:any)-en-(:any)', 'Inicio::busqueda/$1/$2');
+    $routes->get('busca-(:any)-de-(:any)', 'Inicio::busqueda/$1/$2');
+    $routes->get('busca-(:any)', 'Inicio::busqueda/$1');
+
     $routes->get('anuncio-(:any)', 'Inicio::detalleAnuncio/$1');
     $routes->get('ingresar', 'Inicio::loginRegister');
     $routes->post('ingresar', 'Inicio::loginRegister');

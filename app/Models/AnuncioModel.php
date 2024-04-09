@@ -12,11 +12,25 @@ class AnuncioModel extends Model{
         return $st->getResultArray();    
     }
 
+    public function getTipo_x_Tipo($tipo){
+        $query = "select idtipo_anuncio, ta_tipo, ta_status from tipo_anuncio where ta_tipo = ?";
+        $st = $this->db->query($query, [$tipo]);
+
+        return $st->getRowArray();    
+    }
+
     public function listarCategorias(){
-        $query = "select idcate, categoria, status from cat_anuncio where status = ? order by categoria";
+        $query = "select idcate, categoria, seocategoria, status from cat_anuncio where status = ? order by categoria";
         $st = $this->db->query($query, [1]);
 
         return $st->getResultArray();  
+    }
+
+    public function getCategoria_x_Cat($categoria){
+        $query = "select idcate, categoria, seocategoria from cat_anuncio where seocategoria = ?";
+        $st = $this->db->query($query, [$categoria]);
+
+        return $st->getRowArray();    
     }
 
     public function crearAnuncio($idusuario, $data){
@@ -250,9 +264,12 @@ class AnuncioModel extends Model{
 
 
     //RESULTADO DE BUSQUEDA
-    public function busqueda($desde, $hasta, $nombre = '', $status = [2,4,5]){
-        $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
+    public function busqueda($desde, $hasta, $criterios = '', $params = [], $keyword = '', $status = [2,4,5]){
+        $sql = $keyword != '' ? " and (anu.an_nombre LIKE '%" . $this->db->escapeLikeString($keyword) . "%' or anu.an_descripcion LIKE '%" . $this->db->escapeLikeString($keyword) . "%' or anu.direccion LIKE '%" . $this->db->escapeLikeString($keyword) . "%')" : '';
         //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
+
+        $parametros = [1, $status, ...$params, $desde, $hasta];
+
 
         $query = "select anu.idanuncio, anu.an_nombre, anu.idtipo_anuncio, anu.idcate, anu.precio, anu.precio_mostrar, anu.direccion,
         substring(anu.an_descripcion, 1, 200) as anunciodesc,
@@ -269,11 +286,33 @@ class AnuncioModel extends Model{
         inner join estados_anuncio ean on anu.an_status = ean.idestado 
         inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
         left join destacado des on anu.iddestacado=des.iddestacado
-        where img.principal = ? and anu.an_status in ? $sql order by anu.idanuncio desc limit ?,?";
+        where img.principal = ? and anu.an_status in ? $criterios $sql order by anu.idanuncio desc limit ?,?";
         
-        $st = $this->db->query($query, [1, $status, $desde, $hasta]);
+        $st = $this->db->query($query, $parametros);
+        //echo $this->db->getLastQuery();
 
         return $st->getResultArray();  
+    }
+
+    public function countBusqueda($criterios = '', $params = [], $keyword = '', $status = [2,4,5]){
+        $sql = $keyword != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($keyword) . "%' " : '';
+        //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
+
+        $parametros = [1, $status, ...$params];
+
+        $query = "select count(anu.idanuncio) as total
+        from anuncio anu
+        inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
+        inner join cat_anuncio can on anu.idcate=can.idcate 
+        inner join images img on anu.idanuncio=img.idanuncio 
+        inner join estados_anuncio ean on anu.an_status = ean.idestado 
+        inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
+        left join destacado des on anu.iddestacado=des.iddestacado
+        where img.principal = ? and anu.an_status in ? $criterios $sql";
+        
+        $st = $this->db->query($query, $parametros);
+
+        return $st->getRowArray();
     }
 
 }

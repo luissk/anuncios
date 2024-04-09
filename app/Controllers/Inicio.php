@@ -7,16 +7,38 @@ class Inicio extends BaseController
 {
     protected $modeloAnuncio;
     protected $modeloUsuario;
+    protected $modeloUbigeo;
     protected $helpers = ['funciones'];
 
     public function __construct(){
         $this->modeloUsuario = model('UsuarioModel');
         $this->modeloAnuncio = model('AnuncioModel');
+        $this->modeloUbigeo  = model('UbigeoModel');
         $this->session;
     }
 
-    public function index(): string
+    public function index()
     {
+        if( $this->request->getGet('ini') == 1 ){//del formulario de inicio
+            $txtSearch = trim($this->request->getVar('txtSearch'));
+            $idubigeo  = $this->request->getGet('idubigeo');
+
+            if( $idubigeo != '' ){
+                $ubigeo = $this->modeloUbigeo->getUbigeo_x_Id($idubigeo);
+                if( $ubigeo ){
+                    $prov = help_reemplazaCaracterUrl($ubigeo['prov']);
+                    $dist = $ubigeo['dist'] != '' ? "-".help_reemplazaCaracterUrl($ubigeo['dist']): '';
+                    
+                    $url = "busca-anuncios-en$dist-$prov";
+                    return redirect()->to($url);
+                }
+            }else if( $txtSearch != '' ){
+                return redirect()->to('busca-anuncios?keyword='.$txtSearch);
+            }else{
+                return redirect()->to('busca-anuncios');
+            }
+        }
+
         $data['title']          = 'Inicio pe';
         $data['act_menuinicio'] = 1;
 
@@ -26,12 +48,101 @@ class Inicio extends BaseController
         return view('general/index', $data);
     }
 
-    public function busqueda(){
-        $data['title']    = 'Búsqueda';
+    public function busqueda($t = '', $c = '', $u = ''){
+        $tipo_get      = trim($t);
+        $categoria_get = trim($c);
+        $ubigeo_get    = trim($u);
 
-        $anuncios = $this->modeloAnuncio->busqueda(0, 30, '');
+        //echo "$tipo_get / $categoria_get / $ubigeo_get <br>";
 
-        $data['anuncios'] = $anuncios;
+        $query_bd = "";
+        $param_bd = [];
+        $title = "Busca";
+
+        $idtipo = 0;
+        if( $tipo_get == 'anuncios' ){
+            $idtipo = 0;
+            $title .= ' anuncios';
+        }else{
+            $tipobd = $this->modeloAnuncio->getTipo_x_Tipo($tipo_get);
+            if( $tipobd ){
+                $idtipo     = $tipobd['idtipo_anuncio'];
+                $title     .= " ".$tipobd['ta_tipo'];
+                $query_bd  .= " and anu.idtipo_anuncio = ?";
+                $param_bd[] = $idtipo;
+            }
+        }
+
+        $idcategoria = 0;
+        $idubigeo    = 0;
+        if( $categoria_get == '' ){
+            $idcategoria = 0;
+            $idubigeo    = 0;
+        }else{
+            $categoriabd = $this->modeloAnuncio->getCategoria_x_Cat($categoria_get);
+            $ubigeobd    = $this->modeloUbigeo->getUbigeo_x_Ubigeo($categoria_get);
+            if( $categoriabd ){
+                $idcategoria = $categoriabd['idcate'];
+                $title     .= " de ".$categoriabd['categoria'];
+                $query_bd  .= " and anu.idcate = ?";
+                $param_bd[] = $idcategoria;
+            }
+            if( $ubigeobd ){
+                $idubigeo = $ubigeobd['idubigeo'];
+                $title     .= " en ".$ubigeobd['dist']." ".$ubigeobd['prov'];
+                $query_bd  .= " and ubi.seotexto2 LIKE '%".$categoria_get."%'";
+                //$param_bd[] = $categoria_get;
+            }
+        }
+
+        if( $idubigeo == 0 ){
+            if( $ubigeo_get == '' ){
+                $idubigeo = 0;
+            }else{
+                $ubigeobd    = $this->modeloUbigeo->getUbigeo_x_Ubigeo($ubigeo_get);
+                if( $ubigeobd ){
+                    $idubigeo = $ubigeobd['idubigeo'];
+                    $title     .= " en ".$ubigeobd['dist']." ".$ubigeobd['prov'];
+                    $query_bd  .= " and ubi.seotexto2 LIKE '%".$ubigeo_get."%'";
+                }
+            }
+        }
+
+        $keyword = '';
+        if( trim($this->request->getVar('keyword')) ){
+            $keyword = trim($this->request->getVar('keyword'));
+        }
+
+        $order = '';
+        if( trim($this->request->getVar('order')) ){
+            $order = $this->request->getVar('order');
+        }
+
+        $page = 1;
+        if( trim($this->request->getVar('page')) ){
+            $page = $this->request->getVar('page');
+        }
+
+        $desde        = $page * 2 - 2;
+        $hasta        = 2;
+        $data['page'] = $page;
+
+
+        //echo "<br>$idtipo -- $idcategoria -- $idubigeo -- $keyword -- $order -- $page";
+
+        $title = "$title | ".help_nombreWeb(); 
+
+        $data['title']    = $title;
+
+        $anuncios = $this->modeloAnuncio->busqueda($desde, $hasta, $query_bd, $param_bd, $keyword);
+        $data['totalRegistros'] = $this->modeloAnuncio->countBusqueda($query_bd, $param_bd, $keyword)['total'];
+        $data['anuncios']       = $anuncios;
+
+        $tipos      = $this->modeloAnuncio->listarTipos();
+        $categorias = $this->modeloAnuncio->listarCategorias();
+
+        $data['tipos']      = $tipos;
+        $data['categorias'] = $categorias;
 
         return view('general/busqueda', $data);
     }

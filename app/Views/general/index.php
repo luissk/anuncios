@@ -1,13 +1,19 @@
 <?php echo $this->extend('plantilla/layout')?>
 
+<?php echo $this->section('csslinks');?>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<?php echo $this->endSection();?>
+
 <?php echo $this->section('contenido');?>
 
 <section class="py-3 bg-success">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-sm-12 col-md-6">
-                <form action="busca" class="d-flex formsearch"  method="get">
-                    <input class="form-control  me-2" type="text" placeholder="Busca anuncios por distritos o nombres"> 
+                <form class="d-flex formsearch" id="frmSearch">
+                    <input class="form-control  me-2" type="text" placeholder="Busca por distritos o palabra" id="txtSearch" name="txtSearch">
+                    <input type="hidden" id="idubigeo" name="idubigeo">
+                    <input type="hidden" id="ini" name="ini" value="1">
                     <button class="btn btn-outline-dark" title="Buscar"><i class="fas fa-search"></i></button>
                 </form>
             </div>
@@ -229,5 +235,89 @@
         </div>
     </div>
 </section>
+
+<?php echo $this->endSection();?>
+
+<?php echo $this->section('scripts');?>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<script>
+$(function(){
+    let items = [];
+    $.getJSON('public/ubigeo.json', function(data){
+        $.each(data, (i,v) => {
+            //console.log(i, v);
+            items[i] = {value: v.idubigeo, label: v.texto2};
+        });
+    });
+
+    var accentMap = {
+        "à": "a", 
+        "á": "a", 
+        "ä": "a", 
+        "è": "e", 
+        "é": "e", 
+        "ë": "e", 
+        "ì": "i", 
+        "í": "i",
+        "ï": "i",
+        "ò": "o",
+        "ó": "o",
+        "ö": "o",
+        "ù": "u",
+        "ú": "u",
+        "ü": "u",
+        "ñ": "n"
+    };
+    var normalize = function( term ) {
+        var ret = "";
+        for ( var i = 0; i < term.length; i++ ) {
+            ret += accentMap[ term.charAt(i) ] || term.charAt(i);
+        }
+        return ret;
+    };
+
+    $( "#txtSearch" ).autocomplete({
+        minLength: 3,
+        source: function( request, response ) {
+                var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
+                response( $.grep( items, function( value ) {
+                value = value.label || value.value || value;
+                return matcher.test( value ) || matcher.test( normalize( value ) );
+                }) );
+        },
+        focus: function( event, ui ) {
+            console.log('focus');
+            $( "#txtSearch" ).val('');
+            $("#idubigeo").val('');
+            return false;
+        },
+        select: function( event, ui ) {
+            console.log('select');
+            $( "#txtSearch" ).val( ui.item.label );
+            $("#idubigeo").val(ui.item.value);
+            $("#frmSearch").submit();
+            return false;
+        },
+        response: function( event, ui ) {
+            console.log('response', ui);
+            if( ui.content.length == 0 ){
+                //$( "#txtSearch" ).val('');
+                $("#idubigeo").val('');
+            }
+        },
+    }) 
+    /* .autocomplete( "instance" )._renderItem = function( ul, item ) {
+      return $( "<li>" )
+        .append( "<div>" + item.label + "</div>" )
+        .appendTo( ul );
+    }; */
+
+    /* $("#frmSearch").on('submit', function(e){
+        e.preventDefault();
+        console.log($(this).serialize());
+    }); */
+})
+</script>
 
 <?php echo $this->endSection();?>
