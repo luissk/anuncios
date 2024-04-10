@@ -85,7 +85,7 @@
                 <div class="card border-0 shadow-sm my-1 destacados_item">
                     <a href="anuncio-<?=$url?>"><img src="<?=$img?>" class="card-img-top" alt="<?=$nombre?>"></a>
                     <div class="card-body">
-                        <h5 class="card-title fs-6"><a class="text-decoration-none text-success" href="anuncio-<?=$url?>"><?=strlen($nombre) > 70 ? substr($nombre, 0, 70)."..." : $nombre?></a></h5>
+                        <h5 class="card-title fs-6"><a class="text-decoration-none text-primary" href="anuncio-<?=$url?>"><?=strlen($nombre) > 70 ? substr($nombre, 0, 70)."..." : $nombre?></a></h5>
                         <p class="card-text text-truncate"><a class="text-decoration-none text-secondary" href="#"><?=$categoria?></a></p>
                         <a href="anuncio-<?=$url?>" class="btn btn-outline-secondary"><i class="fas fa-angle-right"></i> ver más</a>
                     </div>

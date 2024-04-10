@@ -5,7 +5,12 @@
 <?php echo $this->endSection();?>
 
 <?php echo $this->section('contenido');?>
-
+<?php
+echo "<pre>";
+//$link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") ."://" . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+$path_current = uri_string();
+echo "</pre>";
+?>
 <section class="container filters mt-4">
     <div class="row py-2">
         <div class="col-sm-2">
@@ -14,15 +19,16 @@
                     Tipo de anuncio
                 </button>
                 <ul class="dropdown-menu">
-                    <!-- <li><a class="dropdown-item active" href="#">Inmuebles</a></li>
-                    <li><a class="dropdown-item" href="#">Tiendas</a></li>
-                    <li><a class="dropdown-item" href="#">Negocios</a></li> -->
                     <?php
+                    $path_tipo_explode = explode("-", $path_current);
                     foreach($tipos as $t){
                         $idtipo = $t['idtipo_anuncio'];
                         $tipo   = $t['ta_tipo'];
 
-                        echo '<li><a class="dropdown-item" href="#">'.$tipo.'</a></li>';
+                        $path_tipo_explode[1] = help_reemplazaCaracterUrl($tipo);
+                        $path_tipo = implode("-", $path_tipo_explode);
+
+                        echo '<li><a class="dropdown-item" href="'.base_url($path_tipo).'">'.$tipo.'</a></li>';
                     }
                     ?>
                 </ul>
@@ -33,14 +39,24 @@
                 <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
                     Categoría de anuncio
                 </button>
-                <div class="dropdown-menu p-3">
+                <div class="dropdown-menu p-3" style="max-height: 400px; overflow: auto">
                 <?php
+                    $path_cat_explode = explode("-de-", $path_current);
+
                     foreach($categorias as $c){
                         $idcate       = $c['idcate'];
                         $categoria    = $c['categoria'];
                         $seocategoria = $c['seocategoria'];
 
-                        echo '<li><a class="dropdown-item" href="'.$seocategoria.'">'.$categoria.'</a></li>';
+                        if( count($path_cat_explode) == 1 && strpos($path_current, "-en-") == 0 ) 
+                            $path_cat = "$path_current-de-$seocategoria";
+                        else if( count($path_cat_explode) == 1 && strpos($path_current, "-en-") > 0 )
+                            $path_cat = substr($path_current, 0, strpos($path_current, "-en-")) . "-de-" . $seocategoria . substr($path_current, strpos($path_current, "-en-"));
+                        else if( count($path_cat_explode) > 1 ){
+                            $path_cat = substr_replace($path_current, $seocategoria, strpos($path_current,"-de-") + 4) . (strpos($path_current, "-en-") > 0 ? substr($path_current, strpos($path_current, "-en-")) : '');
+                        }
+
+                        echo '<li><a class="dropdown-item" href="'.$path_cat.'">'.$categoria.'</a></li>';
                     }
                     ?>
                 </div>
@@ -48,10 +64,14 @@
         </div>
         <div class="col-sm-3">                      
             <input type="text" class="form-control" id="txtSearch" placeholder="Buscar por distrito o provincia" autocomplete="off">
-            <input type="hidden" id="idubigeo" name="idubigeo">
+            <input type="hidden" id="path_current" value="<?=base_url().$path_current?>">
         </div>
         <div class="col-sm-3">                      
-            <input type="text" class="form-control" id="keyword" placeholder="Buscar por palabra clave" autocomplete="off">
+            <!-- <input type="text" class="form-control" id="keyword" placeholder="Buscar por palabra clave" autocomplete="off"> -->
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="buscar por palabra clave" autocomplete="off">
+                <button class="btn btn-outline-secondary" type="button" id=""><i class="fas fa-search" aria-hidden="true"></i></button>
+            </div>
         </div>
     </div>
 
@@ -111,11 +131,11 @@
     <div class="resultado__item mb-4">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-4 col-xl-3 resultado__item--img text-center">
-                <a href="anuncio-<?=$url?>"><img src="<?=$img?>" alt="<?=$nombre?>" class=""></a>
+                <a href="<?=base_url('anuncio-'.$url.'')?>"><img src="<?=$img?>" alt="<?=$nombre?>" class=""></a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 col-xl-9 resultado__item--content py-2 px-3">
                 <div class="resultado__item--title fw-bolder text-success">
-                    <?=$nombre?>
+                    <a href="<?=base_url('anuncio-'.$url.'')?>" class="text-decoration-none text-primary"><?=$nombre?></a>
                 </div>
                 <div class="resultado__item--desc pt-2 text-secondary">
                     <?=strlen($anunciodesc) > 200 ? $anunciodesc."..." : $anunciodesc?>
@@ -134,7 +154,7 @@
                         <?=$precio > 0 ? "S/. ".number_format($precio, 2) : ''?>
                     </div>
                     <div class="col-sm-4 text-end pe-4">
-                        <a href="#" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
+                        <a href="<?=base_url('anuncio-'.$url.'')?>" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
                     </div>
                 </div>
             </div>
@@ -208,7 +228,7 @@ $(function(){
     $.getJSON('public/ubigeo.json', function(data){
         $.each(data, (i,v) => {
             //console.log(i, v);
-            items[i] = {value: v.idubigeo, label: v.texto2};
+            items[i] = {value: v.idubigeo, label: v.texto2, seo: v.seotexto2};
         });
     });
 
@@ -248,20 +268,23 @@ $(function(){
                 }) );
         },
         focus: function( event, ui ) {
-            //console.log('focus');
             $( "#txtSearch" ).val('');
             $("#idubigeo").val('');
             return false;
         },
         select: function( event, ui ) {
-            //console.log('select');
             $( "#txtSearch" ).val( ui.item.label );
-            $("#idubigeo").val(ui.item.value);
-            //$("#frmSearch").submit();
+
+            let path_current = $("#path_current").val(),
+            path_ubi = '';
+
+            path_ubi = path_current.indexOf('-en-') > 0 ? path_current.substring(0, path_current.indexOf('-en-') + 4) + ui.item.seo : `${path_current}-en-${ui.item.seo}`;
+
+            location.href = path_ubi;
+
             return false;
         },
         response: function( event, ui ) {
-            //console.log('response', ui);
             if( ui.content.length == 0 ){
                 $("#idubigeo").val('');
             }
