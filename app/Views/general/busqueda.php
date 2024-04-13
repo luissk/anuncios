@@ -7,8 +7,9 @@
 <?php echo $this->section('contenido');?>
 <?php
 echo "<pre>";
-//$link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") ."://" . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 $path_current = uri_string();
+//$uri = new \CodeIgniter\HTTP\URI('http://localhost/anuncios/busca-anuncios?keyword=palabra&order=asc&page=2');
+//print_r($filters);
 echo "</pre>";
 ?>
 <section class="container filters mt-4">
@@ -69,17 +70,27 @@ echo "</pre>";
         <div class="col-sm-3">                      
             <!-- <input type="text" class="form-control" id="keyword" placeholder="Buscar por palabra clave" autocomplete="off"> -->
             <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="buscar por palabra clave" autocomplete="off">
-                <button class="btn btn-outline-secondary" type="button" id=""><i class="fas fa-search" aria-hidden="true"></i></button>
+                <input type="text" class="form-control" placeholder="buscar por palabra clave" autocomplete="off" id="txtKeyword">
+                <button class="btn btn-outline-secondary" type="button" id="btnKeyword"><i class="fas fa-search" aria-hidden="true"></i></button>
             </div>
+            <p class="text-danger" id="msjKeyword"></p>
         </div>
     </div>
 
     <div class="row filters__selected py-2">
         <div class="col-sm-12 text-center">
-            <span class="border rounded p-1 bg-light m-1">Trujillo <a href="#" class="badge bg-danger" title="borrar filtro"><i class="fas fa-times"></i></a></span>
+            <?php
+            if( $filters ){
+                foreach($filters as $fil){
+                    if( $fil[1] != '' ){
+                        echo '<span class="border rounded p-1 bg-light m-1">'.$fil[1].' <a href="'.$fil[0].'" class="badge bg-danger" title="borrar filtro"><i class="fas fa-times"></i></a></span>';
+                    }
+                }
+            }
+            ?>
+            <!-- <span class="border rounded p-1 bg-light m-1">Trujillo <a href="#" class="badge bg-danger" title="borrar filtro"><i class="fas fa-times"></i></a></span>
             <span class="border rounded p-1 bg-light m-1">Tiendas <a href="#" class="badge bg-danger" title="borrar filtro"><i class="fas fa-times"></i></a></span>
-            <span class="border rounded p-1 bg-light m-1">xD <a href="#" class="badge bg-danger" title="borrar filtro"><i class="fas fa-times"></i></a></span>
+            <span class="border rounded p-1 bg-light m-1">xD <a href="#" class="badge bg-danger" title="borrar filtro"><i class="fas fa-times"></i></a></span> -->
         </div>
     </div>
 
@@ -93,9 +104,12 @@ echo "</pre>";
                     Ordenar
                 </button>
                 <ul class="dropdown-menu order">
-                    <li><a class="dropdown-item active" href="#">Mayor</a></li>
-                    <li><a class="dropdown-item" href="#">Menor</a></li>
-                    <li><a class="dropdown-item" href="#">Precio</a></li>
+                    <?php
+                    $uri = service('uri');
+                    $uri->stripQuery('page');
+                    ?>
+                    <li><a class="dropdown-item" href="<?=$uri->addQuery('order', 'asc');?>">Menor precio</a></li>
+                    <li><a class="dropdown-item" href="<?=$uri->addQuery('order', 'desc');?>">Mayor precio</a></li>
                 </ul>
             </div>
         </div>
@@ -170,20 +184,19 @@ echo "</pre>";
         $res    = $totalRegistros % $RegistrosAMostrar;
         if( $res > 0 ) $PagUlt = floor($PagUlt) + 1;
 
-        //echo current_url();
-        //echo help_remove_url_query_args('http://localhost/anuncios/busca-anuncios-en-ascope?page=1', ['page']);
+        $uri = new \CodeIgniter\HTTP\URI(current_url(). ($_SERVER['QUERY_STRING'] != '' ? "?".$_SERVER['QUERY_STRING'] : ''));
         }
         ?>
 
         <nav>
             <ul class="pagination justify-content-end <?=$totalRegistros <= 2 ? 'd-none' : ''?>">
                 <li class="page-item <?=$PagAct > ($PaginasIntervalo + 1) ? '' : 'd-none'?>">
-                    <a class="page-link" href="<?=current_url()."?page=1"?>">Primer</a>
+                    <a class="page-link" href="<?=$uri->addQuery('page', '1')?>">Primer</a>
                 </li>
                 <?php
                 for ( $i = ($PagAct - $PaginasIntervalo) ; $i <= ($PagAct - 1) ; $i ++) {
                     if($i >= 1) {
-                        echo "<li class='page-item'><a class='page-link' href='".current_url()."?page=$i'>$i</a></li>";
+                        echo "<li class='page-item'><a class='page-link' href='".$uri->addQuery('page', $i)."'>$i</a></li>";
                     }
                 }
                 ?>
@@ -191,12 +204,12 @@ echo "</pre>";
                 <?php
                 for ( $i = ($PagAct + 1) ; $i <= ($PagAct + $PaginasIntervalo) ; $i ++) {
                     if( $i <= $PagUlt) {
-                        echo "<li class='page-item'><a class='page-link' href='".current_url()."?page=$i'>$i</a></li>";
+                        echo "<li class='page-item'><a class='page-link' href='".$uri->addQuery('page', $i)."'>$i</a></li>";
                     }
                 }
                 ?>          
                 <li class="page-item <?=$PagAct < ($PagUlt - $PaginasIntervalo) ? '' : 'd-none'?>">
-                    <a class="page-link" href="<?=current_url()."?page=".$PagUlt?>">Ultimo</a>
+                    <a class="page-link" href="<?=$uri->addQuery('page', $PagUlt)?>">Ultimo</a>
                 </li>
             </ul>
         </nav>
@@ -290,6 +303,19 @@ $(function(){
             }
         },
     });
+
+    $("#btnKeyword").on('click', function(e){
+        e.preventDefault();
+        let path_current = $("#path_current").val(),
+            txtKeyword = $("#txtKeyword").val().trim();
+
+        if( txtKeyword.length > 2 ){
+            location.href = `${path_current}?keyword=${txtKeyword}`;
+        }else{
+            $("#msjKeyword").text('Ingrese más de 2 caracteres');
+        }
+
+    })
 })
 </script>
 

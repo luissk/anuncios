@@ -59,6 +59,15 @@ class Inicio extends BaseController
         $param_bd = [];
         $title = "Busca";
 
+        $uri = new \CodeIgniter\HTTP\URI(current_url(). ($_SERVER['QUERY_STRING'] != '' ? "?".$_SERVER['QUERY_STRING'] : ''));
+        $remove_filters = [
+            'tipo'    => ['busca-anuncios', ''],
+            'cate'    => ['', ''],
+            'ubi'     => ['',''],
+            'order'   => ['',''],
+            'keyword' => ['','']
+        ];
+
         $idtipo = 0;
         if( $tipo_get == 'anuncios' ){
             $idtipo = 0;
@@ -70,6 +79,9 @@ class Inicio extends BaseController
                 $title     .= " ".$tipobd['ta_tipo'];
                 $query_bd  .= " and anu.idtipo_anuncio = ?";
                 $param_bd[] = $idtipo;
+
+                $rf = str_replace('busca-'.$tipo_get, 'busca-anuncios', (string) $uri);
+                $remove_filters['tipo'] = [$rf, 'Tipo: '.$tipobd['ta_tipo']];
             }
         }
 
@@ -86,12 +98,18 @@ class Inicio extends BaseController
                 $title     .= " de ".$categoriabd['categoria'];
                 $query_bd  .= " and anu.idcate = ?";
                 $param_bd[] = $idcategoria;
+
+                $rf = str_replace('-de-'.$categoria_get, '', (string) $uri);
+                $remove_filters['cate'] = [$rf, 'Categoría: '.$categoriabd['categoria']];
             }
             if( $ubigeobd ){
                 $idubigeo = $ubigeobd['idubigeo'];
                 $title     .= " en ".$ubigeobd['dist']." ".$ubigeobd['prov'];
                 $query_bd  .= " and ubi.seotexto2 LIKE '%".$categoria_get."%'";
                 //$param_bd[] = $categoria_get;
+
+                $rf = str_replace('-en-'.$categoria_get, '', (string) $uri);
+                $remove_filters['ubi'] = [$rf, 'En: '.$ubigeobd['dist']." ".$ubigeobd['prov']];
             }
         }
 
@@ -104,18 +122,27 @@ class Inicio extends BaseController
                     $idubigeo = $ubigeobd['idubigeo'];
                     $title     .= " en ".$ubigeobd['dist']." ".$ubigeobd['prov'];
                     $query_bd  .= " and ubi.seotexto2 LIKE '%".$ubigeo_get."%'";
+
+                    $rf = str_replace('-en-'.$ubigeo_get, '', (string) $uri);
+                    $remove_filters['ubi'] = [$rf, 'En: '.$ubigeobd['dist']." ".$ubigeobd['prov']];
                 }
             }
-        }
-
-        $keyword = '';
-        if( trim($this->request->getVar('keyword')) ){
-            $keyword = trim($this->request->getVar('keyword'));
         }
 
         $order = '';
         if( trim($this->request->getVar('order')) ){
             $order = $this->request->getVar('order');
+
+            $rf = (string) $uri->stripQuery('order');
+            $remove_filters['order'] = [$rf, 'Orden: '.($order == 'asc' ? 'Precio menor' : 'Precio mayor')];
+        }
+
+        $keyword = '';
+        if( trim($this->request->getVar('keyword')) ){
+            $keyword = trim($this->request->getVar('keyword'));
+
+            $rf = (string) $uri->stripQuery('keyword');
+            $remove_filters['keyword'] = [$rf, 'Palabra: '.$keyword];
         }
 
         $page = 1;
@@ -134,7 +161,7 @@ class Inicio extends BaseController
 
         $data['title']    = $title;
 
-        $anuncios = $this->modeloAnuncio->busqueda($desde, $hasta, $query_bd, $param_bd, $keyword);
+        $anuncios = $this->modeloAnuncio->busqueda($desde, $hasta, $query_bd, $param_bd, $keyword, $order);
         $data['totalRegistros'] = $this->modeloAnuncio->countBusqueda($query_bd, $param_bd, $keyword)['total'];
         $data['anuncios']       = $anuncios;
 
@@ -143,6 +170,8 @@ class Inicio extends BaseController
 
         $data['tipos']      = $tipos;
         $data['categorias'] = $categorias;
+
+        $data['filters'] = $remove_filters;
 
         return view('general/busqueda', $data);
     }

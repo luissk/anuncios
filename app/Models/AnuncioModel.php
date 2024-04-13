@@ -264,12 +264,16 @@ class AnuncioModel extends Model{
 
 
     //RESULTADO DE BUSQUEDA
-    public function busqueda($desde, $hasta, $criterios = '', $params = [], $keyword = '', $status = [2,4,5]){
+    public function busqueda($desde, $hasta, $criterios = '', $params = [], $keyword = '', $order = '', $status = [2,4,5]){
         $sql = $keyword != '' ? " and (anu.an_nombre LIKE '%" . $this->db->escapeLikeString($keyword) . "%' or anu.an_descripcion LIKE '%" . $this->db->escapeLikeString($keyword) . "%' or anu.direccion LIKE '%" . $this->db->escapeLikeString($keyword) . "%')" : '';
         //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
 
         $parametros = [1, $status, ...$params, $desde, $hasta];
 
+        $orden = 'order by anu.idanuncio desc';
+        if( $order != '' ){
+            $orden = " order by anu.precio ".$this->db->escapeString($order)." ";
+        }
 
         $query = "select anu.idanuncio, anu.an_nombre, anu.idtipo_anuncio, anu.idcate, anu.precio, anu.precio_mostrar, anu.direccion,
         substring(anu.an_descripcion, 1, 200) as anunciodesc,
@@ -286,7 +290,7 @@ class AnuncioModel extends Model{
         inner join estados_anuncio ean on anu.an_status = ean.idestado 
         inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
         left join destacado des on anu.iddestacado=des.iddestacado
-        where img.principal = ? and anu.an_status in ? $criterios $sql order by anu.idanuncio desc limit ?,?";
+        where img.principal = ? and anu.an_status in ? $criterios $sql $orden limit ?,?";
         
         $st = $this->db->query($query, $parametros);
         //echo $this->db->getLastQuery();
@@ -294,11 +298,16 @@ class AnuncioModel extends Model{
         return $st->getResultArray();  
     }
 
-    public function countBusqueda($criterios = '', $params = [], $keyword = '', $status = [2,4,5]){
-        $sql = $keyword != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($keyword) . "%' " : '';
+    public function countBusqueda($criterios = '', $params = [], $keyword = '', $order = '', $status = [2,4,5]){
+        $sql = $keyword != '' ? " and (anu.an_nombre LIKE '%" . $this->db->escapeLikeString($keyword) . "%' or anu.an_descripcion LIKE '%" . $this->db->escapeLikeString($keyword) . "%' or anu.direccion LIKE '%" . $this->db->escapeLikeString($keyword) . "%')" : '';
         //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
 
         $parametros = [1, $status, ...$params];
+
+        $orden = 'order by anu.idanuncio desc';
+        if( $order != '' ){
+            $orden = " order by anu.precio $order ";
+        }
 
         $query = "select count(anu.idanuncio) as total
         from anuncio anu
@@ -308,7 +317,7 @@ class AnuncioModel extends Model{
         inner join estados_anuncio ean on anu.an_status = ean.idestado 
         inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
         left join destacado des on anu.iddestacado=des.iddestacado
-        where img.principal = ? and anu.an_status in ? $criterios $sql";
+        where img.principal = ? and anu.an_status in ? $criterios $sql $orden";
         
         $st = $this->db->query($query, $parametros);
 
