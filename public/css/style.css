@@ -103,7 +103,7 @@ footer .footer-end{
 /**** DETALLE ***/
 .multimedia__images{
     display: flex;
-    height: 400px;
+    height: 380px;
     box-shadow: 0 0 5px #999;
     justify-content: center;
 }

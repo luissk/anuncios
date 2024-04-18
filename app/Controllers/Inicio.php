@@ -176,6 +176,85 @@ class Inicio extends BaseController
         return view('general/busqueda', $data);
     }
 
+    public function captchaMensaje(){
+        $codigo = stringAleatorio(5);
+        $this->session->setFlashdata('codigoCaptcha', sha1($codigo));
+        help_Captcha($codigo);
+    }
+
+    public function enviarMensaje(){
+        if( $this->request->isAJAX() ){
+            //print_r($_POST);
+            //echo session('codigoCaptcha');
+
+            $validation = \Config\Services::validation();
+
+            $data = [
+                'txtMail'    => trim($this->request->getVar('txtMail')),
+                'txtNombre'  => trim($this->request->getVar('txtNombre')),
+                'txtFono'    => trim($this->request->getVar('txtFono')),
+                'txtMensaje' => trim($this->request->getVar('txtMensaje')),
+                'txtCaptcha' => trim($this->request->getVar('txtCaptcha')),
+            ];
+
+            $rules = [
+                'txtMail' => [
+                    'label' => 'Correo', 
+                    'rules' => 'required|valid_email',
+                    'errors' => [
+                        'required'    => '* El {field} es requerido.',
+                        'valid_email' => '* El {field} no es válido.'
+                    ]
+                ],
+                'txtNombre' => [
+                    'label' => 'Nombre', 
+                    'rules'  => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$/]|max_length[100]',
+                    'errors' => [
+                        'required'    => '* El {field} es requerido.',
+                        'regex_match' => '* El {field} no es válido.',
+                        'max_length'  => '* Como máximo 100 caracteres para el {field}.'
+                    ]
+                ],
+                'txtFono' => [
+                    'label' => 'Teléfono', 
+                    'rules' => 'required|numeric|max_length[12]',
+                    'errors' => [
+                        'required'   => '* El {field} es requerido.',
+                        'max_length' => '* Como máximo 12 caracteres para el {field}.',
+                        'numeric'    => '* El {field} sólo contiene números.'
+                    ]
+                ],
+                'txtMensaje' => [
+                    'label' => 'Mensaje', 
+                    'rules' => 'required|max_length[200]',
+                    'errors' => [
+                        'required'   => '* El {field} es requerido.',
+                        'max_length' => '* El {field} debe contener máximo 200 caracteres.'
+                    ]
+                ],
+                'txtCaptcha' => [
+                    'label' => 'Captcha', 
+                    'rules' => 'required|max_length[5]|regex_match[/^[A-Z0-9]+$/]',
+                    'errors' => [
+                        'required'    => '* El {field} es requerido.',
+                        'max_length'  => '* El {field} debe contener máximo 5 caracteres.',
+                        'regex_match' => '* El {field} no es válido.',
+                    ]
+                ],
+            ];
+
+            if( session('codigoCaptcha') !== sha1($data['txtCaptcha']) ){
+                $validation->setError('txtCaptcha', 'No coincide con el captcha.');
+            }
+
+            $validation->setRules($rules);
+            
+            if (!$validation->run($data)) {                
+                return $this->response->setJson(['errors' => $validation->getErrors()]); 
+            }
+        }
+    }    
+
     public function detalleAnuncio($a)
     {   
         if( $this->request->is('get') ){
@@ -328,7 +407,7 @@ class Inicio extends BaseController
                         ]
                     ],
                     'regFono' => [
-                        'label' => 'Nombre Completo', 
+                        'label' => 'Teléfono', 
                         'rules' => 'required|numeric|max_length[12]',
                         'errors' => [
                             'required' => '* El {field} es requerido.',

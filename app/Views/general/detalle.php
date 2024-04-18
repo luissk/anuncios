@@ -65,7 +65,7 @@ $imgprincipal = $carpeta.$bd_img;
     </div>
 
     <div class="row">
-        <div class="col-sm-12 col-md-9">
+        <div class="col-sm-12 col-md-8">
             <div class="multimedia">
                 <div class="multimedia__images">
                     <div class="big">
@@ -170,21 +170,85 @@ $imgprincipal = $carpeta.$bd_img;
                     })
                 </script>
             </div>
+            
+            <?php if($bd_mostrar == 0){?>
+            <div class="mt-4 text-light-emphasis">
+                <h4>S/. <?=$bd_precio?></h4>
+            </div>
+            <?php }?>
 
-            <div class="desc mt-5">
-                <h4>Descripción</h4>
+            <div class="mt-4 text-light-emphasis">
+                <p class="m-0 fw-semibold"><?=$bd_dist?>, <?=$bd_prov?></p>
+                <p class="m-0 fst-italic"><?=$bd_direccion != '' ? $bd_direccion : ''?></p>
+            </div>
+            
+            <div class="desc mt-4">
+                <h5 class="bg-light py-3 px-1 border-bottom border-secondary">Descripción</h4>
 
                 <p><?=nl2br($bd_descripcion)?></p>
             </div>
 
             <div class="desc mt-5">
-                <h4>Características</h4>
+                <h5 class="bg-light py-3 px-1 border-bottom border-secondary">Características</h4>
 
                 <p><?=nl2br($bd_caracteristicas)?></p>
             </div>
         </div>
 
-        <div class="d-none d-sm-none d-md-block col-md-3 col-lg-3 col-xl-3 col-xxl-3 text-center bg-light">
+        <div class="col-md-4 col-lg-4 col-xl-4 col-xxl-4 text-center">
+            <div class="card text-bg-white mb-3 rounded-0">
+                <div class="card-header bg-light fw-semibold">Usuario</div>
+                <div class="card-body">
+                    <div class="card-title"><?=$bd_usunombre?></div>
+                    <p class="card-text text-right"><a class="btn btn-sm btn-outline-primary" href="#">Ver anuncios</a></p>
+                </div>
+            </div>
+
+            <div class="card text-bg-white mb-3 rounded-0">
+                <div class="card-header bg-light fw-semibold">Contacto</div>
+                <div class="card-body">
+                    <div class="card-title fs-4"><i class="fas fa-phone-square-alt text-primary"></i> <?=$bd_contactfono?></div>
+                    <div class="card-title fs-4"><i class="fab fa-whatsapp text-success"></i> <?=$bd_contactwhatsapp?></div>
+                    <hr>
+                    
+                    <form id="frmMensaje" class="text-secondary">
+                        <div class="form-group pb-1 text-start">
+                            <label for="txtMail" class="mb-2">Tu correo</label>
+                            <input type="email" class="form-control rounded-0" maxlength="100" name="txtMail" id="txtMail">
+                            <p class="text-danger" id="msj-txtMail"></p>
+                        </div>
+                        <div class="form-group pb-1 text-start">
+                            <label for="" class="mb-2">Tu nombre</label>
+                            <input type="text" class="form-control rounded-0" maxlength="100" name="txtNombre" id="txtNombre">
+                            <p class="text-danger" id="msj-txtNombre"></p>
+                        </div>
+                        <div class="form-group pb-1 text-start">
+                            <label for="txtFono" class="mb-2">Tu teléfono</label>
+                            <input type="text" class="form-control rounded-0" maxlength="12" name="txtFono" id="txtFono">
+                            <p class="text-danger" id="msj-txtFono"></p>
+                        </div>
+                        <div class="form-group pb-1 text-start">
+                            <label for="txtMensaje" class="mb-2">Tu mensaje</label>
+                            <textarea class="form-control rounded-0" name="txtMensaje" id="txtMensaje" cols="30" rows="3" maxlength="200"></textarea>
+                            <p class="text-danger" id="msj-txtMensaje"></p>
+                        </div>
+
+                        <div class="form-group pb-1 text-start">
+                            <label for="txtCaptcha" class="mb-2">Ingrese el captcha</label>
+                            <input type="text" class="form-control rounded-0" maxlength="6" name="txtCaptcha" id="txtCaptcha">
+                            <p class="text-danger" id="msj-txtCaptcha"></p>
+                            <div class="d-flex align-items-center">
+                                <img src="<?=base_url('gcaptcha-mensaje')?>" alt="captcha" id="img-captcha">
+                                <a class="btn ms-2 text-decoration-none" title="Otro captcha" id="refreshCaptcha"><i class="fas fa-sync-alt fs-4"></i>recargar Captcha</a>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-danger mt-2 d-block px-5 w-100" id="btnMensaje">Enviar Mensaje</button>
+                    </form>
+                    <div id="msjMensaje"></div>
+                </div>
+            </div>
+
             <a href="#">
                 <img src="public/img/banner/banner-h.png" alt="" class="img-fluid">
             </a>
@@ -192,5 +256,66 @@ $imgprincipal = $carpeta.$bd_img;
     </div>
 
 </div>
+
+<?php echo $this->endSection();?>
+
+<?php echo $this->section('scripts');?>
+
+<script>
+$(function(){
+    $("#refreshCaptcha").on('click', function(){
+        let imgCaptcha = document.querySelector("#img-captcha"),
+            _this = $(this);
+        _this.addClass('pe-none');
+        fetch('gcaptcha-mensaje')
+            .then(response => response.blob())
+            .then(data => {
+                if (data) {
+                    imgCaptcha.src = URL.createObjectURL(data);
+                    _this.removeClass('pe-none');
+                }
+            });
+    });
+
+    $("#frmMensaje").on('submit', function(e){
+        e.preventDefault();
+        let btn = document.querySelector('#btnMensaje'),
+            txtbtn = btn.textContent,
+            btnHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        btn.setAttribute('disabled', 'disabled');
+        btn.innerHTML = `${btnHTML} PROCESANDO...`;
+
+        $.ajax({
+            method: 'POST',
+            url: 'enviar-mensaje',
+            data: $(this).serialize(),
+            success: function(data){
+                $('[id^="msj-"').text("");
+                if( data.errors ){                    
+                    let errors = data.errors;
+                    for( let err in errors ){
+                        /* if( err === 'imagenes[]' ){
+                            $('#msj-imagenes').text(errors[err]);
+                            continue;
+                        } */
+                        $('#msj-' + err).text(errors[err]);
+                    }
+                }
+                $("#msjMensaje").html(data);
+                btn.removeAttribute('disabled');
+                btn.innerHTML = txtbtn;
+            }
+        });
+        /* $.post('enviar-mensaje', $(this).serialize(), function(data){
+            console.log(data);
+            $("#msjMensaje").html(data);
+            btn.removeAttribute('disabled');
+            btn.innerHTML = txtbtn;
+
+            $("#refreshCaptcha").click();
+        }) */
+    })
+});
+</script>
 
 <?php echo $this->endSection();?>

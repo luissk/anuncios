@@ -24,6 +24,9 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     $routes->post('ingresar', 'Inicio::loginRegister');
     $routes->get('salir', 'Inicio::salir');
     $routes->get('panel-usuario', 'Inicio::panel');
+
+    $routes->get('gcaptcha-mensaje', 'Inicio::captchaMensaje');
+    $routes->post('enviar-mensaje', 'Inicio::enviarMensaje');
 });
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
