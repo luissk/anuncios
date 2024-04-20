@@ -1,4 +1,7 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 if(!defined('APPPATH')) exit('No direct script access allowed');
 
 if(!function_exists('nombre_mes')){
@@ -177,6 +180,40 @@ if(!function_exists('help_Captcha')){
         header('Content-Type: image/png');
         imagepng($imagen);
         imagedestroy($imagen);
+    }
+}
+
+if(!function_exists('help_sendMail')){
+    function help_sendMail($from, $to, $subject, $body, $username = 'anunciosdelvalle2024@gmail.com', $password = 'kevdsfzdqrwndfwi'){
+        $mail = new PHPMailer(true);  
+        try {            
+            $mail->SMTPDebug = 0;
+            $mail->isSMTP();  
+            $mail->Host         = 'smtp.gmail.com'; //smtp.google.com
+            $mail->SMTPAuth     = true;     
+            $mail->Username     = $username;  
+            $mail->Password     = $password;
+            $mail->SMTPSecure   = PHPMailer::ENCRYPTION_SMTPS;  
+            $mail->Port         = 465;  
+            $mail->setFrom($from[0], $from[1]);
+            
+            $mail->addAddress($to);  
+            $mail->isHTML(true);
+            $mail->CharSet = 'UTF-8';
+            $mail->Subject      = $subject;
+            $mail->Body         = $body;
+            
+            if(!$mail->send()) {
+                echo "Ocurrió un problema. Por favor vuelve a intentar.";
+            }
+            else {
+                //echo "Email enviado!.";
+                return true;
+            }
+            
+        } catch (Exception $e) {
+            echo "Hubo un problema." .$e;
+        }
     }
 }
 ?>

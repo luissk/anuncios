@@ -33,6 +33,7 @@ $bd_usunombre       = $anuncio['us_nombre_razon'];
 $bd_levantaobs      = $anuncio['levanta_obs'];
 $bd_img             = $anuncio['img'];
 $bd_imgthumb        = $anuncio['img_thumb'];
+$bd_usuavatar       = $anuncio['us_avatar'];
 
 $bd_tipo        = $anuncio['ta_tipo'];
 $bd_cate        = $anuncio['categoria'];
@@ -196,22 +197,37 @@ $imgprincipal = $carpeta.$bd_img;
         </div>
 
         <div class="col-md-4 col-lg-4 col-xl-4 col-xxl-4 text-center">
-            <div class="card text-bg-white mb-3 rounded-0">
-                <div class="card-header bg-light fw-semibold">Usuario</div>
-                <div class="card-body">
-                    <div class="card-title"><?=$bd_usunombre?></div>
-                    <p class="card-text text-right"><a class="btn btn-sm btn-outline-primary" href="#">Ver anuncios</a></p>
+            <div class="card mb-3 bg-light mb-3 border-0">
+                <div class="row">
+                    <div class="col-md-4 d-flex align-items-center justify-content-center">
+                        <?php
+                        $img_avatar = $bd_usuavatar == '' ? 'default.jpg': $bd_usuavatar;
+                        ?>
+                        <a href="#"><img src="public/images/avatar/<?=$img_avatar?>" class="object-fit-cover" alt="avatar" style="max-width: 100%; max-height: 100%"></a>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body text-start">
+                            <p class="card-title m-0 fw-semibold"><?=$bd_usunombre?></p>
+                            <p class="card-text text-right"><a class="text-decoration-none fs-12px" href="#">Ver anuncios</a></p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="card text-bg-white mb-3 rounded-0">
-                <div class="card-header bg-light fw-semibold">Contacto</div>
+            <div class="card bg-light mb-3 border-0">
+                <div class="card-header bg-light fw-semibold">Datos de contacto</div>
                 <div class="card-body">
-                    <div class="card-title fs-4"><i class="fas fa-phone-square-alt text-primary"></i> <?=$bd_contactfono?></div>
-                    <div class="card-title fs-4"><i class="fab fa-whatsapp text-success"></i> <?=$bd_contactwhatsapp?></div>
+                    <?php
+                    if( $bd_contactfono != '' ){
+                        echo '<div class="card-title fs-5"><i class="fas fa-phone-square-alt text-primary" title="teléfono"></i> '.$bd_contactfono.'</div>';
+                    }
+                    if( $bd_contactwhatsapp != '' ){
+                        echo '<div class="card-title fs-5"><i class="fab fa-whatsapp text-success" title="whatsapp"></i> '.$bd_contactwhatsapp.'</div>';
+                    }
+                    ?>
                     <hr>
                     
-                    <form id="frmMensaje" class="text-secondary">
+                    <form id="frmMensaje">
                         <div class="form-group pb-1 text-start">
                             <label for="txtMail" class="mb-2">Tu correo</label>
                             <input type="email" class="form-control rounded-0" maxlength="100" name="txtMail" id="txtMail">
@@ -242,7 +258,7 @@ $imgprincipal = $carpeta.$bd_img;
                                 <a class="btn ms-2 text-decoration-none" title="Otro captcha" id="refreshCaptcha"><i class="fas fa-sync-alt fs-4"></i>recargar Captcha</a>
                             </div>
                         </div>
-
+                        <input type="hidden" name="idanuncio" id="idanuncio" value=<?=$bd_idanuncio?>>
                         <button class="btn btn-danger mt-2 d-block px-5 w-100" id="btnMensaje">Enviar Mensaje</button>
                     </form>
                     <div id="msjMensaje"></div>
@@ -294,16 +310,14 @@ $(function(){
                 if( data.errors ){                    
                     let errors = data.errors;
                     for( let err in errors ){
-                        /* if( err === 'imagenes[]' ){
-                            $('#msj-imagenes').text(errors[err]);
-                            continue;
-                        } */
+
                         $('#msj-' + err).text(errors[err]);
                     }
                 }
                 $("#msjMensaje").html(data);
                 btn.removeAttribute('disabled');
                 btn.innerHTML = txtbtn;
+                $("#refreshCaptcha").click();
             }
         });
         /* $.post('enviar-mensaje', $(this).serialize(), function(data){

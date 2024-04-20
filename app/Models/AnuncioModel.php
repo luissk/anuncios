@@ -225,7 +225,7 @@ class AnuncioModel extends Model{
         img.idimages, img.img, img.img_thumb,
         ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
         ean.estado,
-        usu.us_email, usu.us_nombre_razon,
+        usu.us_email, usu.us_nombre_razon,usu.us_avatar,
         anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
         from anuncio anu
         inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 

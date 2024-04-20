@@ -27,6 +27,8 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
 
     $routes->get('gcaptcha-mensaje', 'Inicio::captchaMensaje');
     $routes->post('enviar-mensaje', 'Inicio::enviarMensaje');
+
+    $routes->get('sendmail', 'Inicio::sendmail');//PARA PROBAR
 });
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {

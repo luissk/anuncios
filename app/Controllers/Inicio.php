@@ -195,6 +195,7 @@ class Inicio extends BaseController
                 'txtFono'    => trim($this->request->getVar('txtFono')),
                 'txtMensaje' => trim($this->request->getVar('txtMensaje')),
                 'txtCaptcha' => trim($this->request->getVar('txtCaptcha')),
+                'idanuncio'  => $this->request->getVar('idanuncio'),
             ];
 
             $rules = [
@@ -252,8 +253,26 @@ class Inicio extends BaseController
             if (!$validation->run($data)) {                
                 return $this->response->setJson(['errors' => $validation->getErrors()]); 
             }
+
+            $anuncio = $this->modeloAnuncio->getAnu_idanu($data['idanuncio']);
+            if( $anuncio ){
+                $nombre_anu    = $anuncio['an_nombre'];
+                $contact_email = $anuncio['contact_email'] == '' ? $anuncio['us_email'] : $anuncio['contact_email'];
+
+                $mensaje = "<h3>Hola te enviaron un mensaje de tu anuncio: $nombre_anu</h3>";
+                $mensaje .= $data['txtMensaje'];
+
+                if( help_sendMail(['avd@gmail.com', 'Anuncios del Valle'], $contact_email, 'Tienes un correo nuevo', $mensaje) ){
+                    echo "BIEN, SE ENVIÓ TU MENSAJE";
+                }
+            }
+
         }
-    }    
+    }
+    
+    public function sendmail(){
+        help_sendMail(['avd@gmail.com', 'Anuncios del Valle (ADV)'], 'luchini_1102@hotmail.com', 'Tienes un correo nuevo', 'Hola te escribo desde adv');      
+    }
 
     public function detalleAnuncio($a)
     {   
