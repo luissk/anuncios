@@ -6,16 +6,16 @@ use CodeIgniter\Model;
 class UsuarioModel extends Model{
     
     public function registrarUsuario($datos, $hash, $codigou){
-        $query = "insert into usuario(us_codusuario,us_email,us_pass,us_nombre_razon,idtipo_usuario,us_status,us_telefono) 
-        values(?,?,?,?,?,?,?)";
-        $this->db->query($query, [$codigou, $datos['email'], $hash, $datos['nombre'], 2, 1, $datos['telefono']]);
+        $query = "insert into usuario(us_codusuario,us_email,us_pass,us_nombre_razon,idtipo_usuario,us_status,us_telefono,us_linkact) 
+        values(?,?,?,?,?,?,?,?)";
+        $this->db->query($query, [$codigou, $datos['email'], $hash, $datos['nombre'], 2, 2, $datos['telefono'], $datos['linkact']]);
 
         return $this->db->insertID();
     }
 
     public function validarLogin($email){
-        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario from usuario where LOWER(us_email) = LOWER(?) and us_status = ?";
-        $st = $this->db->query($query, [$email, 1]);
+        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario, us_status from usuario where LOWER(us_email) = LOWER(?)";
+        $st = $this->db->query($query, [$email]);
 
         return $st->getRowArray();
     }
@@ -47,6 +47,27 @@ class UsuarioModel extends Model{
         $st = $this->db->query($query,['', $idusuario]);
 
         return $st;
+    }
+
+    public function getUser_x_linkact($link){
+        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario, us_status from usuario where us_linkact = ?";
+        $st = $this->db->query($query, [$link]);
+
+        return $st->getRowArray();
+    }
+
+    public function activaCuenta_x_linkact($idusuario){
+        $query = "update usuario set us_status = 1 where idusuario = ? and us_status = 2";
+        $st = $this->db->query($query,[$idusuario]);
+
+        return $st;
+    }
+
+    public function existeEmail($email){
+        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario, us_status, us_linkrecup from usuario where LOWER(us_email) = LOWER(?)";
+        $st = $this->db->query($query, [$email]);
+
+        return $st->getRowArray();
     }
 
 

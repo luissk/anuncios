@@ -29,6 +29,9 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     $routes->post('enviar-mensaje', 'Inicio::enviarMensaje');
 
     $routes->get('sendmail', 'Inicio::sendmail');//PARA PROBAR
+    $routes->get('activarcuenta/(:any)', 'Inicio::activarcuenta/$1');
+    //ajax
+    $routes->post('recuperapassword', 'Inicio::recuperarPassword');
 });
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {

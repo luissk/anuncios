@@ -271,7 +271,12 @@ class Inicio extends BaseController
     }
     
     public function sendmail(){
-        help_sendMail(['avd@gmail.com', 'Anuncios del Valle (ADV)'], 'luchini_1102@hotmail.com', 'Tienes un correo nuevo', 'Hola te escribo desde adv');      
+        //help_sendMail(['avd@gmail.com', 'Anuncios del Valle (ADV)'], 'lushito88@gmail.com', 'Tienes un correo nuevo', view('general/mailregistro'));
+        
+        $link_act = stringAleatorio(30);
+        $dataMail['link_act'] = $link_act;
+        $dataMail['email'] = 'micorreo@gmail.com';
+        return view('general/mailregistro', $dataMail);
     }
 
     public function detalleAnuncio($a)
@@ -382,6 +387,11 @@ class Inicio extends BaseController
                    /*  echo "<pre>";
                     print_r($result)             ;
                     echo "</pre>"; */
+                    if( $result['us_status'] == 2 ){
+                        return redirect()->route('ingresar')->with('msg_login', 'Su cuenta esta pendiente de activación.<br>Por favor revise su correo.');
+                        exit();
+                    }
+
                     $datasession = [
                         'idusuario' => $result['idusuario'],
                         'email'     => $result['us_email'],
@@ -398,7 +408,7 @@ class Inicio extends BaseController
                 }               
             }            
         }else{
-            echo "ALGO PASO CON EL CAPTCHA";
+            //echo "ALGO PASO CON EL CAPTCHA";
         }
     }
 
@@ -486,17 +496,118 @@ class Inicio extends BaseController
                 $hash = '$2a$12$YmtIBS/VsxVywSQHV4A2.upBWJxS2VSqFzUwo1eMU5.tIGOgne6YG';
                 $password = crypt($vars['password'], $hash);
                 //GUARDAR REGISTRO
-                //if ( $id = $this->modeloUsuario->registrarUsuario($validation->getValidated(), $hash) ){
-                if ( $id = $this->modeloUsuario->registrarUsuario($vars, $password, stringAleatorio(10)) ){
-                    $this->session->remove('errors');
-                    return redirect()->to(current_url())->with('msg_register', 1);
-                    //echo "REGISTRO CORRECTO: ".$id;
+                $link_act = stringAleatorio(30, 0);
+                $dataMail['link_act'] = base_url('activarcuenta')."/".$link_act;
+                $dataMail['email']    = $vars['email'];
+                if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $vars['email'], 'Felicidades te has registrado en nuestra web, activa tu cuenta.', view('general/mailregistro', $dataMail)) ){
+
+                    $vars['linkact'] = $link_act;
+                    if ( $id = $this->modeloUsuario->registrarUsuario($vars, $password, stringAleatorio(10)) ){
+                        $this->session->remove('errors');
+                        return redirect()->to(current_url())->with('msg_register', ['success','<strong>Registro Correcto</strong>. Revisa tu correo (si no se encuentra, revisa en tus spam) y activa tu cuenta.']);
+                    }
+                }else{
+                    return redirect()->to(current_url())->with('msg_register', ['danger','<strong>Hubo un problema en el envío de correo., inténtelo de nuevo.</strong>']);
                 }
                 /* print_r($validation->getValidated());
                 echo "FORMULARIO REGISTRO CORRECTO"; */
             }            
         }else{
-            echo "ALGO PASO CON EL CAPTCHA";
+            /* echo "<script>
+                alert('Inténtelo de nuevo');
+            </script>"; */
+        }
+    }
+
+    public function activarcuenta($link){
+        $validation = \Config\Services::validation();
+
+        $data = [
+            'linkact' => trim($link)
+        ];
+
+        $rules = [
+            'linkact' => [
+                'label' => 'Link de Activación', 
+                'rules' => 'required|alpha_numeric',
+                'errors' => [
+                    'required'    => '* El {field} es requerido.',
+                    'alpha_numeric' => '* El {field} no es válido.'
+                ]
+            ]
+        ];
+
+        $validation->setRules($rules);
+
+        if( !$validation->run($data) ) {
+            //return print_r($validation->getErrors());
+            return redirect()->route('ingresar')->with('msg_activacion', ['danger', $validation->getErrors()['linkact']]);
+        }
+
+        if( $usuario = $this->modeloUsuario->getUser_x_linkact($link) ){
+
+            //print_r($usuario);exit();
+
+            if( $usuario['us_status'] == 1 ){
+                return redirect()->route('ingresar')->with('msg_activacion', ['warning', 'Su cuenta ya ha sido activada.']);
+            }else if( $usuario['us_status'] == 2 ){
+                if( $this->modeloUsuario->activaCuenta_x_linkact($usuario['idusuario']) ){
+                    return redirect()->route('ingresar')->with('msg_activacion', ['success', '<b>Felicidades!</b>. Su cuenta ha sido activada, ya puede iniciar sesión']);
+                }
+            }
+        }else{
+            return redirect()->route('ingresar')->with('msg_activacion', ['danger', 'No existen datos con ese link.']);
+        }        
+    }
+
+    public function recuperarPassword(){
+        if( $this->request->isAJAX() ){
+            $validation = \Config\Services::validation();
+
+            $data = [
+                'txtMailRec' => trim($this->request->getVar('txtMailRec'))
+            ];
+
+            $rules = [
+                'txtMailRec' => [
+                    'label' => 'Email', 
+                    'rules' => 'required|valid_email',
+                    'errors' => [
+                        'required'    => '* El {field} es requerido.',
+                        'valid_email' => '* El {field} no es válido.'
+                    ]
+                ],
+            ];
+
+            $validation->setRules($rules);
+
+            $msj = [];
+
+            if( !$validation->run($data) ) {
+                //print_r($validation->getErrors());
+                $msj = ['danger', $validation->getErrors()['txtMailRec'] ];
+            }else{
+                if( !$this->modeloUsuario->existeEmail($data['txtMailRec']) ){
+                    $msj = ['danger', 'El email no existe.' ];
+                }else{
+                    $usuario = $this->modeloUsuario->existeEmail($data['txtMailRec']);
+                    if( $usuario['us_status'] == 2 ){
+                        $msj = ['warning', 'Si cuenta aun no ha sido activada, revise correo.' ];
+                    }else if( $usuario['us_status'] == 1 ){
+                        $linkrec = stringAleatorio(30, 0);
+                        if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $data['txtMailRec'], 'Recupera tu contraseña', 'Link rec, '.$linkrec) ){
+                            $msj = ['success', 'Se le ha enviado un correo de recuperación a: <br>'.$data['txtMailRec'] ];
+                            echo "<script>$('#txtMailRec').val('')</script>";
+                        }
+                    }                    
+                }
+            }
+
+            echo '<div class="alert alert-'.$msj[0].' alert-dismissible fade show mt-2" role="alert">
+                '.$msj[1].'
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>';
+
         }
     }
 

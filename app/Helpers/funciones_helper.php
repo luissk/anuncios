@@ -41,8 +41,8 @@ if(!function_exists('help_nombreWeb')){
 }
 
 if(!function_exists('stringAleatorio')){
-    function stringAleatorio($length  = 5){
-		$characters       = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    function stringAleatorio($length = 5, $case = 1){
+		$characters       = $case == 1 ? '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ' : '0123456789abcdefghijklmnopqrstuvwxyz';
 		$charactersLength = strlen($characters);
 		$randomString     = '';
 	    for($i = 0; $i < $length; $i++){
@@ -204,7 +204,8 @@ if(!function_exists('help_sendMail')){
             $mail->Body         = $body;
             
             if(!$mail->send()) {
-                echo "Ocurrió un problema. Por favor vuelve a intentar.";
+                //echo "Ocurrió un problema. Por favor vuelve a intentar.";
+                return false;
             }
             else {
                 //echo "Email enviado!.";
@@ -212,7 +213,9 @@ if(!function_exists('help_sendMail')){
             }
             
         } catch (Exception $e) {
-            echo "Hubo un problema." .$e;
+            //echo "Hubo un problema." .$e;
+            //echo "Hubo un problema, Inténtelo en un momento.";
+            return false;
         }
     }
 }

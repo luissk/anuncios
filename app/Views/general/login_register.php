@@ -4,6 +4,13 @@
 
 <section class="bg-light py-5">
     <div class="container">
+        <?php if(session('msg_activacion')){?>
+        <div class="alert alert-<?=session('msg_activacion')[0]?> alert-dismissible fade show" role="alert">
+            <?=session('msg_activacion')[1]?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php }?>
+                    
         <div class="row">
             <div class="col-sm-12 col-md-6 py-2">
                 <div class="card border-0">
@@ -18,19 +25,19 @@
                         <form id="frmLogin" method="post">
                             <div class="form-group pb-2">
                                 <label for="loginEmail" class="mb-2">Ingresa tu email</label>
-                                <input type="email" class="form-control form-control-lg rounded-0" maxlength="100" name="loginEmail" id="loginEmail" value="<?=old('loginEmail');?>">
+                                <input type="email" class="form-control form-control-lg rounded-0" maxlength="100" name="loginEmail" id="loginEmail" value="<?=old('loginEmail');?>" required>
                                 <p class="text-danger"><?=session('errors.loginEmail')?></p>
                             </div>
                             <div class="form-group pb-2">
                                 <label for="loginPassword" class="mb-2">Ingresa tu contraseña</label>
-                                <input type="password" class="form-control form-control-lg rounded-0" name="loginPassword" id="loginPassword" maxlength="15">
+                                <input type="password" class="form-control form-control-lg rounded-0" name="loginPassword" id="loginPassword" maxlength="15" required>
                                 <p class="text-danger"><?=session('errors.loginPassword')?></p>
                             </div>
 
                             <button class="btn btn-danger mt-3 d-block px-5 form-control-lg" id="btnLogin">Ingresar</button>
                         </form>
                         <div class="text-end">
-                            <a href="#" class="link-dark">¿Olvidaste tu Contraseña?</a>
+                            <a data-bs-toggle="modal" data-bs-target="#modalRecuperaPassword" class="btn link-dark">¿Olvidaste tu Contraseña?</a>
                         </div>
                         <hr>
                         <p>o Ingresa con: </p>
@@ -43,8 +50,8 @@
                 <div class="card border-0">
                     <h5 class="card-header border-0 px-sm-2 px-md-5"><i class="fas fa-clipboard"></i> Regístrate</h5>
                     <?php if(session('msg_register')){?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>¡Registro Correcto!</strong> Ya puede iniciar sesión.
+                    <div class="alert alert-<?=session('msg_register')[0]?> alert-dismissible fade show" role="alert">
+                        <?=session('msg_register')[1]?>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <?php }?>
@@ -85,12 +92,38 @@
 
                             <button class="btn btn-danger mt-3 d-block px-5 form-control-lg" id="btnRegister">Registrarse</button>
                         </form>
-                    </div>
+                    </div>                    
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+
+<div class="modal fade" id="modalRecuperaPassword" tabindex="-1" aria-labelledby="modalRecuperaPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalRecuperaPasswordLabel">Recupera tu Contraseña</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmRecuperaPassword">
+                    <div class="mb-3">
+                        <label for="txtMail" class="col-form-label">Ingresa tu email:</label>
+                        <input type="email" class="form-control rounded-0" id="txtMailRec" name="txtMailRec" autocomplete="off" required>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-success" id="btnRecuperaPassword">Enviar</button>
+                    </div>
+                    <div id="msjRecupera"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <?php echo $this->endSection();?>
 
@@ -128,6 +161,23 @@
                     $("#frmRegister").submit();
                 });
             });
+        });
+
+        $("#frmRecuperaPassword").on('submit', function(e){
+            e.preventDefault();
+            let btn = document.querySelector('#btnRecuperaPassword'),
+            txtbtn = btn.textContent,
+            btnHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            btn.setAttribute('disabled', 'disabled');
+            btn.innerHTML = `${btnHTML} PROCESANDO...`;
+
+            $.post('recuperapassword', $(this).serialize(), function(data){
+                //console.log(data);
+                $("#msjRecupera").html(data);
+
+                btn.removeAttribute('disabled');
+                btn.innerHTML = txtbtn;
+            });            
         });
     });
 </script>
