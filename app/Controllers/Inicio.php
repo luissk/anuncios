@@ -262,7 +262,7 @@ class Inicio extends BaseController
                 $mensaje = "<h3>Hola te enviaron un mensaje de tu anuncio: $nombre_anu</h3>";
                 $mensaje .= $data['txtMensaje'];
 
-                if( help_sendMail(['avd@gmail.com', 'Anuncios del Valle'], $contact_email, 'Tienes un correo nuevo', $mensaje) ){
+                if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $contact_email, 'Tienes un correo nuevo', $mensaje) ){
                     echo "BIEN, SE ENVIÓ TU MENSAJE";
                 }
             }
@@ -273,10 +273,10 @@ class Inicio extends BaseController
     public function sendmail(){
         //help_sendMail(['avd@gmail.com', 'Anuncios del Valle (ADV)'], 'lushito88@gmail.com', 'Tienes un correo nuevo', view('general/mailregistro'));
         
-        $link_act = stringAleatorio(30);
+        /* $link_act = stringAleatorio(30);
         $dataMail['link_act'] = $link_act;
         $dataMail['email'] = 'micorreo@gmail.com';
-        return view('general/mailregistro', $dataMail);
+        return view('general/mailregistro', $dataMail); */
     }
 
     public function detalleAnuncio($a)
@@ -594,10 +594,14 @@ class Inicio extends BaseController
                     if( $usuario['us_status'] == 2 ){
                         $msj = ['warning', 'Si cuenta aun no ha sido activada, revise correo.' ];
                     }else if( $usuario['us_status'] == 1 ){
-                        $linkrec = stringAleatorio(30, 0);
-                        if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $data['txtMailRec'], 'Recupera tu contraseña', 'Link rec, '.$linkrec) ){
-                            $msj = ['success', 'Se le ha enviado un correo de recuperación a: <br>'.$data['txtMailRec'] ];
-                            echo "<script>$('#txtMailRec').val('')</script>";
+                        $link_rec             = stringAleatorio(30, 0);
+                        $dataMail['link_rec'] = base_url('nuevopassword')."-".$link_rec;
+                        $dataMail['email']    = $usuario['us_email'];
+                        if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $usuario['us_email'], 'Recupera tu contraseña', view('general/mailrecpass', $dataMail)) ){
+                            if( $this->modeloUsuario->insert_link_rec($link_rec, $usuario['idusuario']) ){
+                                $msj = ['success', 'Se le ha enviado un correo de recuperación a: <br>'.$data['txtMailRec'] ];
+                                echo "<script>$('#txtMailRec').val('')</script>";
+                            }                            
                         }
                     }                    
                 }
@@ -607,6 +611,111 @@ class Inicio extends BaseController
                 '.$msj[1].'
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>';
+
+        }
+    }
+
+    public function nuevopassword($link){
+        $validation = \Config\Services::validation();
+
+        $data = [
+            'linkrec' => trim($link)
+        ];
+
+        $rules = [
+            'linkrec' => [
+                'label' => 'Link de Recuperación', 
+                'rules' => 'required|alpha_numeric',
+                'errors' => [
+                    'required'    => '* El {field} es requerido.',
+                    'alpha_numeric' => '* El {field} no es válido.'
+                ]
+            ]
+        ];
+
+        $validation->setRules($rules);
+        
+        $this->session->remove('msg_recup');
+
+        if( !$validation->run($data) ) {
+            //return print_r($validation->getErrors());
+            //return redirect()->to(current_url())->with('msg_recup', ['danger', $validation->getErrors()['linkrec']]);
+            $this->session->setFlashdata('msg_recup', ['danger', $validation->getErrors()['linkrec']]);
+        }else{
+            if( $usuario = $this->modeloUsuario->getUser_x_linkrec($link) ){
+                $data['linkrec'] = $link;
+                $data['usuario'] = $usuario;
+            }else{
+                $this->session->setFlashdata('msg_recup', ['danger', 'Ya no existe un link de recuperación.']);
+            }
+        }       
+
+        $data['title']    = 'Nueva Contraseña';
+
+        return view('general/formnuevopass', $data);
+
+    }
+
+    public function guardarNuevoPassword(){
+        if( $this->request->isAJAX() ){
+            $validation = \Config\Services::validation();
+            //print_r($_POST);
+            $data = [
+                'nvoPass'     => trim($this->request->getVar('nvoPass')),
+                'nvoPassConf' => trim($this->request->getVar('nvoPassConf')),
+                'linkRec'     => trim($this->request->getVar('linkRec'))
+            ];
+
+            $rules = [
+                'nvoPass' => [
+                    'label' => 'Contraseña', 
+                    'rules' => 'required|min_length[8]|max_length[15]',
+                    'errors' => [
+                        'required' => '* La {field} es requerida.',
+                        'min_length' => '* La {field} debe tener al menos 8 caracteres.',
+                        'max_length' => '* La {field} debe tener hasta 15 caracteres.'
+                    ]
+                ],
+                'nvoPassConf' => [
+                    'label' => 'Contraseña', 
+                    'rules' => 'required|matches[nvoPass]',
+                    'errors' => [
+                        'required' => '* La {field} es requerida.',
+                        'matches' => '* Las {field}s deben coincidir.'
+                    ]
+                ],
+                'linkRec' => [
+                    'label' => 'Link de Recuperación', 
+                    'rules' => 'required|alpha_numeric',
+                    'errors' => [
+                        'required'    => '* El {field} es requerido.',
+                        'alpha_numeric' => '* El {field} no es válido.'
+                    ]
+                ]
+            ];
+
+            $validation->setRules($rules);
+
+            if (!$validation->run($data)) {
+                return $this->response->setJson(['errors' => $validation->getErrors()]); 
+            }
+
+            $hash = '$2a$12$YmtIBS/VsxVywSQHV4A2.upBWJxS2VSqFzUwo1eMU5.tIGOgne6YG';
+            $password = crypt($data['nvoPass'], $hash);
+
+            if( $usuario = $this->modeloUsuario->getUser_x_linkrec($data['linkRec']) ){
+                if( $this->modeloUsuario->actualizarPassword_x_quitaLinkRec($usuario['idusuario'], $password) ){
+                    echo '<div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                        <b>Su contraseña fue actualizada.</b> Ya puede iniciar sesión.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>';
+                }
+            }else{
+                echo '<div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                    Usted ya ha actualizado su contraseña.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>';
+            }
 
         }
     }

@@ -70,7 +70,26 @@ class UsuarioModel extends Model{
         return $st->getRowArray();
     }
 
+    public function insert_link_rec($link, $idusuario){
+        $query = "update usuario set us_linkrecup = ? where idusuario = ? and us_status = 1";
+        $st = $this->db->query($query,[$link, $idusuario]);
 
+        return $st;
+    }
+
+    public function getUser_x_linkrec($link){
+        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario, us_status from usuario where us_linkrecup = ?";
+        $st = $this->db->query($query, [$link]);
+
+        return $st->getRowArray();
+    }
+
+    public function actualizarPassword_x_quitaLinkRec($idusuario, $password){
+        $query = "update usuario set us_linkrecup = '', us_pass = ? where idusuario = ? and us_status = 1";
+        $st = $this->db->query($query,[$password, $idusuario]);
+
+        return $st;
+    }
 
 
 

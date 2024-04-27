@@ -30,8 +30,11 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
 
     $routes->get('sendmail', 'Inicio::sendmail');//PARA PROBAR
     $routes->get('activarcuenta/(:any)', 'Inicio::activarcuenta/$1');
+
+    $routes->get('nuevopassword-(:any)', 'Inicio::nuevopassword/$1');
     //ajax
     $routes->post('recuperapassword', 'Inicio::recuperarPassword');
+    $routes->post('guardarnuevopass', 'Inicio::guardarNuevoPassword');
 });
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {

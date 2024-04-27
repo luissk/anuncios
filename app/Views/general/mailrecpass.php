@@ -1,18 +1,17 @@
 <table width="700" cellpadding="12" cellspacing="0" style="border: 1px solid #ddd;-webkit-border-radius:3px;border-radius:5px;" align="center">
     <tr>
         <td valign="middle">
-        	<span style='font-size:20px;font-weight:bold;color:#198754'>Bienvenido a <?=help_nombreWeb()?></span>
+        	<span style='font-size:20px;font-weight:bold;color:#198754'>Hola, recupera tu contraseña</span>
         </td>
     </tr>
     <tr>
     	<td colspan="2" style="color:#000">
-        	Hola <b><?=$email?></b>, gracias por registrarte en nuestra web. Ya puedes ingresar al sito web m&aacute;s completo de anuncios, y utilizar nuestras herramientas que te ayudar&aacute;n a administrarlos. 
-            <p>A continuación debes activar tu cuenta para proceder a publicar: </p>
+        	Hola <b><?=$email?></b>, desde nuestra web haz solicitado recuperar tu contraseña, por cual te hemos enviado este correo para que puedas recuperarla; a continuación haz clic en el siguiente enlace: </p>
         </td>
     </tr>
     <tr>
         <td colspan="2" style="margin-bottom:2px" align="center">
-            <a style="margin-top:10px; background-color: #e74c3c; text-decoration: none; padding: 10px 20px; color: white" href="<?=$link_act?>">Activa tu Cuenta</a><br><br>
+            <a style="margin-top:10px; background-color: #e74c3c; text-decoration: none; padding: 10px 20px; color: white" href="<?=$link_rec?>">Recupera tu contraseña</a><br><br>
         </td>
     </tr>
     <tr bgcolor="#F3F5F4">
