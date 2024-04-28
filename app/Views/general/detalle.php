@@ -229,29 +229,24 @@ $imgprincipal = $carpeta.$bd_img;
                     
                     <form id="frmMensaje">
                         <div class="form-group pb-1 text-start">
-                            <label for="txtMail" class="mb-2">Tu correo</label>
-                            <input type="email" class="form-control rounded-0" maxlength="100" name="txtMail" id="txtMail">
+                            <input type="email" class="form-control rounded-0" maxlength="100" name="txtMail" id="txtMail" placeholder="Correo">
                             <p class="text-danger" id="msj-txtMail"></p>
                         </div>
                         <div class="form-group pb-1 text-start">
-                            <label for="" class="mb-2">Tu nombre</label>
-                            <input type="text" class="form-control rounded-0" maxlength="100" name="txtNombre" id="txtNombre">
+                            <input type="text" class="form-control rounded-0" maxlength="100" name="txtNombre" id="txtNombre" placeholder="Nombre">
                             <p class="text-danger" id="msj-txtNombre"></p>
                         </div>
                         <div class="form-group pb-1 text-start">
-                            <label for="txtFono" class="mb-2">Tu teléfono</label>
-                            <input type="text" class="form-control rounded-0" maxlength="12" name="txtFono" id="txtFono">
+                            <input type="text" class="form-control rounded-0" maxlength="12" name="txtFono" id="txtFono" placeholder="Teléfono">
                             <p class="text-danger" id="msj-txtFono"></p>
                         </div>
                         <div class="form-group pb-1 text-start">
-                            <label for="txtMensaje" class="mb-2">Tu mensaje</label>
-                            <textarea class="form-control rounded-0" name="txtMensaje" id="txtMensaje" cols="30" rows="3" maxlength="200"></textarea>
+                            <textarea class="form-control rounded-0" name="txtMensaje" id="txtMensaje" cols="30" rows="3" maxlength="200">Hola, me gustaría más información sobre éste anuncio.</textarea>
                             <p class="text-danger" id="msj-txtMensaje"></p>
                         </div>
 
                         <div class="form-group pb-1 text-start">
-                            <label for="txtCaptcha" class="mb-2">Ingrese el captcha</label>
-                            <input type="text" class="form-control rounded-0" maxlength="6" name="txtCaptcha" id="txtCaptcha">
+                            <input type="text" class="form-control rounded-0" maxlength="6" name="txtCaptcha" id="txtCaptcha" placeholder="Ingrese el captcha">
                             <p class="text-danger" id="msj-txtCaptcha"></p>
                             <div class="d-flex align-items-center">
                                 <img src="<?=base_url('gcaptcha-mensaje')?>" alt="captcha" id="img-captcha">

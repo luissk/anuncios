@@ -6,7 +6,7 @@
     </tr>
     <tr>
     	<td colspan="2" style="color:#000">
-        	Hola <b><?=$email?></b>, gracias por registrarte en nuestra web. Ya puedes ingresar al sito web m&aacute;s completo de anuncios, y utilizar nuestras herramientas que te ayudar&aacute;n a administrarlos. 
+        	Hola <b style="text-decoration:none;"><?=$email?></b>, gracias por registrarte en nuestra web. Ya puedes ingresar al sito web m&aacute;s completo de anuncios, y utilizar nuestras herramientas que te ayudar&aacute;n a administrarlos. 
             <p>A continuación debes activar tu cuenta para proceder a publicar: </p>
         </td>
     </tr>
@@ -19,7 +19,7 @@
             <td>
                 <table border="0"  width="100%">
                     <tr>
-                        <td width="100%" style="font-size:12px;text-align:center">
+                        <td width="100%" style="font-size:13px;text-align:center">
                            si tienes dudas o alg&uacute;n comentario cont&aacute;ctanos a:
                            contacto@advalle.com
                            <hr width="80%">

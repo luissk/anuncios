@@ -145,11 +145,11 @@ echo "</pre>";
     <div class="resultado__item mb-4">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-4 col-xl-3 resultado__item--img text-center">
-                <a href="<?=base_url('anuncio-'.$url.'')?>"><img src="<?=$img?>" alt="<?=$nombre?>" class=""></a>
+                <a  target="_blank"href="<?=base_url('anuncio-'.$url.'')?>"><img src="<?=$img?>" alt="<?=$nombre?>" class=""></a>
             </div>
             <div class="col-sm-12 col-md-12 col-lg-8 col-xl-9 resultado__item--content py-2 px-3">
                 <div class="resultado__item--title fw-bolder text-success">
-                    <a href="<?=base_url('anuncio-'.$url.'')?>" class="text-decoration-none text-primary"><?=$nombre?></a>
+                    <a  target="_blank"href="<?=base_url('anuncio-'.$url.'')?>" class="text-decoration-none text-primary"><?=$nombre?></a>
                 </div>
                 <div class="resultado__item--desc pt-2 text-secondary">
                     <?=strlen($anunciodesc) > 200 ? $anunciodesc."..." : $anunciodesc?>
@@ -168,7 +168,7 @@ echo "</pre>";
                         <?=$precio > 0 ? "S/. ".number_format($precio, 2) : ''?>
                     </div>
                     <div class="col-sm-4 text-end pe-4">
-                        <a href="<?=base_url('anuncio-'.$url.'')?>" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
+                        <a target="_blank" href="<?=base_url('anuncio-'.$url.'')?>" class="btn btn-success rounded-0" title="ver detalle">Detalle</a>
                     </div>
                 </div>
             </div>

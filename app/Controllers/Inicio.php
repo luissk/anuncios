@@ -259,12 +259,25 @@ class Inicio extends BaseController
                 $nombre_anu    = $anuncio['an_nombre'];
                 $contact_email = $anuncio['contact_email'] == '' ? $anuncio['us_email'] : $anuncio['contact_email'];
 
-                $mensaje = "<h3>Hola te enviaron un mensaje de tu anuncio: $nombre_anu</h3>";
-                $mensaje .= $data['txtMensaje'];
+                $url = help_reemplazaCaracterUrl($nombre_anu)."-".$data['idanuncio'];
 
-                if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $contact_email, 'Tienes un correo nuevo', $mensaje) ){
-                    echo "BIEN, SE ENVIÓ TU MENSAJE";
-                }
+                $dataMail['mensaje']     = $data;
+                $dataMail['linkanuncio'] = base_url('anuncio-'.$url.'');
+                $dataMail['nombre_anu']  = $nombre_anu;
+                $dataMail['email']       = $contact_email;
+
+                if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $contact_email, 'Tienes 1 mensaje de tu anuncio', view('general/mailmensaje', $dataMail)) ){
+                    echo '<div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                        <b>¡Mensaje enviado!.</b>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>';
+                    echo "<script>$('#frmMensaje')[0].reset()</script>";
+                }else{
+                    echo '<div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+                        <b>Por favor inténtelo más tarde.</b>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>';
+                }              
             }
 
         }
@@ -277,6 +290,8 @@ class Inicio extends BaseController
         $dataMail['link_act'] = $link_act;
         $dataMail['email'] = 'micorreo@gmail.com';
         return view('general/mailregistro', $dataMail); */
+
+        //return view('general/mailmensaje');
     }
 
     public function detalleAnuncio($a)
