@@ -60,16 +60,18 @@ class AnuncioModel extends Model{
         return $st;
     }
 
-    public function listarAnunciosUsuario($idusuario, $desde, $hasta, $nombre = '', $status = ''){
+    public function listarAnunciosUsuario($idusuario, $desde, $hasta, $nombre = '', $status = [1,2,3,4,5,6]){
         $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
         //date_format(anu.an_fechacreacion, '%d/%m/%Y %h:%m %p') fechac
 
         $query = "select anu.idanuncio, anu.an_nombre, anu.an_fechacreacion, anu.idtipo_anuncio, anu.idusuario, anu.idcate, anu.precio, anu.precio_mostrar,
         anu.codanuncio, anu.an_status,date_format(anu.an_fechacreacion, '%d/%m/%Y') fechac,
+        substring(anu.an_descripcion, 1, 200) as anunciodesc, anu.direccion,
         DATEDIFF(anu.hastafecha, now()) diasactivo,
         anu.levanta_obs,
         tan.ta_tipo, can.categoria,
         img.idimages, img.img, img.img_thumb,
+        ubi.iddepa, ubi.idprov, ubi.iddist, ubi.prov, ubi.dist,
         ean.estado,
         anu.iddestacado, des.tipo as tipodes, date_format(des.fechadesde, '%d/%m/%Y') as fechad_ini, date_format(des.fechahasta, '%d/%m/%Y') as fechad_fin, DATEDIFF(des.fechahasta, des.fechadesde) diasdestacado
         from anuncio anu
@@ -78,21 +80,22 @@ class AnuncioModel extends Model{
         inner join images img on anu.idanuncio=img.idanuncio 
         inner join estados_anuncio ean on anu.an_status = ean.idestado 
         left join destacado des on anu.iddestacado=des.iddestacado 
-        where anu.idusuario = ? and img.principal = ? $sql order by anu.idanuncio desc limit ?,?";
+        inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo 
+        where anu.idusuario = ? and img.principal = ? and anu.an_status in ? $sql order by anu.idanuncio desc limit ?,?";
         
-        $st = $this->db->query($query, [$idusuario, 1, $desde, $hasta]);
+        $st = $this->db->query($query, [$idusuario, 1, $status, $desde, $hasta]);
 
         return $st->getResultArray();  
     }
 
-    public function countListarAnunciosUsuario($idusuario, $nombre = '', $status = ''){
+    public function countListarAnunciosUsuario($idusuario, $nombre = '', $status = [1,2,3,4,5,6]){
         $sql = $nombre != '' ? " and anu.an_nombre LIKE '%" . $nombre . "%' " : '';
 
         $query = "select count(anu.idanuncio) as total
         from anuncio anu 
-        where anu.idusuario = ? $sql";
+        where anu.idusuario = ? and anu.an_status in ? $sql";
         
-        $st = $this->db->query($query, [$idusuario]);
+        $st = $this->db->query($query, [$idusuario, $status]);
 
         return $st->getRowArray();
     }
@@ -270,7 +273,7 @@ class AnuncioModel extends Model{
 
         $parametros = [1, $status, ...$params, $desde, $hasta];
 
-        $orden = 'order by anu.idanuncio desc';
+        $orden = 'order by an_status desc, anu.idanuncio desc';
         if( $order != '' ){
             $orden = " order by anu.precio ".$this->db->escapeString($order)." ";
         }
@@ -322,6 +325,21 @@ class AnuncioModel extends Model{
         $st = $this->db->query($query, $parametros);
 
         return $st->getRowArray();
+    }
+
+
+    public function existeFavorito($idusuario, $idanuncio){
+        $query = "select count(idfavorito) as total from favorito where idusuario = ? and idanuncio = ?";
+        $st = $this->db->query($query, [$idusuario, $idanuncio]);
+
+        return $st->getRowArray();
+    }
+
+    public function agregarFavorito($idusuario, $idanuncio){
+        $query = "insert into favorito(idusuario, idanuncio) values(?, ?)";
+        $st = $this->db->query($query, [$idusuario, $idanuncio]);
+
+        return $st;
     }
 
 }

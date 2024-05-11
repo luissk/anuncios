@@ -35,14 +35,18 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     //ajax
     $routes->post('recuperapassword', 'Inicio::recuperarPassword');
     $routes->post('guardarnuevopass', 'Inicio::guardarNuevoPassword');
+
+    $routes->post('agregarfavorito', 'Inicio::agregarFavorito');
 });
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
     $routes->get('mi-cuenta', 'Usuario::micuenta');
+    //parte paginas principales
+    $routes->get('anunciante-(:any)-(:num)', 'Usuario::verAnunciosUsuario/$1/$2');
     //AJAX
     $routes->post('modificarDatosUsu', 'Usuario::modificarDatosUsuario');
     $routes->post('distritosUsu', 'Usuario::listarDistritosUsuario');
-    $routes->post('eliminarAvaUsu', 'Usuario::eliminarAvatarUsuario');    
+    $routes->post('eliminarAvaUsu', 'Usuario::eliminarAvatarUsuario');
 });
 
 $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {

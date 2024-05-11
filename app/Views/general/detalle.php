@@ -34,6 +34,7 @@ $bd_levantaobs      = $anuncio['levanta_obs'];
 $bd_img             = $anuncio['img'];
 $bd_imgthumb        = $anuncio['img_thumb'];
 $bd_usuavatar       = $anuncio['us_avatar'];
+$bd_idusuario       = $anuncio['idusuario'];
 
 $bd_tipo        = $anuncio['ta_tipo'];
 $bd_cate        = $anuncio['categoria'];
@@ -61,7 +62,7 @@ $imgprincipal = $carpeta.$bd_img;
                 <li><a class="dropdown-item" href="<?=current_url();?>"><i class="fab fa-whatsapp"></i> Whatsapp</a></li>
             </ul>
 
-            <a href="#" class="btn btn-outline-secondary">Favorito <i class="far fa-heart"></i></a>
+            <a id="btnFavorito" class="btn btn-outline-secondary">Favorito <i class="far fa-heart"></i></a>
         </div>
     </div>
 
@@ -203,12 +204,14 @@ $imgprincipal = $carpeta.$bd_img;
                         <?php
                         $img_avatar = $bd_usuavatar == '' ? 'default.jpg': $bd_usuavatar;
                         ?>
-                        <a href="#"><img src="public/images/avatar/<?=$img_avatar?>" class="object-fit-cover" alt="avatar" style="max-width: 100%; max-height: 100%"></a>
+                        <a href="anunciante-<?=help_reemplazaCaracterUrl($bd_usunombre)?>-<?=$bd_idusuario?>" target="_blank"><img src="public/images/avatar/<?=$img_avatar?>" class="object-fit-cover" alt="avatar" style="max-width: 100%; max-height: 100%"></a>
                     </div>
                     <div class="col-md-8">
                         <div class="card-body text-start">
                             <p class="card-title m-0 fw-semibold"><?=$bd_usunombre?></p>
-                            <p class="card-text text-right"><a class="text-decoration-none fs-12px" href="#">Ver anuncios</a></p>
+                            <p class="card-text text-right">
+                                <a target="_blank" class="text-decoration-none fs-12px" href="anunciante-<?=help_reemplazaCaracterUrl($bd_usunombre)?>-<?=$bd_idusuario?>">Ver anuncios</a>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -268,6 +271,24 @@ $imgprincipal = $carpeta.$bd_img;
 
 </div>
 
+
+
+<div class="modal fade" id="modalLoading" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="text-end">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="divLoading" class="d-flex justify-content-center align-items-center p-3">
+                <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                &nbsp;Validando
+            </div>            
+        </div>
+    </div>
+</div>
+
 <?php echo $this->endSection();?>
 
 <?php echo $this->section('scripts');?>
@@ -323,7 +344,23 @@ $(function(){
 
             $("#refreshCaptcha").click();
         }) */
-    })
+    });
+
+    $("#btnFavorito").on('click', function(e){
+        let btn = document.querySelector('#btnFavorito'),
+        htmldiv = '<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="visually-hidden">Loading...</span></div>&nbsp;Validando';
+        $("#divLoading").html(htmldiv);
+
+        btn.classList.add('disabled');
+        $("#modalLoading").modal('show');
+        $.post('agregarfavorito', {
+            id: $("#idanuncio").val()
+        }, function(data){
+            console.log(data);
+            $("#divLoading").html(data);
+            btn.classList.remove('disabled');
+        })
+    });
 });
 </script>
 

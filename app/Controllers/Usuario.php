@@ -6,11 +6,13 @@ class Usuario extends BaseController
 {
     protected $modeloUsuario;
     protected $modeloUbigeo;
+    protected $modeloAnuncio;
     protected $helpers = ['funciones'];
 
     public function __construct(){
         $this->modeloUsuario = model('UsuarioModel');
         $this->modeloUbigeo  = model('UbigeoModel');
+        $this->modeloAnuncio = model('AnuncioModel');
         $this->session;
     }
 
@@ -283,5 +285,61 @@ class Usuario extends BaseController
             }
         }
     }
+
+    //PARTE DE LAS PAGINAS INICIALES
+    public function verAnunciosUsuario($nomuser, $iduser){
+        if( $usuario = $this->modeloUsuario->getUsuarioPorId($iduser) ) {
+            if( $usuario['idtipo_usuario'] == 1 ) return redirect()->to('/');
+
+            
+            $data['usuario'] = $usuario;
+            $data['title']   = 'Anunciante '.$usuario['us_nombre_razon'];
+
+            $nombre = '';
+            if( $this->request->is('get') && $this->request->getGet('nombre') ){ 
+                //if( !is_int($page) ) return redirect()->to('/');
+                //print_r($this->request->getGet('nombre'));
+                $dato = [
+                    'nombre' => trim($this->request->getVar('nombre'))
+                ];
+                $validation = \Config\Services::validation();
+                $rules = [
+                    'nombre' => [
+                        'label' => 'Nombre', 
+                        'rules' => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ. 0-9]+$/]|max_length[100]',
+                        'errors' => [
+                            'required'    => '* El {field} es requerido.',
+                            'regex_match' => '* El {field} no es válido.',
+                            'max_length'  => '* El {field} debe contener máximo 100 caracteres.'
+                        ]
+                    ],
+                ];
+                $validation->setRules($rules);
+                if (!$validation->run($dato)) {
+                    return redirect()->back()->with('errors', $validation->getErrors())->withInput();
+                }
+            }
+            $nombre = trim($this->request->getVar('nombre'));
+
+
+            /* $uri = service('uri'); 
+            print_r( $uri->getQuery() ); */
+            $page = $this->request->getVar('page') ? $this->request->getVar('page') : 1;
+
+            $desde        = $page * 20 - 20;
+            $hasta        = 20;
+            $data['page'] = $page;
+
+            $data['anuncios']       = $this->modeloAnuncio->listarAnunciosUsuario($iduser, $desde, $hasta, $nombre, [2,4,5]);
+            $data['totalRegistros'] = $this->modeloAnuncio->countListarAnunciosUsuario($iduser, $nombre, [2,4,5])['total'];
+
+            return view('general/anunciante', $data);
+        }else{
+            return redirect()->to('/');
+        }
+    }
+
+
+
 
 }

@@ -1,7 +1,7 @@
 <table width="700" cellpadding="12" cellspacing="0" style="border: 1px solid #ddd;-webkit-border-radius:3px;border-radius:5px;" align="center">
     <tr>
         <td valign="middle">
-        	<span style='font-size:20px;font-weight:bold;color:#198754'>Tienes un mensaje sobre unos de tus anuncios</span>
+        	<span style='font-size:20px;font-weight:bold;color:#198754'>Tienes un mensaje sobre uno de tus anuncios</span>
         </td>
     </tr>
     <tr>

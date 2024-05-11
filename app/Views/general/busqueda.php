@@ -176,7 +176,7 @@ echo "</pre>";
     </div>
 
     <?php
-        $RegistrosAMostrar = 2;
+        $RegistrosAMostrar = 25;
         $PaginasIntervalo  = 2;
         $PagAct            = $page;
 
@@ -189,7 +189,7 @@ echo "</pre>";
         ?>
 
         <nav>
-            <ul class="pagination justify-content-end <?=$totalRegistros <= 2 ? 'd-none' : ''?>">
+            <ul class="pagination justify-content-end <?=$totalRegistros <= 25 ? 'd-none' : ''?>">
                 <li class="page-item <?=$PagAct > ($PaginasIntervalo + 1) ? '' : 'd-none'?>">
                     <a class="page-link" href="<?=$uri->addQuery('page', '1')?>">Primer</a>
                 </li>

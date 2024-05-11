@@ -150,8 +150,8 @@ class Inicio extends BaseController
             $page = $this->request->getVar('page');
         }
 
-        $desde        = $page * 2 - 2;
-        $hasta        = 2;
+        $desde        = $page * 25 - 25;
+        $hasta        = 25;
         $data['page'] = $page;
 
 
@@ -732,6 +732,35 @@ class Inicio extends BaseController
                 </div>';
             }
 
+        }
+    }
+
+    public function agregarFavorito(){
+        if( $this->request->isAJAX() ){
+            //$validation = \Config\Services::validation();
+            //print_r($_POST);
+            if( !session('idusuario') ){
+                echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <b>Tiene que iniciar sesión.</b>
+                </div>';
+                exit();
+            }
+
+            $idanuncio = $this->request->getVar('id');
+
+            $fav = $this->modeloAnuncio->existeFavorito(session('idusuario'), $idanuncio);
+            if( $fav['total'] > 0 ){
+                echo '<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <b>Ud. Ya agregó éste anuncio como favorito.</b>
+                </div>';
+                exit();
+            }
+
+            if( $this->modeloAnuncio->agregarFavorito(session('idusuario'), $idanuncio) ){
+                echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <b>Anuncio agregado como favorito.</b>
+                </div>';
+            }
         }
     }
 
