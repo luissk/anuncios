@@ -327,7 +327,7 @@ class AnuncioModel extends Model{
         return $st->getRowArray();
     }
 
-
+    // FAVORITOS
     public function existeFavorito($idusuario, $idanuncio){
         $query = "select count(idfavorito) as total from favorito where idusuario = ? and idanuncio = ?";
         $st = $this->db->query($query, [$idusuario, $idanuncio]);
@@ -341,5 +341,32 @@ class AnuncioModel extends Model{
 
         return $st;
     }
+
+    public function getFavoritos_x_Usuario($idusuario){
+        $query = "select fav.idfavorito, fav.idusuario, fav.fechareg, fav.idanuncio,
+        anu.an_nombre, anu.idtipo_anuncio, anu.idcate, anu.an_status, anu.codanuncio,
+        tan.ta_tipo, can.categoria,
+        img.idimages, img.img, img.img_thumb
+        from favorito fav
+        inner join anuncio anu on fav.idanuncio = anu.idanuncio
+        inner join tipo_anuncio tan on anu.idtipo_anuncio=tan.idtipo_anuncio 
+        inner join cat_anuncio can on anu.idcate=can.idcate 
+        inner join images img on anu.idanuncio=img.idanuncio 
+        inner join estados_anuncio ean on anu.an_status = ean.idestado 
+        inner join ubigeo ubi on anu.ubigeo = ubi.idubigeo
+        where fav.idusuario = ? and img.principal = 1 order by fav.idfavorito desc";
+        $st = $this->db->query($query, [$idusuario]);
+
+        return $st->getResultArray();
+    }
+
+    public function borrarFavorito($idfavorito, $idusuario){
+        $query = "delete from favorito where idfavorito = ? and idusuario = ? ";
+        $st = $this->db->query($query, [$idfavorito, $idusuario]);
+
+        return $st;
+    }
+
+    //FIN FAVORITOS
 
 }

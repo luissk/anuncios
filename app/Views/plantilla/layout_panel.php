@@ -52,7 +52,7 @@ if(!session('idusuario')){
                             <?php
                             if( session('idtipousu') == 2 ){
                             ?>
-                            <a href="#" class="text-secondary text-decoration-none d-block p-2 border-bottom bg-light <?php echo $opt_favorite?>">
+                            <a href="favoritos" class="text-secondary text-decoration-none d-block p-2 border-bottom bg-light <?php echo $opt_favorite?>">
                                 <i class="far fa-heart"></i> Mis favoritos
                             </a>
                             <?php }?>

@@ -90,7 +90,7 @@ if( isset($_GET['page']) ){
     </div>
 </div>
 
-<section class="container resultado">
+<section class="container resultado pb-5">
     <?php
     /* echo "<pre>"; 
     print_r($anuncios);

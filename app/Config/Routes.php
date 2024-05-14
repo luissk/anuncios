@@ -66,4 +66,10 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     $routes->post('activarObservar', 'Anuncio::activarObservarAnuncio');
 });
 
+$routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes) {
+    $routes->get('favoritos', 'Favorito::index');
+    //AJAX
+    $routes->post('deletefavorite', 'Favorito::borrarFavorito');
+});
+
 //$routes->get('users/(:num)/gallery/(:num)', 'Galleries::showUserGallery/$1/$2', ['as' => 'user_gallery']);
