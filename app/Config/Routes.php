@@ -43,6 +43,7 @@ $routes->group('/', ['namespace' => 'App\Controllers'], static function ($routes
     $routes->get('mi-cuenta', 'Usuario::micuenta');
     //parte paginas principales
     $routes->get('anunciante-(:any)-(:num)', 'Usuario::verAnunciosUsuario/$1/$2');
+    $routes->get('anunciantes', 'Usuario::mostrarAnunciantes');
     //AJAX
     $routes->post('modificarDatosUsu', 'Usuario::modificarDatosUsuario');
     $routes->post('distritosUsu', 'Usuario::listarDistritosUsuario');

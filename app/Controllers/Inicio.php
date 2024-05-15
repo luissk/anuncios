@@ -160,6 +160,7 @@ class Inicio extends BaseController
         $title = "$title | ".help_nombreWeb(); 
 
         $data['title']    = $title;
+        $data['act_menuanuncios'] = 1;
 
         $anuncios = $this->modeloAnuncio->busqueda($desde, $hasta, $query_bd, $param_bd, $keyword, $order);
         $data['totalRegistros'] = $this->modeloAnuncio->countBusqueda($query_bd, $param_bd, $keyword)['total'];
@@ -764,6 +765,7 @@ class Inicio extends BaseController
         }
     }
 
+    
 
     public function salir(){
         $this->session->destroy();

@@ -293,7 +293,7 @@ class Usuario extends BaseController
 
             
             $data['usuario'] = $usuario;
-            $data['title']   = 'Anunciante '.$usuario['us_nombre_razon'];
+            $data['title']   = $usuario['us_nombre_razon']." | ".help_nombreWeb();
 
             $nombre = '';
             if( $this->request->is('get') && $this->request->getGet('nombre') ){ 
@@ -337,6 +337,50 @@ class Usuario extends BaseController
         }else{
             return redirect()->to('/');
         }
+    }
+
+    public function mostrarAnunciantes(){
+
+        $nombre = '';
+        if( $this->request->is('get') && $this->request->getGet('nombre') ){ 
+            //if( !is_int($page) ) return redirect()->to('/');
+            //print_r($this->request->getGet('nombre'));
+            $dato = [
+                'nombre' => trim($this->request->getVar('nombre'))
+            ];
+            $validation = \Config\Services::validation();
+            $rules = [
+                'nombre' => [
+                    'label' => 'Nombre', 
+                    'rules' => 'required|regex_match[/^[a-zA-ZñÑáéíóúÁÉÍÓÚ. 0-9]+$/]|max_length[100]',
+                    'errors' => [
+                        'required'    => '* El {field} es requerido.',
+                        'regex_match' => '* El {field} no es válido.',
+                        'max_length'  => '* El {field} debe contener máximo 100 caracteres.'
+                    ]
+                ],
+            ];
+            $validation->setRules($rules);
+            if (!$validation->run($dato)) {
+                return redirect()->back()->with('errors', $validation->getErrors())->withInput();
+            }
+        }
+        $nombre = trim($this->request->getVar('nombre'));
+
+        $page = $this->request->getVar('page') ? $this->request->getVar('page') : 1;
+        $desde        = $page *  30 -  30;
+        $hasta        = 30;
+        $data['page'] = $page;
+
+        $usuarios = $this->modeloUsuario->getUsuarios(1, $nombre, $desde, $hasta);
+        
+        $data['usuarios'] = $usuarios;
+        $data['totalRegistros'] = $this->modeloUsuario->count_getUsuarios(1, $nombre)['total'];
+
+        $data['title']          = 'Anunciantes | '.help_nombreWeb();
+        $data['act_menuanunciantes'] = 1;
+
+        return view('general/anunciantes', $data);
     }
 
 

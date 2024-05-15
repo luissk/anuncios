@@ -34,7 +34,7 @@
                         <a class="nav-link <?php echo isset($act_menuanuncios) ? 'active' : ''?>" href="busca-anuncios"><i class="fas fa-bullhorn"></i> Anuncios</a>
                     </li>
                     <li class="nav-item pe-3">
-                        <a class="nav-link <?php echo isset($act_menucontact) ? 'active' : ''?>" href="<?php echo base_url();?>"><i class="fas fa-address-book"></i> Contáctanos</a>
+                        <a class="nav-link <?php echo isset($act_menuanunciantes) ? 'active' : ''?>" href="<?php echo base_url('anunciantes');?>"><i class="fas fa-address-book"></i> Anunciantes</a>
                     </li>
                     <li class="nav-item pe-3">
                         <a class="btn btn-danger" href="<?php echo base_url('publicar-anuncio')?>">Publica Anuncio</a>

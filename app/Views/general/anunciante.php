@@ -21,6 +21,8 @@ $instagram   = $usuario['us_instagram'];
 $tiktok      = $usuario['us_tiktok'];
 $youtube     = $usuario['us_youtube'];
 $direccion   = $usuario['us_direccion'];
+$prov        = $usuario['prov'];
+$dist        = $usuario['dist'];
 
 $img_avatar = $avatar == '' ? 'default.jpg': $avatar;
 
@@ -59,7 +61,8 @@ if( isset($_GET['page']) ){
                                     <?php if($tiktok != ''){?><a href="<?=$tiktok?>" target="_blank" class="text-decoration-none text-body"><i class="fab fa-tiktok"></i> tiktok</a> &nbsp;<?php }?>
                                     <?php if($youtube != ''){?><a href="<?=$youtube?>" target="_blank" class="text-decoration-none text-body"><i class="fab fa-youtube-square"></i> Youtube</a> &nbsp;<?php }?>
                                 </small><br>
-                                <?php if($direccion != ''){?><small class="text-body"><i class="fas fa-map-marker-alt"></i> <?=$direccion?></small><br><?php }?>
+                                <?php if($direccion != ''){?><small class="text-body"><i class="fas fa-map-marker-alt"></i> <?=$direccion?></small><br><?php }?> 
+                                <?php if($prov != ''){ echo $dist.", ".$prov;}?>
                             </p>
                         </div>
                     </div>

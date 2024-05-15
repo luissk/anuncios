@@ -23,12 +23,40 @@ class UsuarioModel extends Model{
     public function getUsuarioPorId($idusuario){
         $query = "select us.idusuario, us.us_codusuario, us.us_email, us.us_pass, us.us_nombre_razon, us.us_ruc, us.us_telefono, us.us_avatar, us.idtipo_usuario,
         us.us_whatsapp, us.us_website, us.us_facebook, us.us_instagram, us.us_tiktok, us.us_youtube, us.us_ubigeo, us.us_direccion,
-        tu.tu_tipo, ub.iddepa, ub.idprov, ub.iddist
+        tu.tu_tipo, ub.iddepa, ub.idprov, ub.iddist, ub.prov, ub.dist
         from usuario us 
         inner join tipo_usuario tu on us.idtipo_usuario = tu.idtipo_usuario 
         left join ubigeo ub on us.us_ubigeo = ub.idubigeo
         where us.idusuario = ?";
         $st = $this->db->query($query, [$idusuario]);
+
+        return $st->getRowArray();
+    }
+
+    public function getUsuarios($status, $nombre = '', $desde, $hasta){
+        $sql = $nombre != '' ? " and us.us_nombre_razon LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
+
+        $query = "select us.idusuario, us.us_codusuario, us.us_email, us.us_pass, us.us_nombre_razon, us.us_ruc, us.us_telefono, us.us_avatar, us.idtipo_usuario,
+        us.us_whatsapp, us.us_website, us.us_facebook, us.us_instagram, us.us_tiktok, us.us_youtube, us.us_ubigeo, us.us_direccion, us.us_status,
+        tu.tu_tipo, ub.iddepa, ub.idprov, ub.iddist, ub.prov, ub.dist
+        from usuario us 
+        inner join tipo_usuario tu on us.idtipo_usuario = tu.idtipo_usuario 
+        left join ubigeo ub on us.us_ubigeo = ub.idubigeo
+        where us.us_status = ? and us.idtipo_usuario = 2 $sql limit ?,?";
+        $st = $this->db->query($query, [$status, $desde, $hasta]);
+
+        return $st->getResultArray();
+    }
+
+    public function count_getUsuarios($status, $nombre = ''){
+        $sql = $nombre != '' ? " and us.us_nombre_razon LIKE '%" . $this->db->escapeLikeString($nombre) . "%' " : '';
+
+        $query = "select count(us.idusuario) as total
+        from usuario us 
+        inner join tipo_usuario tu on us.idtipo_usuario = tu.idtipo_usuario 
+        left join ubigeo ub on us.us_ubigeo = ub.idubigeo
+        where us.us_status = ? and us.idtipo_usuario = 2 $sql";
+        $st = $this->db->query($query, [$status]);
 
         return $st->getRowArray();
     }
