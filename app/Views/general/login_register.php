@@ -41,8 +41,8 @@
                         </div>
                         <hr>
                         <p>o Ingresa con: </p>
-                        <p><a href="#" class="btn btn-outline-secondary w-50"><i class="fab fa-google"></i> Google</a></p>
-                        <p><a href="#" class="btn btn-outline-primary w-50"><i class="fab fa-facebook"></i> Facebook</a></p>
+                        <p><a href="<?=isset($linkGoogle) ? $linkGoogle : ''?>" class="btn btn-outline-secondary w-50"><i class="fab fa-google"></i> Google</a></p>
+                        <!-- <p><a href="#" class="btn btn-outline-primary w-50"><i class="fab fa-facebook"></i> Facebook</a></p> -->
                     </div>
                 </div>
             </div>

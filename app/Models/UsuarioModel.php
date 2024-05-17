@@ -13,8 +13,16 @@ class UsuarioModel extends Model{
         return $this->db->insertID();
     }
 
+    public function registrarUsuario_x_Google($email, $nombre, $codusuario){
+        $query = "insert into usuario(us_email,us_nombre_razon,us_codusuario,idtipo_usuario,us_status,us_google) 
+        values(?,?,?,2,1,1)";
+        $st = $this->db->query($query, [$email, $nombre, $codusuario]);
+
+        return $st;
+    }
+
     public function validarLogin($email){
-        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario, us_status from usuario where LOWER(us_email) = LOWER(?)";
+        $query = "select idusuario, us_codusuario, us_email, us_pass, us_nombre_razon, idtipo_usuario, us_status, us_google from usuario where LOWER(us_email) = LOWER(?)";
         $st = $this->db->query($query, [$email]);
 
         return $st->getRowArray();

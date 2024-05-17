@@ -317,10 +317,57 @@ class Inicio extends BaseController
         }        
     }
 
+    private function _loginGmail(){
+
+        //
+    }
+
+    private function loginConGoogle($arr){
+        $email  = $arr[0];
+        $nombre = $arr[1];
+
+        if( $u = $this->modeloUsuario->validarLogin($email) ){
+            if( $u['us_status'] == 2 ){
+                $this->modeloUsuario->activaCuenta_x_linkact($u['idusuario']);
+            }
+
+            $datasession = [
+                'idusuario' => $u['idusuario'],
+                'email'     => $u['us_email'],
+                'idtipousu' => $u['idtipo_usuario'],
+                'codigous'  => $u['us_codusuario']
+            ];
+            $this->session->set($datasession);
+
+            return $this->response->redirect(site_url('panel-usuario'));
+        }else{
+            if( $this->modeloUsuario->registrarUsuario_x_Google($email, $nombre, stringAleatorio(10, 0)) ){
+                if( $u = $this->modeloUsuario->validarLogin($email) ){       
+                    $datasession = [
+                        'idusuario' => $u['idusuario'],
+                        'email'     => $u['us_email'],
+                        'idtipousu' => $u['idtipo_usuario'],
+                        'codigous'  => $u['us_codusuario']
+                    ];
+                    $this->session->set($datasession);
+        
+                    return $this->response->redirect(site_url('panel-usuario'));
+                }
+            }
+        }
+    }
+
     public function loginRegister()
     {   
         if( session('idusuario') ){
             return redirect()->to('/');
+        }
+
+        $google = $this->_loginGmail();
+        if( $google['tipo'] == 'datosGoogle' ){
+            $this->loginConGoogle($google['datos']);
+        }else if( $google['tipo'] == 'linkGoogle' ){
+            $data['linkGoogle'] = $google['link'];
         }
 
         if( $this->request->is('post') ){
@@ -518,7 +565,7 @@ class Inicio extends BaseController
                 if( help_sendMail(['anunciosdelvalle2024@gmail.com', 'Anuncios del Valle (ADV)'], $vars['email'], 'Felicidades te has registrado en nuestra web, activa tu cuenta.', view('general/mailregistro', $dataMail)) ){
 
                     $vars['linkact'] = $link_act;
-                    if ( $id = $this->modeloUsuario->registrarUsuario($vars, $password, stringAleatorio(10)) ){
+                    if ( $id = $this->modeloUsuario->registrarUsuario($vars, $password, stringAleatorio(10, 0)) ){
                         $this->session->remove('errors');
                         return redirect()->to(current_url())->with('msg_register', ['success','<strong>Registro Correcto</strong>. Revisa tu correo (si no se encuentra, revisa en tus spam) y activa tu cuenta.']);
                     }
