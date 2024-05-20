@@ -577,12 +577,30 @@ class Anuncio extends BaseController
 
             $idanuncio_post = $this->request->getVar('id');
             if( $idanuncio_post != '' && $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post) ){
-                $bd_anuncio = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
-                $codanuncio = $bd_anuncio['codanuncio'];
+                $bd_anuncio  = $this->modeloAnuncio->getAnu_idanu_idusu(session('idusuario'), $idanuncio_post);
+                $codanuncio  = $bd_anuncio['codanuncio'];
+                $iddestacado = $bd_anuncio['iddestacado'];
+
+                if( $iddestacado > 0 ){
+                    $this->modeloAnuncio->cambiarEstadoDeDestacado($idanuncio_post, $iddestacado, 2);
+                }
+
+                if( $this->modeloAnuncio->cambiarEstadoAnuncioDestacado($idanuncio_post, 7) ){ //ya lo elimina y borra el iddestacado si lo tuviera
+                    echo '<script>
+                        Swal.fire({
+                            title: "ANUNCIO ELIMINADO.",
+                            text: "",
+                            icon: "success",
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                        });
+                        setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
+                    </script>';
+                }
 
                 //PENDIENTE: VALIDAR SI ES QUE NO TIENE PAGOS (DESTACADO), DE LO CONTRARIO SOLO CAMBIAR A ESTADO ELIMINADO
                 
-                $micarpeta = help_folderAnuncio().$codanuncio;
+                /* $micarpeta = help_folderAnuncio().$codanuncio;
 
                 //eliminar imagenes
                 $images_bd = $this->modeloAnuncio->getImages($idanuncio_post);
@@ -611,7 +629,7 @@ class Anuncio extends BaseController
                         });
                         setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },1500);
                     </script>';
-                }
+                } */
             }else{
                 echo '<script>
                     Swal.fire({

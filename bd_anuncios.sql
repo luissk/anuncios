@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-04-2024 a las 01:11:48
+-- Tiempo de generación: 21-05-2024 a las 01:11:41
 -- Versión del servidor: 10.4.27-MariaDB
 -- Versión de PHP: 8.0.25
 
@@ -49,7 +49,7 @@ CREATE TABLE `anuncio` (
   `an_activo` tinyint(4) DEFAULT NULL,
   `activadofecha` date DEFAULT NULL,
   `hastafecha` date DEFAULT NULL,
-  `activousuario` int(11) DEFAULT NULL,
+  `activousuario` int(11) DEFAULT NULL COMMENT 'que usuario admin lo activó',
   `observadopor` varchar(255) DEFAULT NULL,
   `estado_ant` tinyint(4) DEFAULT NULL,
   `levanta_obs` tinyint(4) DEFAULT NULL,
@@ -61,11 +61,11 @@ CREATE TABLE `anuncio` (
 --
 
 INSERT INTO `anuncio` (`idanuncio`, `an_nombre`, `an_descripcion`, `an_fechacreacion`, `idtipo_anuncio`, `idusuario`, `idcate`, `precio`, `precio_mostrar`, `caracteristicas`, `url_video`, `ubigeo`, `direccion`, `contact_email`, `contact_fono`, `contact_whatsapp`, `codanuncio`, `an_status`, `an_activo`, `activadofecha`, `hastafecha`, `activousuario`, `observadopor`, `estado_ant`, `levanta_obs`, `iddestacado`) VALUES
-(2, 'Vendo Juego de PS4 DAYS GONE Nuevo xD xD', 'Este calibrador digital de 100mm es una herramienta electrónica esencial para tus necesidades de medición en una variedad de aplicaciones industriales y automotrices. Con una pantalla LCD de fácil lectura y una precisión impresionante, este calibrador te brinda un control preciso sobre tus mediciones.\r\n\r\nCaracterísticas Destacadas:\r\n\r\nMediciones Multipropósito: Este calibrador es versátil y capaz de medir en cuatro modos diferentes: interior, exterior, profundidad y paso, lo que lo convierte en una herramienta completa para múltiples situaciones.\r\n\r\nPantalla LCD Clara: La pantalla LCD es fácil de leer y muestra tus mediciones con una escala mínima de lectura de 0.1mm o 0.01 pulgadas.\r\n\r\nTabla de Conversión Práctica: En la parte posterior del calibrador, encontrarás una tabla de conversión que te facilita la conversión de medidas, lo que es especialmente útil en aplicaciones industriales.\r\n\r\nPuesta a Cero en Cualquier Posición: La función de puesta a cero te permite iniciar tus mediciones desde cualquier posición, lo que mejora la comodidad y la eficiencia de uso.\r\n\r\nConstrucción de Calidad: Hecho de fibra de carbono resistente, este calibrador es duradero y adecuado para un uso prolongado en entornos industriales y automotrices.\r\n\r\nEspecificaciones Técnicas:\r\n\r\nMaterial: Fibra de Carbono\r\nPantalla: Pantalla LCD\r\nRango de Medición: 0-100mm (0-4 pulgadas)\r\nResolución: 0.1mm (0.01 pulgadas)\r\nPrecisión: +/- 0.2mm (0.01 pulgadas)\r\nSistema de Medición: Sistema de medición lineal de la PAC sin contacto\r\nTemperatura de Funcionamiento: 0°C - 40°C\r\nTemperatura de Almacenamiento: -20°C - 70°C\r\nInfluencia de la Humedad: Funcionamiento normal dentro del 0-80% de humedad relativa\r\nTamaño: 18x6x1.2 cm (Largo x Ancho x Alto)\r\nPotencia: 1x1.5 V LR44 (batería incluida)\r\nEl Paquete Incluye:\r\n\r\n1x Calibrador Digital de 100mm\r\nEste calibrador digital es una adición esencial para tu caja de herramientas, proporcionando mediciones precisas y versatilidad en una variedad de aplicaciones. Ya sea que trabajes en la industria o en proyectos automotrices, este calibrador te permitirá realizar mediciones con confianza y precisión. ¡Adquiere el tuyo hoy mismo!', '2024-03-07 15:11:10', 3, 11, 26, '55.00', 0, 'Nuevo\r\nEn Caja\r\nSellado', '', 130208, 'Urb Miguel Grau 2da Etapa D', 'luchini_1102@hotmail.com', '987456999', '975089666', 'HHCMVUA1NT', 4, 1, '2024-03-24', '2024-04-23', 1, '', 0, 0, 1),
-(6, 'Vendo Local de buen espacio para todo negocios', 'Alquilo Local para diversos tipos de festividades\r\n\r\nEl local cuenta con 200 m cuadrados', '2024-03-12 09:23:54', 1, 12, 14, '50000.00', 0, 'Cerca a Negocios\r\nCon Piso\r\nPiscina', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130205, 'Urb. Razuri', 'lushito88@gmail.com', '975089485', '975089485', 'GVEUW3GPFB', 2, 1, '2024-03-30', '2024-04-29', 1, '', 0, 0, NULL),
-(7, 'Busco usb con entrada 3.0 y tipo c', 'Busco usb con entradas 3.0 y tipo\r\n\r\nUsb que sea híbrido', '2024-03-12 09:27:01', 2, 12, 7, '0.00', 1, '64 gb\r\nkingston', 'https://www.youtube.com/watch?v=xjJ7OvNWEM8', 130605, 'aaa', 'lushito88@gmail.com', '975089485', '', 'JO51Z6ZM0Y', 2, 1, '2024-03-30', '2024-04-29', 1, '', 0, 0, NULL),
-(8, 'Vendo Juegos de Llaves Stilson', 'Vendo Kit de LLave Stilson a buen precio\r\n\r\nNuevos, en caja. Para todo tipo de trabajos xD', '2024-03-12 09:30:27', 3, 11, 10, '150.00', 0, 'Acero inoxidable\r\nKit o set de llaves', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130208, '', 'luchini_1102@hotmail.com', '987456321', '975089485', 'FZT8PAEWHB', 2, 1, '2024-03-27', '2024-04-26', 1, '', 0, 0, NULL),
-(9, 'Vendo todo tipo de útiles Escolares', 'Potencia la imagen de tu negocio con nuestras hojas membretadas de alta calidad. En nuestra imprenta, ofrecemos servicios de impresión de hojas membretadas en papel bond de 75 gramos, con impresión a todo color y una calidad excepcional.\r\n\r\n¿Por qué elegir nuestras hojas membretadas?\r\n\r\nCalidad insuperable: Utilizamos papel bond de primera calidad, que garantiza una apariencia profesional y duradera. Nuestras hojas membretadas se destacan por su acabado impecable y su textura agradable al tacto.\r\n\r\nImpresión full color: ¿Quieres que tu imagen corporativa cobre vida en cada hoja? Nuestro servicio de impresión a todo color hará que tu logotipo, colores y detalles se vean vibrantes y atractivos. Logra una presentación impactante que refleje la identidad única de tu empresa.', '2024-03-12 09:34:05', 3, 11, 28, '0.00', 1, 'Cuadernos\r\nLapiceros\r\nColores\r\nPlumones', '', 130203, 'Sintuco', 'luchini_1102@hotmail.com', '987456321', '975089485', 'WYO2674R41', 2, 1, '2024-03-12', '2024-05-13', 1, '', 0, 0, NULL);
+(2, 'Vendo Juego de PS4 DAYS GONE Nuevo xD xD', 'Este calibrador digital de 100mm es una herramienta electrónica esencial para tus necesidades de medición en una variedad de aplicaciones industriales y automotrices. Con una pantalla LCD de fácil lectura y una precisión impresionante, este calibrador te brinda un control preciso sobre tus mediciones.\r\n\r\nCaracterísticas Destacadas:\r\n\r\nMediciones Multipropósito: Este calibrador es versátil y capaz de medir en cuatro modos diferentes: interior, exterior, profundidad y paso, lo que lo convierte en una herramienta completa para múltiples situaciones.\r\n\r\nPantalla LCD Clara: La pantalla LCD es fácil de leer y muestra tus mediciones con una escala mínima de lectura de 0.1mm o 0.01 pulgadas.\r\n\r\nTabla de Conversión Práctica: En la parte posterior del calibrador, encontrarás una tabla de conversión que te facilita la conversión de medidas, lo que es especialmente útil en aplicaciones industriales.\r\n\r\nPuesta a Cero en Cualquier Posición: La función de puesta a cero te permite iniciar tus mediciones desde cualquier posición, lo que mejora la comodidad y la eficiencia de uso.\r\n\r\nConstrucción de Calidad: Hecho de fibra de carbono resistente, este calibrador es duradero y adecuado para un uso prolongado en entornos industriales y automotrices.\r\n\r\nEspecificaciones Técnicas:\r\n\r\nMaterial: Fibra de Carbono\r\nPantalla: Pantalla LCD\r\nRango de Medición: 0-100mm (0-4 pulgadas)\r\nResolución: 0.1mm (0.01 pulgadas)\r\nPrecisión: +/- 0.2mm (0.01 pulgadas)\r\nSistema de Medición: Sistema de medición lineal de la PAC sin contacto\r\nTemperatura de Funcionamiento: 0°C - 40°C\r\nTemperatura de Almacenamiento: -20°C - 70°C\r\nInfluencia de la Humedad: Funcionamiento normal dentro del 0-80% de humedad relativa\r\nTamaño: 18x6x1.2 cm (Largo x Ancho x Alto)\r\nPotencia: 1x1.5 V LR44 (batería incluida)\r\nEl Paquete Incluye:\r\n\r\n1x Calibrador Digital de 100mm\r\nEste calibrador digital es una adición esencial para tu caja de herramientas, proporcionando mediciones precisas y versatilidad en una variedad de aplicaciones. Ya sea que trabajes en la industria o en proyectos automotrices, este calibrador te permitirá realizar mediciones con confianza y precisión. ¡Adquiere el tuyo hoy mismo!', '2024-03-07 15:11:10', 3, 11, 26, '55.00', 0, 'Nuevo\r\nEn Caja\r\nSellado', '', 130208, 'Urb Miguel Grau 2da Etapa D', 'luchini_1102@hotmail.com', '987456999', '975089666', 'HHCMVUA1NT', 2, 1, '2024-03-24', '2024-06-18', 1, '', 0, 0, NULL),
+(6, 'Vendo Local de buen espacio para todo negocios', 'Alquilo Local para diversos tipos de festividades\r\n\r\nEl local cuenta con 200 m cuadrados', '2024-03-12 09:23:54', 1, 12, 14, '50000.00', 0, 'Cerca a Negocios\r\nCon Piso\r\nPiscina', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130205, 'Urb. Razuri', 'lushito88@gmail.com', '975089485', '975089485', 'GVEUW3GPFB', 3, 1, '2024-03-30', '2024-04-29', 1, '', 0, 0, NULL),
+(7, 'Busco usb con entrada 3.0 y tipo c', 'Busco usb con entradas 3.0 y tipo\r\n\r\nUsb que sea híbrido', '2024-03-12 09:27:01', 2, 12, 7, '0.00', 1, '64 gb\r\nkingston', 'https://www.youtube.com/watch?v=xjJ7OvNWEM8', 130605, 'aaa', 'lushito88@gmail.com', '975089485', '', 'JO51Z6ZM0Y', 3, 1, '2024-03-30', '2024-04-29', 1, '', 0, 0, NULL),
+(8, 'Vendo Juegos de Llaves Stilson', 'Vendo Kit de LLave Stilson a buen precio\r\n\r\nNuevos, en caja. Para todo tipo de trabajos xD', '2024-03-12 09:30:27', 3, 11, 10, '150.00', 0, 'Acero inoxidable\r\nKit o set de llaves', 'https://www.youtube.com/watch?v=8VJWi6UfxU4', 130208, '', 'luchini_1102@hotmail.com', '987456321', '975089485', 'FZT8PAEWHB', 2, 1, '2024-03-27', '2024-06-19', 1, '', 0, 0, NULL),
+(9, 'Vendo todo tipo de útiles Escolares', 'Potencia la imagen de tu negocio con nuestras hojas membretadas de alta calidad. En nuestra imprenta, ofrecemos servicios de impresión de hojas membretadas en papel bond de 75 gramos, con impresión a todo color y una calidad excepcional.\r\n\r\n¿Por qué elegir nuestras hojas membretadas?\r\n\r\nCalidad insuperable: Utilizamos papel bond de primera calidad, que garantiza una apariencia profesional y duradera. Nuestras hojas membretadas se destacan por su acabado impecable y su textura agradable al tacto.\r\n\r\nImpresión full color: ¿Quieres que tu imagen corporativa cobre vida en cada hoja? Nuestro servicio de impresión a todo color hará que tu logotipo, colores y detalles se vean vibrantes y atractivos. Logra una presentación impactante que refleje la identidad única de tu empresa.', '2024-03-12 09:34:05', 3, 11, 28, '0.00', 1, 'Cuadernos\r\nLapiceros\r\nColores\r\nPlumones', '', 130203, 'Sintuco', 'luchini_1102@hotmail.com', '987456321', '975089485', 'WYO2674R41', 2, 1, '2024-03-12', '2024-06-19', 1, '', 0, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -126,7 +126,7 @@ CREATE TABLE `destacado` (
   `tipo` tinyint(4) NOT NULL,
   `fechadesde` date NOT NULL,
   `fechahasta` date NOT NULL,
-  `estado` tinyint(4) NOT NULL
+  `estado` tinyint(4) NOT NULL COMMENT '1.Activo, 2.Finalizado'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
@@ -134,7 +134,7 @@ CREATE TABLE `destacado` (
 --
 
 INSERT INTO `destacado` (`iddestacado`, `idanuncio`, `tipo`, `fechadesde`, `fechahasta`, `estado`) VALUES
-(1, 2, 4, '2024-04-01', '2024-04-16', 1);
+(1, 2, 4, '2024-05-03', '2024-05-18', 2);
 
 -- --------------------------------------------------------
 
@@ -160,6 +160,26 @@ INSERT INTO `estados_anuncio` (`idestado`, `estado`, `descripcion`) VALUES
 (5, 'Super Destacado', 'El anuncio es destacado y se mostrará dentro los 20 anuncios aleatorios de la página principal.'),
 (6, 'Observado', 'Cuando el usuario admin observa un anuncio, por contenido explicito u otro motivo'),
 (7, 'Eliminado', 'Cuando se elimina el anuncio, pero ha tenido movimientos de pago destacados');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `favorito`
+--
+
+CREATE TABLE `favorito` (
+  `idfavorito` int(11) NOT NULL,
+  `idanuncio` int(11) NOT NULL,
+  `idusuario` int(11) NOT NULL,
+  `fechareg` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `favorito`
+--
+
+INSERT INTO `favorito` (`idfavorito`, `idanuncio`, `idusuario`, `fechareg`) VALUES
+(3, 6, 11, '2024-05-14 15:43:41');
 
 -- --------------------------------------------------------
 
@@ -2370,17 +2390,20 @@ CREATE TABLE `usuario` (
   `us_tiktok` varchar(100) NOT NULL,
   `us_direccion` varchar(150) NOT NULL,
   `us_ubigeo` mediumint(9) NOT NULL,
-  `us_zoom` tinyint(4) NOT NULL
+  `us_zoom` tinyint(4) NOT NULL,
+  `us_google` tinyint(4) DEFAULT NULL,
+  `count_anuncios` int(11) NOT NULL,
+  `count_anuncios_used` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`idusuario`, `us_codusuario`, `us_email`, `us_pass`, `us_nombre_razon`, `us_ruc`, `us_avatar`, `us_linkact`, `us_linkrecup`, `us_fechacreacion`, `idtipo_usuario`, `us_status`, `us_telefono`, `us_whatsapp`, `us_website`, `us_facebook`, `us_instagram`, `us_youtube`, `us_tiktok`, `us_direccion`, `us_ubigeo`, `us_zoom`) VALUES
-(1, '1234567899', 'alberto_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Alberto Calderón Sánchez', '45487229', '1234567899.jpg', NULL, NULL, '2024-02-26 21:27:58', 1, 1, '975089485', '975089485', '', '', '', '', '', 'calle 3 de octubre 22mz k lote 12 sector sintuco', 130203, 0),
-(11, 'ALA36J4GDK', 'luchini_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Calderón xD', '', 'ALA36J4GDK.jpg', NULL, NULL, '2024-02-26 21:29:38', 2, 1, '987456321', '975089485', '', '', '', '', '', '', 0, 0),
-(12, 'J1CJKV0ADE', 'lushito88@gmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Lushito Calderón', NULL, NULL, NULL, NULL, '2024-03-12 14:19:53', 2, 1, '975089485', NULL, '', '', '', '', '', '', 0, 0);
+INSERT INTO `usuario` (`idusuario`, `us_codusuario`, `us_email`, `us_pass`, `us_nombre_razon`, `us_ruc`, `us_avatar`, `us_linkact`, `us_linkrecup`, `us_fechacreacion`, `idtipo_usuario`, `us_status`, `us_telefono`, `us_whatsapp`, `us_website`, `us_facebook`, `us_instagram`, `us_youtube`, `us_tiktok`, `us_direccion`, `us_ubigeo`, `us_zoom`, `us_google`, `count_anuncios`, `count_anuncios_used`) VALUES
+(1, '1234567899', 'alberto_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Alberto Calderón Sánchez', '45487229', '1234567899.jpg', NULL, NULL, '2024-02-26 21:27:58', 1, 1, '975089485', '975089485', '', '', '', '', '', 'calle 3 de octubre 22mz k lote 12 sector sintuco', 130203, 0, NULL, 0, 0),
+(11, 'ALA36J4GDK', 'luchini_1102@hotmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Luis Calderón xD', '45487228', 'ALA36J4GDK.jpg', NULL, NULL, '2024-02-26 21:29:38', 2, 1, '987456321', '975089485', 'https://www.lookinmueble.com', 'https://www.lookinmueble.com', 'https://www.lookinmueble.com', 'https://www.lookinmueble.com', 'https://www.lookinmueble.com', 'Urb Miguel Grau 2da Etapa', 130208, 0, NULL, 7, 3),
+(12, 'J1CJKV0ADE', 'lushito88@gmail.com', '$2a$12$YmtIBS/VsxVywSQHV4A2.uFU8VcIdeY.pJDE0ZjKocqkKMwFw/Hka', 'Lushito Calderón', NULL, NULL, NULL, NULL, '2024-03-12 14:19:53', 2, 1, '975089485', NULL, '', '', '', '', '', '', 0, 0, NULL, 8, 2);
 
 --
 -- Índices para tablas volcadas
@@ -2412,6 +2435,12 @@ ALTER TABLE `destacado`
 --
 ALTER TABLE `estados_anuncio`
   ADD PRIMARY KEY (`idestado`);
+
+--
+-- Indices de la tabla `favorito`
+--
+ALTER TABLE `favorito`
+  ADD PRIMARY KEY (`idfavorito`);
 
 --
 -- Indices de la tabla `images`
@@ -2474,6 +2503,12 @@ ALTER TABLE `estados_anuncio`
   MODIFY `idestado` tinyint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
+-- AUTO_INCREMENT de la tabla `favorito`
+--
+ALTER TABLE `favorito`
+  MODIFY `idfavorito` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT de la tabla `images`
 --
 ALTER TABLE `images`
@@ -2495,7 +2530,7 @@ ALTER TABLE `tipo_usuario`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `idusuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Restricciones para tablas volcadas

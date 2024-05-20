@@ -177,6 +177,20 @@ class AnuncioModel extends Model{
         return $st;
     }
 
+    public function cambiarEstadoAnuncioDestacado($idanuncio, $idestado){
+        $query = "update anuncio set an_status = ?, iddestacado = NULL where idanuncio = ?";
+        $st = $this->db->query($query, [$idestado, $idanuncio]);
+
+        return $st;
+    }
+
+    public function cambiarEstadoDeDestacado($idanuncio, $iddestacado, $idestado){
+        $query = "update destacado set estado = ? where iddestacado = ? and idanuncio = ?";
+        $st = $this->db->query($query, [$idestado, $iddestacado, $idanuncio]);
+
+        return $st;
+    }
+
 
 
     public function listarAnunciosAdmin($desde, $hasta, $nombre = '', $status = [1,2,3,4,5,6,7]){
