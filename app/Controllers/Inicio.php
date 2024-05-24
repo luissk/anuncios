@@ -862,6 +862,17 @@ class Inicio extends BaseController
         if( session('idtipousu') == 1 ){
             return view('panel/administrador/index', $data);
         }else if( session('idtipousu') == 2 ){
+            $anunciosDisponiblesUsados = $this->modeloAnuncio->countAnunciosDisponiblesUsados(session('idusuario'));
+            $anunciosenLista           = $this->modeloAnuncio->countAnunciosUsuarioPorEstados(session('idusuario'),[1,2,3,4,5,6])['total'];
+            $anunciosEliminados        = $this->modeloAnuncio->countAnunciosUsuarioPorEstados(session('idusuario'),[7])['total'];
+
+            $data['anunciosDisponiblesUsados'] = $anunciosDisponiblesUsados;
+            $data['anunciosEliminados']        = $anunciosEliminados;
+            $data['anunciosenLista']           = $anunciosenLista;
+
+            $listPrecios = $this->modeloAnuncio->listPrecios('anu');
+            $data['preciosAnuncios'] = $listPrecios;
+
             return view('panel/usuario/index', $data);
         }        
     }

@@ -104,6 +104,20 @@ class Anuncio extends BaseController
         return view($view, $data);
     }
 
+    private function _verificarCantiDeAnuncios(){
+        if( !session('idusuario') ){
+            return redirect()->to('ingresar');
+        }
+
+        if( $user = $this->modeloUsuario->getUsuarioPorId(session('idusuario')) ){
+            if( $user['count_anuncios'] <= 0 ){
+                return FALSE;
+            }
+
+            return TRUE;
+        }
+    }
+
     public function publicarAnuncio($idanuncio = ''){
         if( !session('idusuario') ){
             return redirect()->to('ingresar');
@@ -122,6 +136,13 @@ class Anuncio extends BaseController
                 $data['title']   = 'Modificar Anuncio';
             }else{
                 return redirect()->to('panel-usuario');
+            }
+        }
+
+        //para validar si aun tiene anuncios disponibles
+        if( !isset($anuncio) ){
+            if( !$this->_verificarCantiDeAnuncios() ){
+                return redirect()->to('panel-usuario')->with('noanuncios','Ya no tiene más anuncios disponibles.');
             }
         }
 
@@ -190,7 +211,24 @@ class Anuncio extends BaseController
                 </script>';
                 exit();
             }
-            //fin para editar           
+            //fin para editar
+            
+            //PARA VERIFICAR SI YA NO CUENTA CON ANUNCIOS
+            if( !isset($bd_anuncio) ){
+                if( !$this->_verificarCantiDeAnuncios() ){
+                    echo '<script>
+                        Swal.fire({
+                            title: "Ya no cuenta con más anuncios disponiles.",
+                            text: "",
+                            icon: "error",
+                            showConfirmButton: false,
+                        });
+                        setTimeout(function(){ location.href="'.base_url('mis-anuncios').'" },2000);
+                    </script>';
+                    exit();
+                }
+            }
+            //FIN PARA VERIFICAR SI YA NO CUENTA CON ANUNCIOS
             
             $validation = \Config\Services::validation();
 
@@ -546,6 +584,9 @@ class Anuncio extends BaseController
                         if( $this->modeloAnuncio->insertarImagenes($idanuncio, $nombre_img, $nombre_img_thumb, $check_principal) )
                             $ready = TRUE;
                     }
+
+                    //actualizar contador de anuncios, cuando se crea un anuncio
+                    $this->modeloUsuario->actualizarContadordeAnuncios(session('idusuario'));
     
                     if( $ready ){
                         echo '<script>

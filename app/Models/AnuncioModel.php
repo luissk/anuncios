@@ -383,4 +383,30 @@ class AnuncioModel extends Model{
 
     //FIN FAVORITOS
 
+
+    //DASHBOARD USUARIO
+
+    public function countAnunciosDisponiblesUsados($idusuario){
+        $query = "select count_anuncios, count_anuncios_used from usuario where idusuario = ?";
+        $st = $this->db->query($query, [$idusuario]);
+
+        return $st->getRowArray();
+    }
+
+    public function countAnunciosUsuarioPorEstados($idusuario, $estado = [1,2,3,4,5,6,7]){
+        $query = "select count(idanuncio) as total from anuncio where idusuario = ? and an_status in ?";
+        $st = $this->db->query($query, [$idusuario, $estado]);
+
+        return $st->getRowArray();
+    }
+
+    public function listPrecios($flag){
+        $query = "select idprecio,item,cantidad,precio,flag,descripcion from precios where flag = ?";
+        $st = $this->db->query($query, [$flag]);
+
+        return $st->getResultArray();
+    }
+
+    //FIN DASHBOARD USUARIO
+
 }
